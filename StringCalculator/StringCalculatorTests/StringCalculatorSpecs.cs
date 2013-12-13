@@ -13,20 +13,18 @@ namespace Ajejczes.CodingDojo.Tests
     public class when_empty_input_given : with_string_calculator
     {
         Because of = () => result = sut.Add("");
-            
+
         It should_return_0 = () => result.ShouldEqual(0);
 
         static int result;
     }
-    
+
     public class when_a_single_number_is_provided_for_addition : with_string_calculator
     {
         Because of = () =>
             result = sut.Add("1");
-        It should_return_the_same_number = () =>
-        {
-            result.ShouldEqual(1);
-        };
+
+        It should_return_the_same_number = () => { result.ShouldEqual(1); };
 
         static int result;
     }
@@ -49,9 +47,8 @@ namespace Ajejczes.CodingDojo.Tests
         Because of = () => result = sut.Add("1,2,3,4");
 
         It should_return_sum_of_all_numbers = () => result.ShouldEqual(10);
-            
+
         static int result;
-            
     }
 
     [Subject(typeof (StringCalculator))]
@@ -61,7 +58,7 @@ namespace Ajejczes.CodingDojo.Tests
             result = sut.Add("1\n2,3");
 
         It should_return_their_sum = () => result.ShouldEqual(6);
-            
+
 
         static int result;
     }
@@ -76,7 +73,6 @@ namespace Ajejczes.CodingDojo.Tests
             result.ShouldEqual(3);
 
         static int result;
-            
     }
 
     [Subject(typeof (StringCalculator))]
@@ -85,7 +81,7 @@ namespace Ajejczes.CodingDojo.Tests
         Because of = () =>
             exception = Catch.Exception(() => result = sut.Add("-1,-2"));
 
-        It should_throw = () => 
+        It should_throw = () =>
             exception.ShouldNotBeNull();
 
         It should_throw_meaningfull_message = () =>
@@ -101,5 +97,27 @@ namespace Ajejczes.CodingDojo.Tests
         static Exception exception;
     }
 
+    [Subject(typeof (StringCalculator))]
+    public class when_numbers_greater_than_1000_are_provided_for_addition : with_string_calculator
+    {
+        Because of = () =>
+            result = sut.Add("1001, 2");
 
+        It should_ignore_numbers_greater_than_1000 = () =>
+            result.ShouldEqual(2);
+
+        static int result;
+    }
+
+    [Subject(typeof (StringCalculator))]
+    public class when_long_custom_delimiter_is_provided_for_addition : with_string_calculator
+    {
+        Because of = () =>
+            result = sut.Add("//[***]\n1***2***3");
+
+        It should_return_sum_of_numbers_separated_by_the_long_custom_delimiter = () => 
+            result.ShouldEqual(6);
+
+        static int result;
+    }
 }
