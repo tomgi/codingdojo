@@ -1,15 +1,16 @@
-﻿using Machine.Specifications;
+﻿using System;
+using Machine.Specifications;
 
-namespace Ajejczes.CodingDojo.StringCalculatorTests
+namespace Ajejczes.CodingDojo.Tests
 {
-    public class given_string_calculator
+    public class with_string_calculator
     {
-        Establish context = () => sut = new StringCalculator.StringCalculator();
-        protected static StringCalculator.StringCalculator sut;
+        Establish context = () => sut = new StringCalculator();
+        protected static StringCalculator sut;
     }
 
-    [Subject(typeof (StringCalculator.StringCalculator))]
-    public class when_empty_input_given : given_string_calculator
+    [Subject(typeof (StringCalculator))]
+    public class when_empty_input_given : with_string_calculator
     {
         Because of = () => result = sut.Add("");
             
@@ -18,7 +19,7 @@ namespace Ajejczes.CodingDojo.StringCalculatorTests
         static int result;
     }
     
-    public class when_a_single_number_is_given : given_string_calculator
+    public class when_a_single_number_is_provided_for_addition : with_string_calculator
     {
         Because of = () =>
             result = sut.Add("1");
@@ -30,8 +31,8 @@ namespace Ajejczes.CodingDojo.StringCalculatorTests
         static int result;
     }
 
-    [Subject(typeof (StringCalculator.StringCalculator))]
-    public class when_two_numbers_are_given : given_string_calculator
+    [Subject(typeof (StringCalculator))]
+    public class when_two_numbers_are_provided_for_addition : with_string_calculator
     {
         Because of = () =>
             result = sut.Add("2,3");
@@ -42,8 +43,8 @@ namespace Ajejczes.CodingDojo.StringCalculatorTests
         static int result;
     }
 
-    [Subject(typeof (StringCalculator.StringCalculator))]
-    public class when_set_of_numbers_is_given : given_string_calculator
+    [Subject(typeof (StringCalculator))]
+    public class when_set_of_numbers_is_provided_for_addition : with_string_calculator
     {
         Because of = () => result = sut.Add("1,2,3,4");
 
@@ -53,8 +54,8 @@ namespace Ajejczes.CodingDojo.StringCalculatorTests
             
     }
 
-    [Subject(typeof (StringCalculator.StringCalculator))]
-    public class when_numbers_are_separated_by_new_lines_or_commas_are_given : given_string_calculator
+    [Subject(typeof (StringCalculator))]
+    public class when_numbers_are_separated_by_new_lines_or_commas_are_provided_for_addition : with_string_calculator
     {
         Because of = () =>
             result = sut.Add("1\n2,3");
@@ -65,8 +66,8 @@ namespace Ajejczes.CodingDojo.StringCalculatorTests
         static int result;
     }
 
-    [Subject(typeof (StringCalculator.StringCalculator))]
-    public class when_custom_delimiter_is_provided : given_string_calculator
+    [Subject(typeof (StringCalculator))]
+    public class when_custom_delimiter_is_provided_for_addition : with_string_calculator
     {
         Because of = () =>
             result = sut.Add("//;\n1;2");
@@ -77,4 +78,19 @@ namespace Ajejczes.CodingDojo.StringCalculatorTests
         static int result;
             
     }
+
+    [Subject(typeof (StringCalculator))]
+    public class when_negative_number_is_provided_for_addition : with_string_calculator
+    {
+        Because of = () =>
+            exception = Catch.Exception(() => result = sut.Add("-1"));
+
+        It should_throw = () => 
+            exception.ShouldNotBeNull();
+
+        static int result;
+        static Exception exception;
+    }
+
+
 }

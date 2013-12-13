@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ajejczes.CodingDojo.StringCalculator
+namespace Ajejczes.CodingDojo
 {
     public class StringCalculator
     {
@@ -14,9 +14,16 @@ namespace Ajejczes.CodingDojo.StringCalculator
             }
 
             var nums = input.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+            
             int sum = 0;
             foreach (var num in nums)
-                sum += int.Parse(num);
+            {
+                int element = int.Parse(num);
+                if (element < 0)
+                    throw new ApplicationException("negatives not allowed");
+                sum += element;
+            }
+            ;
             return sum;
         }
     }
