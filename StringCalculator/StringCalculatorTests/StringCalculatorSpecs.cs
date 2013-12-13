@@ -80,13 +80,22 @@ namespace Ajejczes.CodingDojo.Tests
     }
 
     [Subject(typeof (StringCalculator))]
-    public class when_negative_number_is_provided_for_addition : with_string_calculator
+    public class when_negative_numbers_are_provided_for_addition : with_string_calculator
     {
         Because of = () =>
-            exception = Catch.Exception(() => result = sut.Add("-1"));
+            exception = Catch.Exception(() => result = sut.Add("-1,-2"));
 
         It should_throw = () => 
             exception.ShouldNotBeNull();
+
+        It should_throw_meaningfull_message = () =>
+            exception.Message.ShouldStartWith("Negatives not allowed");
+
+        It should_throw_message_containing_negative_numbers = () =>
+        {
+            exception.Message.ShouldContain("-1");
+            exception.Message.ShouldContain("-2");
+        };
 
         static int result;
         static Exception exception;
