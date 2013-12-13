@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace StringCalculatorKata
 {
@@ -6,7 +7,11 @@ namespace StringCalculatorKata
     {
         public int Add(string input)
         {
-            return 0;
+            var nums = input.Split(",\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            int sum = 0;
+            foreach (var num in nums)
+                sum += int.Parse(num);
+            return sum;
         }
     }
 }
