@@ -120,4 +120,15 @@ namespace Ajejczes.CodingDojo.Tests
 
         static int result;
     }
+
+    [Subject(typeof (StringCalculator))]
+    public class when_multiple_custom_delimiters_are_provided : with_string_calculator
+    {
+        Because of = () =>
+            result = sut.Add("//[*][%]\n1*2%3");
+
+        It should_return_sum_of_numbers_separated_by_the_any_of_custon_delimiters = () =>
+            result.ShouldEqual(6);
+        static int result;
+    }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Principal;
 
 namespace Ajejczes.CodingDojo
 {
@@ -77,8 +79,14 @@ namespace Ajejczes.CodingDojo
                 var delimiterLine = delimiterAndNumbers[0].Substring(DelimiterTag.Length);
                 numbersLine = delimiterAndNumbers[1];
 
-                if (delimiterLine[0] == '[')
-                    delimiters = new[] {delimiterLine.Substring(1, delimiterLine.Length - 1 - 1)};
+                if (delimiterLine.StartsWith("["))
+                {
+                    var delimitersCollection = delimiterLine.Split(new string[] {"[", "]"}, StringSplitOptions.RemoveEmptyEntries);
+                    var delimitersList = new List<string>();
+                    foreach (var token in delimitersCollection)
+                        delimitersList.Add(token);
+                    delimiters = delimitersList.ToArray();
+                }
                 else
                     delimiters = new[] {delimiterLine};
             }
