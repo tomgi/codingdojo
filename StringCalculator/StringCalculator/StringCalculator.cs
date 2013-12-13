@@ -1,13 +1,19 @@
 ﻿using System;
-using System.Linq;
 
-namespace StringCalculatorKata
+namespace Ajejczes.CodingDojo.StringCalculator
 {
     public class StringCalculator
     {
         public int Add(string input)
         {
-            var nums = input.Split(",\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            var delimiters = new[] {',', '\n'};
+            if (input.StartsWith("//"))
+            {
+                delimiters = new[] {input[2]};
+                input = input.Substring(3);
+            }
+
+            var nums = input.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
             int sum = 0;
             foreach (var num in nums)
                 sum += int.Parse(num);

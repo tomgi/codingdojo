@@ -7,8 +7,8 @@
     <ProjectGuid>{FDB974B6-3219-4475-8179-90FC6B75566A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>StringCalculatorTests</RootNamespace>
-    <AssemblyName>StringCalculatorTests</AssemblyName>
+    <RootNamespace>Ajejczes.CodingDojo.StringCalculatorTests</RootNamespace>
+    <AssemblyName>Ajejczes.CodingDojo.StringCalculatorTests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

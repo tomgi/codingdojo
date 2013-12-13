@@ -1,16 +1,14 @@
-﻿using System.Runtime.InteropServices;
-using Machine.Specifications;
-using StringCalculatorKata;
+﻿using Machine.Specifications;
 
-namespace StringCalculatorTests
+namespace Ajejczes.CodingDojo.StringCalculatorTests
 {
     public class given_string_calculator
     {
-        Establish context = () => sut = new StringCalculator();
-        protected static StringCalculator sut;
+        Establish context = () => sut = new StringCalculator.StringCalculator();
+        protected static StringCalculator.StringCalculator sut;
     }
 
-    [Subject(typeof (StringCalculator))]
+    [Subject(typeof (StringCalculator.StringCalculator))]
     public class when_empty_input_given : given_string_calculator
     {
         Because of = () => result = sut.Add("");
@@ -32,7 +30,7 @@ namespace StringCalculatorTests
         static int result;
     }
 
-    [Subject(typeof (StringCalculator))]
+    [Subject(typeof (StringCalculator.StringCalculator))]
     public class when_two_numbers_are_given : given_string_calculator
     {
         Because of = () =>
@@ -44,7 +42,7 @@ namespace StringCalculatorTests
         static int result;
     }
 
-    [Subject(typeof (StringCalculator))]
+    [Subject(typeof (StringCalculator.StringCalculator))]
     public class when_set_of_numbers_is_given : given_string_calculator
     {
         Because of = () => result = sut.Add("1,2,3,4");
@@ -55,7 +53,7 @@ namespace StringCalculatorTests
             
     }
 
-    [Subject(typeof (StringCalculator))]
+    [Subject(typeof (StringCalculator.StringCalculator))]
     public class when_numbers_are_separated_by_new_lines_or_commas_are_given : given_string_calculator
     {
         Because of = () =>
@@ -65,5 +63,18 @@ namespace StringCalculatorTests
             
 
         static int result;
+    }
+
+    [Subject(typeof (StringCalculator.StringCalculator))]
+    public class when_custom_delimiter_is_provided : given_string_calculator
+    {
+        Because of = () =>
+            result = sut.Add("//;\n1;2");
+
+        It should_return_sum_of_numbers_separated_by_the_custom_delimiter = () =>
+            result.ShouldEqual(3);
+
+        static int result;
+            
     }
 }
