@@ -38,17 +38,39 @@ namespace IHS.CodingDojo.IntToRoman
         public static string ToRoman(this int i)
         {
             var result = string.Empty;
-            var tens = i/10;
+            int tens;
+            var magnitude = 10;
+            return RomanPolanski(i, magnitude, "I", "X", "V");
+        }
+
+        static string RomanPolanski(int i, int magnitude, string elem_I, string elem_X, string elem_V)
+        {
+            string result= string.Empty;
+            int magcount;
             
-            i -= tens*10;
-            result += string.Join(string.Empty,Enumerable.Repeat("X", tens));
-            if (i%5 == 4)
-                result += "I";
-            if (i >= 9)
-                result += "X";
-            else if (i >= 4)
-                result += "V";
-            return result + string.Join(string.Empty, Enumerable.Repeat("I", i%5 != 4 ? i % 5 : 0));
+            int V_quant = magnitude/2;
+            var V_lesser = magnitude * .4;
+            var X_Lesser = magnitude * .9;
+
+            magcount = i/magnitude;
+
+            if (magcount >= 4)
+            {
+                result += RomanPolanski(i, magnitude*10, "X", "C", "L");
+                i -= magcount * magnitude; 
+                magcount = 0;
+            }
+
+            i -= magcount*magnitude;
+            result += string.Join(string.Empty, Enumerable.Repeat(elem_X, magcount));
+
+            if (i%V_quant == V_lesser)
+                result += elem_I;
+            if (i >= X_Lesser)
+                result += elem_X;
+            else if (i >= V_lesser)
+                result += elem_V;
+            return result + string.Join(string.Empty, Enumerable.Repeat(elem_I, i%V_quant != V_lesser ? i%V_quant : 0));
         }
     }
 }
