@@ -26,29 +26,50 @@ namespace IHS.CodingDojo.IntToRoman
             specify = () => 20.ToRoman().should_be("XX");
             specify = () => 34.ToRoman().should_be("XXXIV");
             specify = () => 40.ToRoman().should_be("XL");
+            specify = () => 41.ToRoman().should_be("XLI");
+            specify = () => 41.ToRoman().should_be("XLI");
+            specify = () => 99.ToRoman().should_be("XCIX");
+            specify = () => 999.ToRoman().should_be("CMXCIX");
+            specify = () => 1999.ToRoman().should_be("MCMXCIX");
+            specify = () => 2999.ToRoman().should_be("MMCMXCIX");
 
         }
     }
 
     internal static class IntToRomanConverter
     {
-        // I II III IV V VI VII VIII IX X
-        // XI XII XIII XIV XVI XVII XVIII XIX XX
+        static readonly Tuple<string, string, string>[] RomanTuples =
+        {
+            new Tuple<string, string, string>("I","X","V"), 
+            new Tuple<string, string, string>("X","C","L"), 
+            new Tuple<string, string, string>("C","M","D")
+        };
 
         public static string ToRoman(this int i)
         {
             var result = string.Empty;
-            var tens = i/10;
-            
-            i -= tens*10;
-            result += string.Join(string.Empty,Enumerable.Repeat("X", tens));
-            if (i%5 == 4)
-                result += "I";
-            if (i >= 9)
-                result += "X";
-            else if (i >= 4)
-                result += "V";
-            return result + string.Join(string.Empty, Enumerable.Repeat("I", i%5 != 4 ? i % 5 : 0));
+
+            foreach (var romanTuple in RomanTuples)
+            {
+                result = (i % 10).RomanPolanski(romanTuple.Item1, romanTuple.Item2, romanTuple.Item3) + result;
+                i = i / 10;
+            }
+            result = string.Join(string.Empty, Enumerable.Repeat("M", i)) + result;
+            return result;
+        }
+
+        static string RomanPolanski(this int i, string minor, string major, string middle)
+        {
+            var result = string.Empty;
+            if (i == 4)
+                result += minor + middle;
+            if (i == 9)
+                result += minor + major;
+            else if (i >= 5)
+                result += middle;
+            if (i % 5 <= 3)
+                result += string.Join(string.Empty, Enumerable.Repeat(minor, i % 5));
+            return result;
         }
     }
 }
