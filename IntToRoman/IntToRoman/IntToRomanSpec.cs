@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using NSpec;
@@ -26,7 +27,7 @@ namespace IHS.CodingDojo.IntToRoman
             specify = () => 20.ToRoman().should_be("XX");
             specify = () => 34.ToRoman().should_be("XXXIV");
             specify = () => 40.ToRoman().should_be("XL");
-
+            specify = () => 41.ToRoman().should_be("XLI");
         }
     }
 
@@ -40,37 +41,35 @@ namespace IHS.CodingDojo.IntToRoman
             var result = string.Empty;
             int tens;
             var magnitude = 10;
-            return RomanPolanski(i, magnitude, "I", "X", "V");
+            return RomanPolanski(i, magnitude, "I", "V", "X");
         }
 
-        static string RomanPolanski(int i, int magnitude, string elem_I, string elem_X, string elem_V)
+        static string RomanPolanski(int i, int magnitude, string elem_I, string elem_V, string elem_X)
         {
-            string result= string.Empty;
-            int magcount;
-            
-            int V_quant = magnitude/2;
-            var V_lesser = magnitude * .4;
-            var X_Lesser = magnitude * .9;
+            string result = string.Empty;
 
-            magcount = i/magnitude;
+            int mag_05 = magnitude / 2;
+            int mag_04 = (int) (magnitude * .4);
+            int mag_09 = (int) (magnitude * .9);
 
-            if (magcount >= 4)
-            {
-                result += RomanPolanski(i, magnitude*10, "X", "C", "L");
-                i -= magcount * magnitude; 
-                magcount = 0;
-            }
+            int mag_count = i / magnitude;
 
-            i -= magcount*magnitude;
-            result += string.Join(string.Empty, Enumerable.Repeat(elem_X, magcount));
+            var biggerMagnitude = mag_count * magnitude;
 
-            if (i%V_quant == V_lesser)
+            if (mag_count >= 4)
+                result += RomanPolanski(biggerMagnitude, magnitude * 10, "X", "L", "C");
+            else
+                result += string.Join(string.Empty, Enumerable.Repeat(elem_X, mag_count));
+
+            i -= biggerMagnitude;
+
+            if (i % mag_05 == mag_04)
                 result += elem_I;
-            if (i >= X_Lesser)
+            if (i >= mag_09)
                 result += elem_X;
-            else if (i >= V_lesser)
+            else if (i >= mag_04)
                 result += elem_V;
-            return result + string.Join(string.Empty, Enumerable.Repeat(elem_I, i%V_quant != V_lesser ? i%V_quant : 0));
+            return result + string.Join(string.Empty, Enumerable.Repeat(elem_I, i % mag_05 != mag_04 ? i % mag_05 : 0));
         }
     }
 }
