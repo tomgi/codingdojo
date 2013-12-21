@@ -37,21 +37,20 @@ namespace IHS.CodingDojo.IntToRoman
     }
 
     internal static class IntToRomanConverter
-    {
-        static readonly Tuple<string, string, string>[] RomanTuples =
-        {
-            new Tuple<string, string, string>("I","X","V"), 
-            new Tuple<string, string, string>("X","C","L"), 
-            new Tuple<string, string, string>("C","M","D")
-        };
-
+    {        
         public static string ToRoman(this int i)
         {
             var result = string.Empty;
 
-            foreach (var romanTuple in RomanTuples)
+            var romanCharacters = new[]{
+                new{minor="I", major="X", middle="V"},
+                new{minor="X", major="C", middle="L"},
+                new{minor="C", major="M", middle="D"}
+            };
+
+            foreach (var charSet in romanCharacters)
             {
-                result = (i % 10).RomanPolanski(romanTuple.Item1, romanTuple.Item2, romanTuple.Item3) + result;
+                result = (i % 10).RomanPolanski(charSet.minor, charSet.major, charSet.middle) + result;
                 i = i / 10;
             }
             result = string.Join(string.Empty, Enumerable.Repeat("M", i)) + result;
