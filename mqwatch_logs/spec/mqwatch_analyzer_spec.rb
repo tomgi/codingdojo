@@ -67,6 +67,32 @@ describe MQWatchAnalyzer do
 		result_stream.last_line.should == ""
 	end	
 
+	it "should display manus flag for an hour where during last hour there was non record with count below threashold" do
+		analyzer.analyze Record.new date:"1980.01.01 01:00",count:100
+		analyzer.analyze Record.new date:"1980.01.01 02:00",count:100
+		result_stream.last_line.should == "1980.01.01 01:00 1"
+	end	
+
+	it "should display manus flag for an hour where during last hour there was non record with count below threashold and 00 minutes are missing" do
+		analyzer.analyze Record.new date:"1980.01.01 01:00",count:100
+		analyzer.analyze Record.new date:"1980.01.01 01:58",count:100
+		analyzer.analyze Record.new date:"1980.01.01 02:01",count:100
+		result_stream.last_line.should == "1980.01.01 01:00 1"
+	end	
+
+	it "should display manus flag for an hour which didn't start with 00 if there was preceeding hour record" do
+		analyzer.analyze Record.new date:"1980.01.01 01:00",count:100
+		analyzer.analyze Record.new date:"1980.01.01 02:01",count:100
+		analyzer.analyze Record.new date:"1980.01.01 02:59",count:100
+		result_stream.last_line.should == "1980.01.01 02:00 1"
+	end
+
+	it "should display manus flag for an hour which didn't start with 00 if there was preceeding hour record" do
+		analyzer.analyze Record.new date:"1980.01.01 23:00",count:100
+		analyzer.analyze Record.new date:"1980.01.02 00:01",count:100
+		result_stream.last_line.should == "1980.01.01 23:00 1"
+	end	
+
 	# it "should generate line for that hour" do
 	# 	analyzer.analyze Record.new{date:"1980.1.01 1:00",count:100} 
 	# 	analyzer.analyze Record.new{date:"1980.1.01 1:59",count:100}
