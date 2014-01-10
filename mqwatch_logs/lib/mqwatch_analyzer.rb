@@ -11,7 +11,8 @@ class MQWatchAnalyzer
 
 		if(record.date.minute == 59 &&
 			@current_date &&
-			@current_date.hour == record.date.hour)
+			@current_date.hour == record.date.hour &&
+			record.count >= @threshold)
 			@result_stream << "#{@current_date.strftime("%Y.%m.%d %H:%M")} 1"
 		end
 	end
