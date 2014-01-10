@@ -2,13 +2,16 @@ class MQWatchAnalyzer
 	def initialize(threshold, result_stream)
 		@threshold = threshold
 		@result_stream = result_stream
-		@records = []
 	end
 
 	def analyze(record)
-		@records << record
+		if record.date.minute == 0
+			@current_date = record.date
+		end
 
-		if(@records.size >= 2 && record.date.minute == 59)
+		if(record.date.minute == 59 &&
+			@current_date &&
+			@current_date.hour == record.date.hour)
 			@result_stream << "1980.1.01 1:00 1"
 		end
 	end
