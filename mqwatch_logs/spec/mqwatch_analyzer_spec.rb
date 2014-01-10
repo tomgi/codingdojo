@@ -1,9 +1,47 @@
 require 'rspec'
 require_relative '../lib/mqwatch_analyzer'
+require_relative '../lib/record'
+require_relative '../lib/result_stream'
 
-
-describe MQWatchAnalyzer do
-	it "works" do
-		(1 + 1).should == 2
+describe MQWatchAnalyzer do	
+	let(:result_stream){
+		ResultStream.new
+	}
+	let (:analyzer) { 
+		MQWatchAnalyzer.new 100, result_stream 
+	}
+	it "should display empty line no input recorded" do
+		result_stream.last_line.should == ""
 	end	
+
+	it "should display empty line for messages appearing during only first minute of an hour" do
+		analyzer.analyze Record.new date:"1980.1.01 1:00",count:100
+		result_stream.last_line.should == ""
+	end	
+	
+	it "should display empty line for messages appearing during only first minutes of an hour" do
+		analyzer.analyze Record.new date:"1980.1.01 1:00",count:100
+		analyzer.analyze Record.new date:"1980.1.01 1:01",count:100 
+		result_stream.last_line.should == ""
+	end	
+
+	# it "should display empty line for messages appearing during only first minutes of an hour" do
+	# 	analyzer.analyze Record.new{date:"1980.1.01 1:00",count:100} 
+	# 	analyzer.analyze Record.new{date:"1980.1.01 1:50",count:100} 
+	# 	result_stream.last_line.should == ""
+	# end	
+
+	it "should display manus flag for an hour where messages appeared during first and the last minute" do
+		analyzer.analyze Record.new date:"1980.1.01 1:00",count:100
+		analyzer.analyze Record.new date:"1980.1.01 1:59",count:100 
+		result_stream.last_line.should == "1980.1.01 1:00 1"
+	end	
+
+	# it "should generate line for that hour" do
+	# 	analyzer.analyze Record.new{date:"1980.1.01 1:00",count:100} 
+	# 	analyzer.analyze Record.new{date:"1980.1.01 1:59",count:100}
+	# 	analyzer.analyze Record.new{date:"1980.1.01 2:00",count:100}
+	# 	analyzer.analyze Record.new{date:"1980.1.01 2:59",count:100}
+	# 	result_stream.last_line.should == "1980.1.01 2:00 1"
+	# end	
 end
