@@ -12,7 +12,7 @@ class MQWatchAnalyzer
 		if(record.date.minute == 59 &&
 			@current_date &&
 			@current_date.hour == record.date.hour)
-			@result_stream << "1980.1.01 1:00 1"
+			@result_stream << "#{@current_date.strftime("%Y.%m.%d %H:%M")} 1"
 		end
 	end
 end
