@@ -52,7 +52,21 @@ describe MQWatchAnalyzer do
 		analyzer.analyze Record.new date:"1980.01.01 01:00",count:100
 		analyzer.analyze Record.new date:"1980.01.01 01:59",count:99 
 		result_stream.last_line.should == ""
+	end
+
+	it "should display empty line for an hour where messages appeared during first and the last minute and value for the first minute doesn't reach threshold" do
+		analyzer.analyze Record.new date:"1980.01.01 01:00",count:99
+		analyzer.analyze Record.new date:"1980.01.01 01:59",count:100 
+		result_stream.last_line.should == ""
+	end
+
+	it "should display empty line for an hour where messages appeared during first and the last minute and value for the middle minute doesn't reach threshold" do
+		analyzer.analyze Record.new date:"1980.01.01 01:00",count:100
+		analyzer.analyze Record.new date:"1980.01.01 01:01",count:99
+		analyzer.analyze Record.new date:"1980.01.01 01:59",count:100 
+		result_stream.last_line.should == ""
 	end	
+
 	# it "should generate line for that hour" do
 	# 	analyzer.analyze Record.new{date:"1980.1.01 1:00",count:100} 
 	# 	analyzer.analyze Record.new{date:"1980.1.01 1:59",count:100}
