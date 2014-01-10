@@ -1,0 +1,2 @@
+class MQWatchAnalyzer
+end
