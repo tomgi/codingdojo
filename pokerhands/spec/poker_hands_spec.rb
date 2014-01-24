@@ -4,10 +4,15 @@ require_relative '../lib/player_parser'
 
 describe "PokerHandsApp" do
 	context "AcceptanceTests" do
-		it "generates correct results for high card ace" do
-			ph = PokerHandsApp.new
+		let(:ph) { PokerHandsApp.new }
+		it "generates correct result for high card ace" do
 			result = ph.compare_hands("Black: 2H 3D 5S 9C KD White: 2C 3H 4S 8C AH")
 			result.should == "White wins - high card: Ace"
+		end
+
+		it "generates correct result for flush" do
+			result = ph.compare_hands("Black: 2H 4S 4C 2D 4H White: 2S 8S AS QS 3S")
+			result.should == "White wins - flush"
 		end
 	end
 
@@ -36,8 +41,20 @@ describe "PokerHandsApp" do
 	end
 
 	context "get rank" do
+		let(:player) { Player.new }
 		it "should recognize high card" do
-			player = Player.new	
+			player.cards = [
+				Card.new('2S'),
+				Card.new('8S'),
+				Card.new('AS'),
+				Card.new('QS'),
+				Card.new('3S')
+			]
+			player.rank.name.should == "flush"
+			player.rank.highest_card.should == Card.new('AS')
+		end
+
+		it "should recognize flush" do
 			player.cards = [
 				Card.new('2C'),
 				Card.new('3H'),
@@ -45,8 +62,6 @@ describe "PokerHandsApp" do
 				Card.new('8C'),
 				Card.new('AH')
 			]
-			player.rank.name.should == "High card"
-			player.rank.highest_card.should == Card.new('AH')
 		end
 	end
 
@@ -71,11 +86,32 @@ describe "PokerHandsApp" do
 
 			player1.rank.should > player2.rank
 		end
+
+		it "should recognize low flush higher than high high card" do
+			player1 = Player.new "white"
+			player1.cards = [
+				Card.new('2C'),
+				Card.new('3C'),
+				Card.new('4C'),
+				Card.new('8C'),
+				Card.new('5C')
+			]
+			player2 = Player.new "black"
+			player2.cards = [
+				Card.new('2H'),
+				Card.new('3D'),
+				Card.new('5S'),
+				Card.new('9C'),
+				Card.new('AD')
+			]
+
+			player1.rank.should > player2.rank
+		end
 	end
 
 	context Rank do
 		it "should have correct string format" do
-			r = Rank.new "High card", Card.new("AD")
+			r = Rank.new Rank::HIGH_CARD, Card.new("AD")
 			r.to_s.should == "high card: Ace"
 		end
 	end

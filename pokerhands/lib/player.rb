@@ -11,6 +11,11 @@ class Player
 
 	def rank
 		high_card = cards.sort.last
-		Rank.new "High card", high_card
+		if (cards.map(&:suit).uniq.size == 1)
+			Rank.new Rank::FLUSH, high_card
+		else
+			
+			Rank.new Rank::HIGH_CARD, high_card
+		end
 	end
 end

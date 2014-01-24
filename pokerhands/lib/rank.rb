@@ -1,6 +1,9 @@
 class Rank
 	include Comparable
 
+	HIGH_CARD = "high card"
+	FLUSH = "flush"
+
 	def initialize rank_name, highest_card
 		@name = rank_name
 		@highest_card = highest_card
@@ -15,11 +18,18 @@ class Rank
 	end
 
 	def <=>(other)
-		highest_card <=> other.highest_card
+		order = [HIGH_CARD, FLUSH]
+		our = order.index name
+		their = order.index other.name 
+		if our == their
+			highest_card <=> other.highest_card
+		else
+			our <=> their
+		end
 	end
 
 	def to_s
-		"#{@name.downcase}: #{@highest_card}"
+		"#{@name}#{name == HIGH_CARD ? ": #{@highest_card}" : ""}"
 	end
 
 	def inspect
