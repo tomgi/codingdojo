@@ -14,13 +14,18 @@ describe "PokerHandsApp" do
 			result = ph.compare_hands("Black: 2H 4S 4C 2D 4H White: 2S 8S AS QS 3S")
 			result.should == "White wins - flush"
 		end
+
+		it "generates correct result for high card tie" do
+			result = ph.compare_hands("Black: 2H 3D 5S 9C KD White: 2C 3H 4S 8C KH")
+			result.should == "Black wins - high card: 9"
+		end
 	end
 
 	context "Input Parsing" do
 		context "parsing single player" do
 			let(:parser) { PlayerParser.new }
 			let(:player) { parser.parse("White: 2C 3H 4S 8C AH") }
-
+			let(:cards) { parser.parse_cards("2C 3H 4S 8C AH") }
 			it "should parse player name" do 
 				player.name.should == "White"
 			end
@@ -34,7 +39,7 @@ describe "PokerHandsApp" do
 					Card.new('AH')
 				]
 
-				player.cards.should =~ expectedCards
+				cards.should =~ expectedCards
 			end
 
 		end
@@ -51,7 +56,6 @@ describe "PokerHandsApp" do
 				Card.new('3S')
 			]
 			player.rank.name.should == "flush"
-			player.rank.highest_card.should == Card.new('AS')
 		end
 
 		it "should recognize flush" do

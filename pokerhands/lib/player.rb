@@ -1,5 +1,6 @@
 require 'card'
 require 'rank'
+require 'ranks/factory'
 
 class Player
 	attr_accessor :name
@@ -9,13 +10,10 @@ class Player
 		@name = name
 	end
 
+	def cards= value
+		@rank = Factory.new.create_rank value
+	end
 	def rank
-		high_card = cards.sort.last
-		if (cards.map(&:suit).uniq.size == 1)
-			Rank.new Rank::FLUSH, high_card
-		else
-			
-			Rank.new Rank::HIGH_CARD, high_card
-		end
+		@rank	
 	end
 end
