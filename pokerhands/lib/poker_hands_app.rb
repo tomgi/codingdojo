@@ -11,21 +11,11 @@ class PokerHandsApp
 
 		result = determine_result(playerA, playerB)		
 				
-		"#{result.winner.name} wins - #{result.justification}"
-	end
-
-	def high_card_compare(playerA, playerB)
-		playerA_sorted_cards = playerA.cards.sort
-		playerB_sorted_cards = playerB.cards.sort
-
-		result = Result.new
-		playerA_sorted_cards.zip(playerB_sorted_cards).reverse_each { |e, f| 
-			if(e.figure != f.figure)
-				result.winner = e > f ? playerA : playerB
-				result.justification = "high card: #{[e, f].max}"
-				return result
-			end	
-		}
+		if (result.winner)
+			"#{result.winner.name} wins - #{result.justification}"
+		else
+			"Tie"
+		end
 	end
 
 	def determine_result(playerA, playerB)	
@@ -38,6 +28,21 @@ class PokerHandsApp
 			method_name = "#{playerA.rank.name.tr(' ', '_')}_compare"
 			return self.send(method_name, playerA, playerB)
 		end
+	end
+
+	def high_card_compare(playerA, playerB)
+		playerA_sorted_cards = playerA.cards.sort
+		playerB_sorted_cards = playerB.cards.sort
+
+		result = Result.new
+		playerA_sorted_cards.zip(playerB_sorted_cards).reverse_each { |e, f| 
+			if(e.figure != f.figure)
+				result.winner = e > f ? playerA : playerB
+				result.justification = "high card: #{[e, f].max}"
+				return result
+			end
+		}
+		result
 	end
 end
 

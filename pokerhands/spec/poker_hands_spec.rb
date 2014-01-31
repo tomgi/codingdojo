@@ -19,6 +19,11 @@ describe "PokerHandsApp" do
 			result = ph.compare_hands("Black: 2H 3D 5S 9C KD White: 2C 3H 4S 8C KH")
 			result.should == "Black wins - high card: 9"
 		end
+
+		it "generates correct result for tie" do
+			result = ph.compare_hands("Black: 2H 3D 5S 9C KD White: 2C 3H 5D 9S KH")
+			result.should == "Tie"
+		end
 	end
 
 	context "Input Parsing" do
