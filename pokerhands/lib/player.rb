@@ -1,19 +1,31 @@
 require 'card'
 require 'rank'
-require 'ranks/factory'
 
 class Player
 	attr_accessor :name
 	attr_accessor :cards
+	attr_reader :rank
 
 	def initialize(name = "")
 		@name = name
 	end
 
 	def cards= value
-		@rank = Factory.new.create_rank value
+		@cards = value
+		@rank = create_rank
 	end
-	def rank
-		@rank	
+
+	private
+	def create_rank 
+		rank = Rank.new
+		if (cards.map(&:suit).uniq.size == 1)
+			rank.value = 6
+			rank.name = "flush"
+		else
+			rank.value = 1
+			rank.name = "high card"
+		end
+		rank
 	end
+
 end
