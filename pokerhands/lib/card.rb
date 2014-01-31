@@ -13,10 +13,6 @@ class Card
 		@cards_literal[1]
 	end
 
-	def == other
-		figure == other.figure && suit == other.suit
-	end
-
 	def to_s
 		if figure == 'A'
 			'Ace'
@@ -31,6 +27,10 @@ class Card
 
 	def <=> other
 		order = '23456789TJQKA'
-		(order.index figure) <=> (order.index other.figure)
+		if order.index(figure) != order.index(other.figure)
+			(order.index figure) <=> (order.index other.figure)
+		else
+			suit <=> other.suit
+		end
 	end
 end

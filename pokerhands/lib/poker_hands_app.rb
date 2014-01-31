@@ -14,37 +14,30 @@ class PokerHandsApp
 		"#{result.winner.name} wins - #{result.justification}"
 	end
 
-	def determine_result(playerA, playerB)
-		result = Result.new
-		if playerA.rank.value > playerB.rank.value
-			result.winner = playerA
-			result.justification = result.winner.rank.to_s
-		elsif playerA.rank.value < playerB.rank.value
-			result.winner = playerB
-			result.justification = result.winner.rank.to_s
-		else
-			case playerA.rank.value
-				when 1
-					my_sorted_cards = playerA.cards.sort
-					other_sorted_cards = playerB.cards.sort
+	def high_card_compare(playerA, playerB)
+		playerA_sorted_cards = playerA.cards.sort
+		playerB_sorted_cards = playerB.cards.sort
 
-					my_sorted_cards.zip(other_sorted_cards).reverse_each { |e, f| 
-						if(e > f)
-							result.winner = playerA
-							result.justification = "high card: #{e}"
-							break
-						elsif (e < f)
-							result.winner = playerB
-							result.justification = "high card: #{f}"
-							break
-						end	
-					}  
-				else
-				  throw "DONT KNOW"
-			end
+		result = Result.new
+		playerA_sorted_cards.zip(playerB_sorted_cards).reverse_each { |e, f| 
+			if(e.figure != f.figure)
+				result.winner = e > f ? playerA : playerB
+				result.justification = "high card: #{[e, f].max}"
+				return result
+			end	
+		}
+	end
+
+	def determine_result(playerA, playerB)	
+		if playerA.rank.value != playerB.rank.value
+			result = Result.new
+			result.winner = [playerA, playerB].max_by(&:rank)
+			result.justification = result.winner.rank.to_s
+			return result
+		else
+			method_name = "#{playerA.rank.name.tr(' ', '_')}_compare"
+			return self.send(method_name, playerA, playerB)
 		end
-		
-		result
 	end
 end
 
