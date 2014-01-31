@@ -11,7 +11,7 @@ describe "PokerHandsApp" do
 		end
 
 		it "generates correct result for flush" do
-			result = ph.compare_hands("Black: 2H 4S 4C 2D 4H White: 2S 8S AS QS 3S")
+			result = ph.compare_hands("Black: 2H 3D 5S 9C KD White: 2S 8S AS QS 3S")
 			result.should == "White wins - flush"
 		end
 
@@ -110,13 +110,6 @@ describe "PokerHandsApp" do
 			]
 
 			player1.rank.should > player2.rank
-		end
-	end
-
-	context Rank do
-		it "should have correct string format" do
-			r = Rank.new Rank::HIGH_CARD, Card.new("AD")
-			r.to_s.should == "high card: Ace"
 		end
 	end
 end

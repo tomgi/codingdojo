@@ -12,7 +12,9 @@ class Player
 
 	def cards= value
 		@rank = Factory.new.create_rank value
+		@cards = value
 	end
+
 	def rank
 		@rank	
 	end
