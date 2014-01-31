@@ -1,12 +1,15 @@
-require 'ranks/high_card'
-require 'ranks/flush'
+require 'rank'
 
 class Factory
 	def create_rank cards 
+		rank = Rank.new
 		if (cards.map(&:suit).uniq.size == 1)
-			Flush.new cards
+			rank.value = 6
+			rank.name = "flush"
 		else
-			HighCard.new cards
+			rank.value = 1
+			rank.name = "high card"
 		end
+		rank
 	end
 end

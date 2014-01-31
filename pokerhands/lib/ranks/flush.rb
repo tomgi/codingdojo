@@ -1,6 +1,5 @@
-require 'ranks/base_rank'
 
-class Flush < BaseRank
+class Flush 
 
 	def self.rank
 		6

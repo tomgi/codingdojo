@@ -79,7 +79,7 @@ describe "PokerHandsApp" do
 				Card.new('KD')
 			]
 
-			result = ph.determine_result([player1, player2])
+			result = ph.determine_result(player1, player2)
 			result.winner.should == player1
 		end
 
@@ -101,7 +101,7 @@ describe "PokerHandsApp" do
 				Card.new('AD')
 			]
 
-			result = ph.determine_result([player1, player2])
+			result = ph.determine_result(player1, player2)
 			result.winner.should == player1
 		end
 	end

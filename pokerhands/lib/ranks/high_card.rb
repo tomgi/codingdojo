@@ -1,6 +1,5 @@
-require 'ranks/base_rank'
 
-class HighCard < BaseRank
+class HighCard
 	def self.rank
 		1
 	end
