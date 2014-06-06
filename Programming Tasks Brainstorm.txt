@@ -1,0 +1,2 @@
+- rozszerzyc istniejacy kod - malo podatny na rozszezenia, trzeba bedzie napisac testy itp. 
+- napisac aplikacje konsolowa, ktora co 30 sekund sciaga najnowsze kursy akcji IHS, i skladuje w plikowej bazie danych a nastepna aplikacja podaje 3 minutowy trend wyliczony na podstawie kursu akcji i wystawia razem z ostatnim notowanie na webie

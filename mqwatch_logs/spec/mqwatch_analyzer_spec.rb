@@ -90,8 +90,20 @@ describe MQWatchAnalyzer do
 	it "should display manus flag for an hour which didn't start with 00 if there was preceeding hour record" do
 		analyzer.analyze Record.new date:"1980.01.01 23:00",count:100
 		analyzer.analyze Record.new date:"1980.01.02 00:01",count:100
-		result_stream.last_line.should == "1980.01.01 23:00 1"
+		result_stream.lines.should == ["1980.01.01 23:00 1"]
 	end	
+
+	it "should display manus flag for the second hour when the gap is longer than hour" do
+		analyzer.analyze Record.new date:"1979.12.31 20:00",count:100
+		analyzer.analyze Record.new date:"1980.01.01 00:59",count:100
+		result_stream.lines.should == ["1979.12.31 20:00 1", "1980.01.01 00:00 1"]
+	end	
+
+	# it "should display manus flag for the second hour when the gap is longer than hour" do
+	# 	analyzer.analyze Record.new date:"1979.12.31 23:00",count:100
+	# 	analyzer.analyze Record.new date:"1980.01.01 00:01",count:100
+	# 	result_stream.last_line.should == "1980.01.01 00:00 1"
+	# end	
 
 	# it "should generate line for that hour" do
 	# 	analyzer.analyze Record.new{date:"1980.1.01 1:00",count:100} 
