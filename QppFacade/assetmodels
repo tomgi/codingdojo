@@ -1,0 +1,40 @@
+Good
+
+DitaMap
+- XmlReference<Topic>
+Topic
+- XmlReference<Pictures>
+- TableSourceReference<Tables>
+Picture
+- ChartSourceReference<Chart>
+File
+
+
+
+
+
+
+Bad
+
+AbstractAssetModel
+StateAnalysisReportSection
+IHSDocument
+PDFPublicationComponentAssetModel
+ChemicalReportSection
+ReportSection
+ChemicalReport
+AssetModel, PublishDitaMap, PublishTopic, PublishAsset
+PDFPublicationAssetModel
+ContactsAndAnalystAssetModel
+HardcodedPdfAsset?
+SummaryTablesAssetModel
+CMASpreadsheet
+EcrCMASpreadsheet
+MissingPictureAsset
+ExcelPictureAsset
+
+po chuj PDF Publication Template
+
+
+
+Unify ChartSourceRefrence and ImageSourceReference (introduce ChartOrImage)
