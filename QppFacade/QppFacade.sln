@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QppFacade", "QppFacade\QppFacade.csproj", "{04C79D75-867A-41E6-B3A8-CCBAB7081ECB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QppFacade.Tests", "QppFacade.Tests\QppFacade.Tests.csproj", "{234C8AAE-2921-43D8-B014-D338FCAAEDFE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{04C79D75-867A-41E6-B3A8-CCBAB7081ECB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04C79D75-867A-41E6-B3A8-CCBAB7081ECB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04C79D75-867A-41E6-B3A8-CCBAB7081ECB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04C79D75-867A-41E6-B3A8-CCBAB7081ECB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{234C8AAE-2921-43D8-B014-D338FCAAEDFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{234C8AAE-2921-43D8-B014-D338FCAAEDFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{234C8AAE-2921-43D8-B014-D338FCAAEDFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{234C8AAE-2921-43D8-B014-D338FCAAEDFE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
