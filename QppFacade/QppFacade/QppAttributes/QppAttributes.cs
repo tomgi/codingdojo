@@ -85,22 +85,23 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
             return qppAttribute.name.ToLower().Contains("(taxonomy)");
         }
 
-        public BaseAttribute FindByName(string attributeName)
+        private BaseAttribute FindByName(string attributeName)
         {
             return AttributesByName.ContainsKey(attributeName) ? AttributesByName[attributeName] : null;
         }
-        public BaseAttribute FindById(long attributeId)
+
+        private BaseAttribute FindById(long attributeId)
         {
             return AttributesById.ContainsKey(attributeId) ? AttributesById[attributeId] : null;
         }
 
-        public BaseAttribute Find(IAttributeIdentifier attributeIdentifier)
+        public BaseAttribute Find(object attributeIdentifier)
         {
-            if (attributeIdentifier.Id != 0)
-                return FindById(attributeIdentifier.Id);
+            if (attributeIdentifier is long)
+                return FindById((long)attributeIdentifier);
             
-            if (false == string.IsNullOrEmpty(attributeIdentifier.Name))
-                return FindByName(attributeIdentifier.Name);
+            if (false == string.IsNullOrEmpty((string)attributeIdentifier))
+                return FindByName((string) attributeIdentifier);
             
             return null;
         }

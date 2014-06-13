@@ -26,7 +26,7 @@ namespace QppFacade
         private readonly AssetService _assetService;
         private readonly QppAttributes _qppAttributes;
         private readonly FileTransferGatewayConnector _fileTransferGatewayConnector;
-        private CollectionService _collectionService;
+        private readonly CollectionService _collectionService;
 
         public Qpp(SessionService sessionService, AssetService assetService, QppAttributes qppAttributes, FileTransferGatewayConnector fileTransferGatewayConnector, CollectionService collectionService)
         {
@@ -37,20 +37,13 @@ namespace QppFacade
             _collectionService = collectionService;
         }
 
-        public long Upload(Dictionary<object, object> dictionary, Stream stringReader)
+        public long Upload(FileAsset assetModel)
         {
-            Asset asset = new Asset();
-            IList<AttributeValue> values = new List<AttributeValue>();
-            foreach (var item in dictionary)
+            var asset = new Asset
             {
-                var attribute = _qppAttributes.FindById((long)item.Key);
-                values.Add(attribute.CreateValue(item.Value));
-            }
-
-            asset.attributeValues = values.ToArray();
-
-
-            return CheckInNewAsset(asset, stringReader);
+                attributeValues = assetModel.Attributes.Select(item => _qppAttributes.Find(item.Key).CreateValue(item.Value)).ToArray()
+            };
+            return CheckInNewAsset(asset, assetModel.Content);
         }
 
 
@@ -85,9 +78,30 @@ namespace QppFacade
             return assetId;
         }
 
-        public Asset Get(long assetId)
+        public FileAsset GetFile(long assetId)
         {
-            return _assetService.getAsset(assetId);
+            var asset = _assetService.getAsset(assetId);
+            var assetModel = new FileAsset()
+            {
+                Id = asset.assetId
+            };
+
+            foreach (var attributeValue in asset.attributeValues)
+            {
+                var attrInfo = _qppAttributes.Find(attributeValue.attributeId);
+                if (attrInfo == null)
+                    continue;
+
+                assetModel.With(attrInfo.Id, attrInfo.GetValue(attributeValue));
+            }
+
+
+            return assetModel;
+        }
+
+        public void UpdateDitaMap(DitaMap ditaMap)
+        {
+            //_assetService.getAsset(assetId);
         }
 
         public void LogIn()
@@ -127,6 +141,36 @@ namespace QppFacade
                 return collection.id;
 
             return FindCollectionRecursive(collectionService, collection, collections, ++i);
+        }
+
+        public void Delete(long assetId)
+        {
+            _assetService.lockAsset(assetId);
+            _assetService.deleteAsset(assetId);
+        }
+
+        public void UpdateFile(FileAsset assetModel)
+        {
+            _assetService.lockAsset(assetModel.Id);
+            var asset = new Asset
+            {
+                assetId = assetModel.Id
+            };
+            var attributeValues = new List<AttributeValue>();
+            foreach (var attribute in assetModel.Attributes)
+            {
+                var attrInfo = _qppAttributes.Find(attribute.Key);
+                if (attrInfo == null)
+                    continue;
+                if (false == attrInfo.CanBeUpdated())
+                    continue;
+                var attributeValue = attrInfo.CreateValue(attribute.Value);
+                if (attributeValue != null)
+                    attributeValues.Add(attributeValue);
+            }
+            asset.attributeValues = attributeValues.ToArray();
+            _assetService.updateAsset(asset);
+            _assetService.unlockAsset(assetModel.Id);
         }
     }
 }

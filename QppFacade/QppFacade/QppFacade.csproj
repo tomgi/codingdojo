@@ -110,6 +110,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AttributesBag.cs" />
+    <Compile Include="DitaMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Qpp.cs" />
     <Compile Include="QppAttributes\BaseAttribute.cs" />
@@ -121,6 +123,7 @@
     <Compile Include="QppAttributes\QppAttributes.cs" />
     <Compile Include="QppAttributes\TextAttr.cs" />
     <Compile Include="QppFacadeWindsorInstaller.cs" />
+    <Compile Include="UberUploader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
