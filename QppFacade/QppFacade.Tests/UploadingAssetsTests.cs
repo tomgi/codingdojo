@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using AutoMapper;
 using Castle.Windsor;
 using com.quark.qpp.core.asset.service.dto;
 using com.quark.qpp.core.attribute.service.constants;
@@ -40,8 +41,24 @@ namespace QppFacade.Tests
             var file = _sut.GetFile(_assetId);
             file.With(DefaultAttributes.DITA_TITLE, "dupa");
             _sut.UpdateFile(file);
-            var fileUpdated = _sut.GetFile(_assetId);
-            fileUpdated.Attributes[DefaultAttributes.DITA_TITLE].ShouldEqual("dupa");
+            _fileUpdated = _sut.GetFile(_assetId);
+            _fileUpdated.Attributes[DefaultAttributes.DITA_TITLE].ShouldEqual("dupa");
+        };
+
+        private It should_map_things_nicely = () =>
+        {
+            var model = new DatabaseModel()
+            {
+                Id = _fileUpdated.Id,
+                DitaTitle = (string) _fileUpdated.Attributes[DefaultAttributes.DITA_TITLE],
+                Name = (string) _fileUpdated.Attributes[DefaultAttributes.NAME]
+            };
+            Mapper.CreateMap<FileAsset, DatabaseModel>()
+                  .ForMember(dest => dest.DitaTitle, opts => opts.MapFrom(fileAsset => fileAsset.Attributes[DefaultAttributes.DITA_TITLE]))
+                  .ForMember(dest => dest.Name, opts => opts.MapFrom(fileAsset => fileAsset.Attributes[DefaultAttributes.NAME]));
+
+            var modelAutoMapper = Mapper.Map<FileAsset,DatabaseModel>(_fileUpdated);
+            modelAutoMapper.Id.ShouldEqual(_fileUpdated.Id);
         };
 
         private Cleanup after = () => _sut.Delete(_assetId);
@@ -49,10 +66,19 @@ namespace QppFacade.Tests
         private static Qpp _sut;
         private static long _assetId;
         private static WindsorContainer _container;
+        private static FileAsset _fileUpdated;
+
         private static MemoryStream GenerateStreamFromString(string value)
         {
             return new MemoryStream(Encoding.UTF8.GetBytes(value ?? ""));
         }
 
+    }
+
+    public class DatabaseModel
+    {
+        public long Id { get; set; }
+        public string DitaTitle { get; set; }
+        public string Name { get; set; }
     }
 }
