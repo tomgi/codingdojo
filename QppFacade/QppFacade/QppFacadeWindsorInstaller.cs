@@ -17,6 +17,7 @@ using com.quark.qpp.core.query.service.remote;
 using com.quark.qpp.core.relation.service.remote;
 using com.quark.qpp.core.security.service.remote;
 using com.quark.qpp.core.workflow.service.remote;
+using com.quark.qpp.FileTransferGateway;
 using QppFacade;
 using Attribute = com.quark.qpp.core.attribute.service.dto.Attribute;
 
@@ -75,7 +76,10 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade
             var serviceFactory = new ServiceFactory(_qppHost, 61400, false, new CookieContainer());
 
             Func<int, IEnumerable<DomainValue>> resolveDomain = domainId => container.Resolve<AttributeDomainService>().getDomainValues(domainId);
+            Func<string, long> resolveCollection = collectionId => container.Resolve<Qpp>().GetCollectionIdByPath(collectionId);
             Func<IEnumerable<Attribute>> getAttributes = () => container.Resolve<AttributeService>().getAllAttributes();
+
+
 
             container.Register(
                 Component.For<SessionService>().UsingFactoryMethod(serviceFactory.GetService<SessionService>),
@@ -89,7 +93,11 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade
                 Component.For<CollectionService>().UsingFactoryMethod(serviceFactory.GetService<CollectionService>),
                 Component.For<RelationService>().UsingFactoryMethod(serviceFactory.GetService<RelationService>),
                 Component.For<WorkflowService>().UsingFactoryMethod(serviceFactory.GetService<WorkflowService>),
-
+                Component.For<Func<IEnumerable<Attribute>>>().Instance(getAttributes),
+                Component.For<Func<int, IEnumerable<DomainValue>>>().Instance(resolveDomain),
+                Component.For<Func<string, long>>().Instance(resolveCollection),
+                Component.For<QppAttributes.QppAttributes>().ImplementedBy<QppAttributes.QppAttributes>(),
+                Component.For<FileTransferGatewayConnector>().LifestyleSingleton().DependsOn(Dependency.OnValue<string>(_qppHost)),
                 Component.For<Qpp>().ImplementedBy<Qpp>()
                 );
             container.Resolve<Qpp>().LogIn();

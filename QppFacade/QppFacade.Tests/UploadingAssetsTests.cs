@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using Castle.Windsor;
 using com.quark.qpp.core.asset.service.dto;
 using com.quark.qpp.core.attribute.service.constants;
 using IHS.Phoenix.QPP.Facade.SoapFacade;
 using Machine.Specifications;
+using Quark.CMSAdapters.QPP.UI;
 
 namespace QppFacade.Tests
 {
@@ -24,11 +27,17 @@ namespace QppFacade.Tests
             _assetId = _sut.Upload(new Dictionary<object,object>
             {
                 {DefaultAttributes.CONTENT_TYPE,"Chemical Report"},
-                {DefaultAttributes.NAME,"acetic acid"},
-                {"Brand (Taxonomy)","5"},
-                {"Domains (Taxonomy)","20"},
-                {"Chemical Product and Market (Taxonomy)","1,2,3"},
-            });
+                {DefaultAttributes.NAME,"acetic acid2"},
+                {DefaultAttributes.WORKFLOW,"Default Workflow"},
+                {DefaultAttributes.STATUS, "Default"},
+                {DefaultAttributes.COLLECTION,"Home/Test"},
+                {DefaultAttributes.FILE_EXTENSION,"txt"},
+                {DefaultAttributes.ORIGINAL_FILENAME,"acetic acid2"},
+               }
+            , GenerateStreamFromString("content")
+            );
+
+            
 
         private It should_upload_asset_properly = () =>
         {
@@ -38,5 +47,10 @@ namespace QppFacade.Tests
         private static Qpp _sut;
         private static long _assetId;
         private static WindsorContainer _container;
+        private static MemoryStream GenerateStreamFromString(string value)
+        {
+            return new MemoryStream(Encoding.UTF8.GetBytes(value ?? ""));
+        }
+
     }
 }

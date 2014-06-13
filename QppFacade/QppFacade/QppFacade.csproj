@@ -112,6 +112,14 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Qpp.cs" />
+    <Compile Include="QppAttributes\BaseAttribute.cs" />
+    <Compile Include="QppAttributes\BoolAttr.cs" />
+    <Compile Include="QppAttributes\CollectionAttrs.cs" />
+    <Compile Include="QppAttributes\DateTimeAttr.cs" />
+    <Compile Include="QppAttributes\DomainAttr.cs" />
+    <Compile Include="QppAttributes\NumAttr.cs" />
+    <Compile Include="QppAttributes\QppAttributes.cs" />
+    <Compile Include="QppAttributes\TextAttr.cs" />
     <Compile Include="QppFacadeWindsorInstaller.cs" />
   </ItemGroup>
   <ItemGroup>
