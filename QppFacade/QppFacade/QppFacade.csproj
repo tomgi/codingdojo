@@ -111,7 +111,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttributesBag.cs" />
-    <Compile Include="DitaMap.cs" />
+    <Compile Include="Models\DitaMap.cs" />
+    <Compile Include="Models\References.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Qpp.cs" />
     <Compile Include="QppAttributes\BaseAttribute.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="QppAttributes\TextAttr.cs" />
     <Compile Include="QppFacadeWindsorInstaller.cs" />
     <Compile Include="UberUploader.cs" />
+    <Compile Include="XElementExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?Xpress productLine="gentitle-article" ?>
+<topic id="IDe46a082d-347c-4c64-8c62-2be215065ca5">
+  <prolog />
+  <title>Analysis: Outlook</title>
+  <body>
+      <table InRangeName="FilterName" InRangeValue="AL" Location="tableSpreadsheet.xlsx" OutRange="test_range" style="tableAuto" tabledef="referenced">
+      <title>Changes to the Forecast (Short Term)</title>
+      <tgroup>
+        <colspec colname="1" colnum="1"></colspec>
+        <colspec colname="2" colnum="2"></colspec>
+        <tbody>
+          <row>
+            <entry namest="1" nameend="1" align="left">
+              <p style="tableContent">Real GSP</p>
+            </entry>
+            <entry namest="2" nameend="2" align="center" valign="bottom">
+              <p style="tableContent">
+                <b>▲</b>
+              </p>
+            </entry>
+          </row>
+          <row>
+            <entry namest="1" nameend="1" align="left">
+              <p style="tableContent">Employment</p>
+            </entry>
+            <entry namest="2" nameend="2" align="center" valign="bottom">
+              <p style="tableContent">
+                <b>►</b>
+              </p>
+            </entry>
+          </row>
+          <row>
+            <entry namest="1" nameend="1" align="left">
+              <p style="tableContent">Personal Income</p>
+            </entry>
+            <entry namest="2" nameend="2" align="center" valign="bottom">
+              <p style="tableContent">
+                <b>▲</b>
+              </p>
+            </entry>
+          </row>
+          <row>
+            <entry namest="1" nameend="1" align="left">
+              <p style="tableContent">Unemployment Rate</p>
+            </entry>
+            <entry namest="2" nameend="2" align="center" valign="bottom">
+              <p style="tableContent">
+                <b>▲</b>
+              </p>
+            </entry>
+          </row>
+          <row>
+            <entry namest="1" nameend="1" align="left">
+              <p style="tableContent">Housing Starts</p>
+            </entry>
+            <entry namest="2" nameend="2" align="center" valign="bottom">
+              <p style="tableContent">
+                <b>▼</b>
+              </p>
+            </entry>
+          </row>
+        </tbody>
+        <tfoot>
+          <row>
+            <entry namest="1" nameend="2" align="left" valign="bottom">
+              <p style="tableNotes">▲ = Higher, ▼ = Lower , ► = No change</p>
+            </entry>
+          </row>
+        </tfoot>
+      </tgroup>
+    </table>    
+    <h1>On the road to recovery</h1>
+    <p>After years of stagnation, 2012 marked a turning point for Alabama's labor market. By the close of the year, employment rose 0.4%, making 2012 the first year of expansion after the recession. Alabama's 2012 growth rate was well below the national average, but still, any sign of improvement is good news for the struggling state. Last year's much-needed boost will kick-start strong growth over the medium term. During the 2013–18 period, Alabama's economy is expected to add jobs at an average annual rate of 1.3%, just shy of the national rate.</p>
+    <p>Alabama's employment recovery will be a broad-based one, mostly fueled by professional/business services, which will account for more than one-fourth of jobs added in the state over the next five years. The burgeoning sector is set to return to its pre-recession peak next year and continue expanding thereafter. As the housing market recovers, growth in the construction sector will contribute another chunk of jobs to Alabama's economy. Alabama's all-important manufacturing sector is also expected to post significant payroll gains in coming years. The new Airbus facility in Mobile will be a huge boon for the economy, creating 1,000 direct jobs by 2016 and thousands more jobs indirectly. The transportation equipment sector will experience significant gains, returning to its pre-recession peak by the close of 2013. Expansions at the Daimler AG and Hyundai plants, as well as the entry of new auto parts suppliers, will buttress the thriving sector.</p>
+    <p>Despite the positive employment forecast, it will take years for Alabama to reach pre-recession levels because it is coming back from such heavy losses. Alabama's labor market was one of the worst-hit by the recession: the state dropped nearly 150,000 jobs and the unemployment rate nearly doubled from 2008 to 2009. Alabama is not projected to return to its pre-recession peak employment level until 2018, years later than the country as a whole. The jobless rate will gradually retreat this decade, but it is expected to remain above its pre-recession level for the remainder of this decade.</p>
+    <image href="just_image.jpg" width="376px" my_insight_guid="afc049f1-cb96-434b-bcab-51c81bd33fb0.jpg"></image>    
+    <image href="image_chart.jpg" width="376px" my_insight_guid="afb049f1-cb96-434b-bcaa-51c81bd33fb0.jpg"></image>
+    <image href="excel_chart.jpg" my_insight_guid="207871a9-d9c3-40c7-8d38-ac9dd71a33b6.jpg" width="450px"/>
+    <h2>Strengths</h2>
+    <ul>
+      <li>Growing automobile manufacturing in the Southeast will drive Alabama's manufacturing sector in the coming years. There is no major assembly plant scheduled to open in the state, but Kia, Toyota, and Volkswagen have opened near the Alabama border, which will help attract suppliers to the state.</li>
+      <li>The growing trading hub along the Gulf of Mexico has been a major boon for Alabama's export industry.</li>
+    </ul>
+    <h2>Weaknesses</h2>
+    <ul>
+      <li>In the medium term, we expect Alabama's population growth to be relatively slow, restricting long-term, robust economic growth.</li>
+      <li>Alabama has made a major push to expand its manufacturing base in recent years, but foreign competition will hamper the long-term growth prospects.</li>
+      <li>The bulk of jobs in the booming professional and business services sector is projected to be in administrative and support services, explaining the state's low real average annual wages ($36,000 in 2012 and $38,000 projected in 2018, compared with the national average of $44,000 in 2012 and $47,000 in 2018). The number of higher-paying management jobs will actually decline through 2018.</li>
+    </ul>
+    <dynamic_object action="fixedchart" ref_id="1600" alt="chart US Regional State Employment" displayName="chart US Regional State Employment" filterId="1233" resourceId="35326" documentId="2157004"></dynamic_object>
+    <dynamic_object action="fixedchart" ref_id="1615" alt="chart US Regional State Real Personal Income" displayName="chart US Regional State Real Personal Income" placement="inline with previous element" filterId="1233" resourceId="35326" documentId="2157004"></dynamic_object>
+    <dynamic_object action="fixeddatatable" ref_id="602" alt="table US Regional State Economic Key Indicators" displayName="table US Regional State Economic Key Indicators" filterId="1233" resourceId="35326" documentId="2157004"></dynamic_object>
+  </body>
+ </topic>

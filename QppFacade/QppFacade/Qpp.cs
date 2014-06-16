@@ -13,6 +13,7 @@ using com.quark.qpp.core.asset.service.remote;
 using com.quark.qpp.core.attribute.service.dto;
 using com.quark.qpp.core.collection.service.dto;
 using com.quark.qpp.core.collection.service.remote;
+using com.quark.qpp.core.relation.service.constants;
 using com.quark.qpp.core.security.service.remote;
 using IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes;
 using System.Data;
@@ -43,20 +44,54 @@ namespace QppFacade
             {
                 attributeValues = assetModel.Attributes.Select(item => _qppAttributes.Find(item.Key).CreateValue(item.Value)).ToArray()
             };
-            return CheckInNewAsset(asset, assetModel.Content);
+            return CheckInNewAsset(asset, assetModel.Content,null);
+        }
+
+        public long UploadTopic(Topic assetModel)
+        {
+            var asset = new Asset
+            {
+                attributeValues = assetModel.Attributes.Select(item => _qppAttributes.Find(item.Key).CreateValue(item.Value)).ToArray(),
+            };
+            var assetRelations = new List<AssetRelation>();
+            foreach (var xmlReference in assetModel.Pictures)
+            {
+                var pictureId = Upload(xmlReference.AssetModel);
+                assetRelations.Add(new AssetRelation
+                {
+                    childAssetId = pictureId,
+                    relationTypeId = xmlReference.RelationType,
+                    relationAttributes = xmlReference.Attributes.Select(item => _qppAttributes.Find(item.Key).CreateValue(item.Value)).ToArray()
+                });
+
+            }
+
+            foreach (var tableReference in assetModel.Tables)
+            {
+                var pictureId = Upload(tableReference.AssetModel);
+                assetRelations.Add(new AssetRelation
+                {
+                    childAssetId = pictureId,
+                    relationTypeId = tableReference.RelationType,
+                    relationAttributes = tableReference.Attributes.Select(item => _qppAttributes.Find(item.Key).CreateValue(item.Value)).ToArray()
+                });
+
+            }
+            return CheckInNewAsset(asset, assetModel.Content,assetRelations.ToArray());
         }
 
 
-        public long CheckInNewAsset(Asset asset, Stream fileStream)
+        public long CheckInNewAsset(Asset asset, Stream fileStream, AssetRelation[] relations)
         {
             long assetId = 0;
 
             var contextId = _assetService.createNewCheckInContextWithRelations(
-                asset,
-                false,
-                new AssetRelation[]{});
+                    asset,
+                    false,
+                    relations);
             try
             {
+
                 var properties = new PropertyCollection
                 {
                     {streamingProperties.HTTPStreamingPort, 61400},
@@ -74,17 +109,17 @@ namespace QppFacade
             {
                 assetId = _assetService.closeContext(contextId).assetId;
                 _assetService.unlockAsset(assetId);
+                fileStream.Dispose();
             }
+
             return assetId;
         }
 
-        public FileAsset GetFile(long assetId)
+        public TAssetModel GetFile<TAssetModel>(long assetId) where TAssetModel : FileAsset
         {
             var asset = _assetService.getAsset(assetId);
-            var assetModel = new FileAsset()
-            {
-                Id = asset.assetId
-            };
+            var assetModel = Activator.CreateInstance<TAssetModel>();
+            assetModel.Id = asset.assetId;
 
             foreach (var attributeValue in asset.attributeValues)
             {
@@ -171,6 +206,41 @@ namespace QppFacade
             asset.attributeValues = attributeValues.ToArray();
             _assetService.updateAsset(asset);
             _assetService.unlockAsset(assetModel.Id);
+        }
+
+        public Topic GetTopicWithReferencedItems(long assetId)
+        {
+            var topic = GetFile<Topic>(assetId);
+            var pictureRelations = _assetService.getAssetRelations(new long[] {DefaultRelationTypes.XML_COMP_REFERENCE});
+            foreach (var assetRelation in pictureRelations)
+            {
+                var picture = GetFile<Picture>(assetRelation.childAssetId);
+                var pictureReference = new XmlReference<Picture>(picture);
+                foreach (var attributeValue in assetRelation.relationAttributes)
+                {
+                    var attrInfo = _qppAttributes.Find(attributeValue.attributeId);
+                    if (attrInfo == null)
+                        continue;
+                    pictureReference.With(attrInfo.Id, attrInfo.GetValue(attributeValue));
+                }
+                topic.WithPictureReference(pictureReference);
+            }
+
+            var tableRelations = _assetService.getAssetRelations(new long[] { 1000 });
+            foreach (var tableRelation in tableRelations)
+            {
+                var table = GetFile<FileAsset>(tableRelation.childAssetId);
+                var tableReference = new TableSourceReference(table);
+                foreach (var attributeValue in tableRelation.relationAttributes)
+                {
+                    var attrInfo = _qppAttributes.Find(attributeValue.attributeId);
+                    if (attrInfo == null)
+                        continue;
+                    tableReference.With(attrInfo.Id, attrInfo.GetValue(attributeValue));
+                }
+                topic.WithTableReference(tableReference);
+            }
+            return topic;
         }
     }
 }

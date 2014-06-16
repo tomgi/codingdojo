@@ -26,7 +26,11 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
 
         public override AttributeValue CreateValue(object value)
         {
-            var domainValue = DomainValues.FirstOrDefault(dv => dv.name.Equals(value));
+            DomainValue domainValue;
+            if(value is string)
+                domainValue = DomainValues.FirstOrDefault(dv => dv.name.Equals(value));
+            else
+                domainValue = DomainValues.FirstOrDefault(dv => dv.id.Equals(value));
             if (domainValue == null)
                 return null;
             var domainValueId = domainValue.id;
@@ -35,7 +39,7 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
                 {
                     attributeValue.domainId = _domainId;
                     attributeValue.id = domainValueId;
-                    attributeValue.name = (string) value;
+                    attributeValue.name = domainValue.name;
                 });
             return attribValue;
         }

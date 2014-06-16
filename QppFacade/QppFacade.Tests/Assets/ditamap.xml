@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<map id="_8102967e-e87d-4287-a825-c86660222d0a" xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/">
+  <title id="_4ec0c3f7-1fe6-487e-8b96-ffc509da1041">This is the map's Title</title>
+  <topicref href="topic1.xml" navtitle="Topic Reference1" format="dita" id="_403e0d6f-15d3-47e4-a65b-23d20be36ff5" scope="local" />
+  <topicref href="topic2.xml" navtitle="Topic Reference2" format="dita" id="_403e0d6f-15d3-47e4-a65b-23d20be36155" scope="local">
+    <topicref href="topic3.xml" navtitle="Topic Reference3" format="dita" id="_32187c6f-696c-4cf8-a48b-ed0e1300bbc0" scope="local">
+      <topichead navtitle="Topic Heading3" id="_be910222-9ec4-491e-bba7-f96a857b3d23" scope="local">
+        <topicref href="topic4.xml" navtitle="Topic Reference3" format="dita" id="_c6ac3eb0-c056-4544-99b8-64d82a65b396" scope="local" />
+      </topichead>
+    </topicref>
+  </topicref>
+</map>

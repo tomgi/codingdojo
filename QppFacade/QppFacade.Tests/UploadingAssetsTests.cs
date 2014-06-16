@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using AutoMapper;
 using Castle.Windsor;
-using com.quark.qpp.core.asset.service.dto;
 using com.quark.qpp.core.attribute.service.constants;
 using IHS.Phoenix.QPP.Facade.SoapFacade;
 using Machine.Specifications;
-using Quark.CMSAdapters.QPP.UI;
 
 namespace QppFacade.Tests
 {
@@ -38,10 +35,10 @@ namespace QppFacade.Tests
 
         private It should_upload_asset_properly = () =>
         {
-            var file = _sut.GetFile(_assetId);
+            var file = _sut.GetFile<FileAsset>(_assetId);
             file.With(DefaultAttributes.DITA_TITLE, "dupa");
             _sut.UpdateFile(file);
-            _fileUpdated = _sut.GetFile(_assetId);
+            _fileUpdated = _sut.GetFile<FileAsset>(_assetId);
             _fileUpdated.Attributes[DefaultAttributes.DITA_TITLE].ShouldEqual("dupa");
         };
 

@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?Xpress productLine="title-article" ?>
+<topic id="IDaabbbf82-4dbb-44e4-a77b-f09c6c9bd4f4">
+  <title>Topic4</title>
+  <body>
+    <p>
+      China is expected to remain a net exporter of acetic acid over the forecast period due to an oversupply of product.
+    </p>
+    <image href="picture.png" height="374" width="465" widthdpi="150" heightdpi="150"></image>
+    <p>
+      China was a net exporting country of acetic acid until the mid-1980s. Since 1992, China imported acetic acid to meet domestic demand, even though domestic capacity increased dramatically. In 2003, imports of acetic acid were 474 thousand metric tons, which accounted for more than 25% of total consumption of acetic acid. Imports of acetic acid increased to 603 thousand metric tons in 2006. Because of new capacity brought onstream beginning in 2007, imports have steadily decreased to negligible volumes.
+    </p>
+    <p>
+      Until 2003, exports of acetic acid from China had been negligible; however, new production capacity was started in 2007 and exports have fluctuated between 131 thousand to 646 thousand metric tons from 2007 to 2012. China became a net exporter in 2010 and is forecast to remain so for the foreseeable future.
+    </p>
+    <table style="tableAuto" tabledef="referenced" Location="High-techST.xls" OutRange="hightech" InRangeName="FilterName" InRangeValue="AK">
+      <title>Alaska: High-Tech Employment</title>
+      <tgroup>
+        <colspec colname="1" colnum="1"></colspec>
+        <colspec colname="2" colnum="2"></colspec>
+        <thead>
+          <row>
+            <entry namest="1" nameend="1" align="left" valign="bottom"></entry>
+            <entry namest="2" nameend="2" align="left" valign="bottom">
+              <p style="tableHeading">NAICS</p>
+            </entry>
+          </row>
+        </thead>
+        <!-- topic/colspec  not supplied within  topic/tgroup -->
+        <!-- topic/thead  not supplied within  topic/tgroup -->
+        <tbody>
+          <row>
+            <entry namest="1" nameend="1" align="right">
+              <p style="tableContent">3254</p>
+            </entry>
+            <entry namest="2" nameend="2" align="left">
+              <p style="tableContent">Pharmaceutical &amp; Medicine Mfg.</p>
+            </entry>
+          </row>
+          <row>
+            <entry namest="1" nameend="1" align="right">
+              <p style="tableContent">3336</p>
+            </entry>
+            <entry namest="2" nameend="2" align="left">
+              <p style="tableContent">Turbine &amp; Power Transmission Eq.</p>
+            </entry>
+          </row>
+        </tbody>
+        <tfoot>
+          <row>
+            <entry namest="1" nameend="7" align="left" valign="bottom">
+              <p style="tableNotes">Note: 50% of motor vehicle parts employment is used in the analysis.</p>
+            </entry>
+          </row>
+          <row>
+            <entry namest="1" nameend="7" align="left" valign="bottom">
+              <p style="tableNotes">Source: U.S. Business Markets Insights Navigator, IHS Global Insight.</p>
+            </entry>
+          </row>
+        </tfoot>
+      </tgroup>
+    </table>
+  </body>
+</topic>
