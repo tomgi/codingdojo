@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using Castle.Core.Internal;
 using com.quark.qpp.common.dto;
 using com.quark.qpp.common.utility;
 using com.quark.qpp.core.asset.service.dto;
@@ -46,6 +47,30 @@ namespace QppFacade
             };
             return CheckInNewAsset(asset, assetModel.Content,null);
         }
+        public long Upload(Picture assetModel)
+        {
+            if (assetModel.IsChart)
+            {
+                var asset = new Asset
+                {
+                    attributeValues = assetModel.Attributes.Select(item => _qppAttributes.Find(item.Key).CreateValue(item.Value)).ToArray(),
+                };
+                var spreadsheetId = Upload(assetModel.Chart.AssetModel);
+                return CheckInNewAsset(
+                    asset,
+                    assetModel.Content,
+                    new[]
+                    {
+                        new AssetRelation
+                        {
+                            childAssetId = spreadsheetId,
+                            relationTypeId = assetModel.Chart.RelationType,
+                            relationAttributes = assetModel.Chart.Attributes.Select(item => _qppAttributes.Find(item.Key).CreateValue(item.Value)).ToArray()
+                        }
+                    });
+            }
+            return Upload(assetModel as FileAsset);
+        }
 
         public long UploadTopic(Topic assetModel)
         {
@@ -63,7 +88,6 @@ namespace QppFacade
                     relationTypeId = xmlReference.RelationType,
                     relationAttributes = xmlReference.Attributes.Select(item => _qppAttributes.Find(item.Key).CreateValue(item.Value)).ToArray()
                 });
-
             }
 
             foreach (var tableReference in assetModel.Tables)
@@ -120,17 +144,7 @@ namespace QppFacade
             var asset = _assetService.getAsset(assetId);
             var assetModel = Activator.CreateInstance<TAssetModel>();
             assetModel.Id = asset.assetId;
-
-            foreach (var attributeValue in asset.attributeValues)
-            {
-                var attrInfo = _qppAttributes.Find(attributeValue.attributeId);
-                if (attrInfo == null)
-                    continue;
-
-                assetModel.With(attrInfo.Id, attrInfo.GetValue(attributeValue));
-            }
-
-
+            PushAttributes(asset.attributeValues, assetModel);
             return assetModel;
         }
 
@@ -211,36 +225,56 @@ namespace QppFacade
         public Topic GetTopicWithReferencedItems(long assetId)
         {
             var topic = GetFile<Topic>(assetId);
-            var pictureRelations = _assetService.getAssetRelations(new long[] {DefaultRelationTypes.XML_COMP_REFERENCE});
+            var pictureRelations = _assetService.getChildAssetRelationsOfType(assetId,new long[] { DefaultRelationTypes.XML_COMP_REFERENCE });
             foreach (var assetRelation in pictureRelations)
             {
                 var picture = GetFile<Picture>(assetRelation.childAssetId);
-                var pictureReference = new XmlReference<Picture>(picture);
-                foreach (var attributeValue in assetRelation.relationAttributes)
+                var chartRelations = _assetService.getChildAssetRelationsOfType(picture.Id, new long[] {1001});
+                if (false==chartRelations.IsNullOrEmpty())
                 {
-                    var attrInfo = _qppAttributes.Find(attributeValue.attributeId);
-                    if (attrInfo == null)
-                        continue;
-                    pictureReference.With(attrInfo.Id, attrInfo.GetValue(attributeValue));
+                    var chartSpreadsheet = GetFile<FileAsset>(chartRelations.First().childAssetId);
+                    picture.WithChartReference(new ChartSourceReference(chartSpreadsheet));
                 }
+                var pictureReference = new XmlReference<Picture>(picture);
+                PushAttributes(assetRelation.relationAttributes, pictureReference);
                 topic.WithPictureReference(pictureReference);
             }
 
-            var tableRelations = _assetService.getAssetRelations(new long[] { 1000 });
+            var tableRelations = _assetService.getChildAssetRelationsOfType(assetId, new long[] { 1000 });
             foreach (var tableRelation in tableRelations)
             {
-                var table = GetFile<FileAsset>(tableRelation.childAssetId);
-                var tableReference = new TableSourceReference(table);
-                foreach (var attributeValue in tableRelation.relationAttributes)
-                {
-                    var attrInfo = _qppAttributes.Find(attributeValue.attributeId);
-                    if (attrInfo == null)
-                        continue;
-                    tableReference.With(attrInfo.Id, attrInfo.GetValue(attributeValue));
-                }
+                var tableSpreadsheet = GetFile<FileAsset>(tableRelation.childAssetId);
+                var tableReference = new TableSourceReference(tableSpreadsheet);
+                PushAttributes(tableRelation.relationAttributes, tableReference);
                 topic.WithTableReference(tableReference);
             }
             return topic;
+        }
+
+        private void PushAttributes(IEnumerable<AttributeValue> attributes, IAttributeBag model)
+        {
+            foreach (var attributeValue in attributes)
+            {
+                var attrInfo = _qppAttributes.Find(attributeValue.attributeId);
+                if (attrInfo == null)
+                    continue;
+                model.With(attrInfo.Id, attrInfo.GetValue(attributeValue));
+            }
+        }
+
+        public void Delete(Topic topic)
+        {
+            foreach (var pictureReference in topic.Pictures)
+            {
+                if(pictureReference.AssetModel.IsChart)
+                    Delete(pictureReference.AssetModel.Chart.AssetModel.Id);
+                Delete(pictureReference.AssetModel.Id);
+            }
+            foreach (var tableRerference in topic.Tables)
+            {
+                Delete(tableRerference.AssetModel.Id);
+            }
+            Delete(topic.Id);
         }
     }
 }

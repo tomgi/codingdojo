@@ -76,7 +76,7 @@
     <p>Despite the positive employment forecast, it will take years for Alabama to reach pre-recession levels because it is coming back from such heavy losses. Alabama's labor market was one of the worst-hit by the recession: the state dropped nearly 150,000 jobs and the unemployment rate nearly doubled from 2008 to 2009. Alabama is not projected to return to its pre-recession peak employment level until 2018, years later than the country as a whole. The jobless rate will gradually retreat this decade, but it is expected to remain above its pre-recession level for the remainder of this decade.</p>
     <image href="just_image.jpg" width="376px" my_insight_guid="afc049f1-cb96-434b-bcab-51c81bd33fb0.jpg"></image>    
     <image href="image_chart.jpg" width="376px" my_insight_guid="afb049f1-cb96-434b-bcaa-51c81bd33fb0.jpg"></image>
-    <image href="excel_chart.jpg" my_insight_guid="207871a9-d9c3-40c7-8d38-ac9dd71a33b6.jpg" width="450px"/>
+    <image href="chart.jpg" my_insight_guid="207871a9-d9c3-40c7-8d38-ac9dd71a33b6.jpg" width="450px" Location="excelChartSpreadsheet.xlsx" OutSheet="Sheet" OutChartName="RelPerf" InRangeName="FilterName" InRangeValue="AL"/>
     <h2>Strengths</h2>
     <ul>
       <li>Growing automobile manufacturing in the Southeast will drive Alabama's manufacturing sector in the coming years. There is no major assembly plant scheduled to open in the state, but Kia, Toyota, and Volkswagen have opened near the Alabama border, which will help attract suppliers to the state.</li>

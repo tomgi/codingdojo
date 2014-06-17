@@ -31,33 +31,37 @@ namespace QppFacade.Tests
                     .With(DefaultAttributes.ORIGINAL_FILENAME, "topic.xml")
                     .With(DefaultAttributes.DITA_TITLE, "topic")
                     .WithPicture(new Picture("Assets\\just_image.jpg").With(DefaultAttributes.COLLECTION, "Home/Test"))
-                    .WithTableSpreadsheet(new FileAsset("Assets\\tableSpreadsheet.xlsx")
-                                                .With(DefaultAttributes.CONTENT_TYPE, "Object Source Spreadsheet")
-                                                .With(DefaultAttributes.WORKFLOW, "Object Source Workflow")
-                                                .With(DefaultAttributes.STATUS, "Ready For Data Admin Update")
-                                                .With(DefaultAttributes.COLLECTION, "Home/Test"))                    
-                );
+                    .WithTableSpreadsheet(
+                        new FileAsset("Assets\\tableSpreadsheet.xlsx")
+                            .With(DefaultAttributes.CONTENT_TYPE, "Object Source Spreadsheet")
+                            .With(DefaultAttributes.WORKFLOW, "Object Source Workflow")
+                            .With(DefaultAttributes.STATUS, "Ready For Data Admin Update")
+                            .With(DefaultAttributes.COLLECTION, "Home/Test"))
+                    .WithChart(
+                        chart:          new Picture("Assets\\chart.jpg").With(DefaultAttributes.COLLECTION, "Home/Test"),                            
+                        fromSpreadsheet:new FileAsset("Assets\\excelChartSpreadsheet.xlsx")
+                            .With(DefaultAttributes.CONTENT_TYPE, "Object Source Spreadsheet")
+                            .With(DefaultAttributes.WORKFLOW, "Object Source Workflow")
+                            .With(DefaultAttributes.STATUS, "Ready For Data Admin Update")
+                            .With(DefaultAttributes.COLLECTION, "Home/Test"))
+                    );
+            _topic = _sut.GetTopicWithReferencedItems(_assetId);
         };
 
-        private It should_upload_pictures = () =>
-        {
-            var topic = _sut.GetTopicWithReferencedItems(_assetId);
-            topic.Pictures.Count().ShouldEqual(1);
-        };
+        private It should_upload_pictures = () => _topic.Pictures.Count().ShouldEqual(2);
 
-        private It should_upload_tables = () =>
-        {
-            var topic = _sut.GetTopicWithReferencedItems(_assetId);
-            topic.Tables.Count().ShouldEqual(1);
-        };
+        private It should_upload_tables = () => _topic.Tables.Count().ShouldEqual(1);
+
+        private It should_upload_chart_spreadsheets = () => _topic.Pictures.Any(picture => picture.AssetModel.IsChart).ShouldBeTrue();
 
 
-        //private Cleanup after = () => _sut.Delete(_assetId);
+        private Cleanup after = () => _sut.Delete(_topic);
 
         private static Qpp _sut;
         private static long _assetId;
         private static WindsorContainer _container;
         private static FileAsset _fileUpdated;
+        private static Topic _topic;
 
         private static MemoryStream GenerateStreamFromString(string value)
         {
