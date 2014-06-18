@@ -12,18 +12,24 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
             : base(attribute)
         {
         }
-
-        public override AttributeValue CreateValue(object primitiveValue)
+        public override AttributeValue ToAttributeValue()
         {
-            var dateTimeValue = primitiveValue as DateTime?;
+            if (Value != null && false == (Value is DateTime))
+                throw new ApplicationException("Attempt was made to initialize QPP Text Attribute with non string value");
+            return ToAttributeValue<DateTimeValue>(attributeValue => attributeValue.value = ((DateTime)Value).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'", CultureInfo.InvariantCulture));
 
-            return CreateValue<DateTimeValue>(attributeValue => attributeValue.value = dateTimeValue.HasValue ? dateTimeValue.Value.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'", CultureInfo.InvariantCulture) : string.Empty);
+        }
+        public override IHaveNameAndId FromAttributeValue(AttributeValue value)
+        {
+            return value == null ? null : WithValue((DateTime?)DateTime.ParseExact((value.attributeValue as DateTimeValue).value, "yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'", CultureInfo.InvariantCulture));
         }
 
-        public override object GetValue(AttributeValue value)
+        public override IHaveNameAndId WithValue(object value)
         {
-            var typedValue = GetValue<DateTimeValue>(value);
-            return typedValue != null ? (DateTime?)DateTime.ParseExact(typedValue.value, "yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'", CultureInfo.InvariantCulture) : null;
+            return new DateTimeAttr(Attribute)
+            {
+                Value = value
+            };
         }
     }
 }

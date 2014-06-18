@@ -46,7 +46,7 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
         {
             _attributesByName = new Dictionary<string, BaseAttribute>();
             _attributesById = new Dictionary<long, BaseAttribute>();
-            foreach (var qppAttribute in _getQppAttributes())
+            foreach (Attribute qppAttribute in _getQppAttributes())
             {
                 BaseAttribute attribute = null;
                 if (qppAttribute.valueType == AttributeValueTypes.TEXT)

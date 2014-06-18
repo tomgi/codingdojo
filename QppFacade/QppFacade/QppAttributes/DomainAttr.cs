@@ -24,17 +24,17 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
             get { return _domainValues ?? (_domainValues = _getDomainValues(_domainId)); }
         }
 
-        public override AttributeValue CreateValue(object value)
+        public override AttributeValue ToAttributeValue()
         {
             DomainValue domainValue;
-            if(value is string)
-                domainValue = DomainValues.FirstOrDefault(dv => dv.name.Equals(value));
+            if(Value is string)
+                domainValue = DomainValues.FirstOrDefault(dv => dv.name.Equals(Value));
             else
-                domainValue = DomainValues.FirstOrDefault(dv => dv.id.Equals(value));
+                domainValue = DomainValues.FirstOrDefault(dv => dv.id.Equals(Value));
             if (domainValue == null)
                 return null;
             var domainValueId = domainValue.id;
-            var attribValue = CreateValue<DomainValue>(
+            var attribValue = ToAttributeValue<DomainValue>(
                 attributeValue =>
                 {
                     attributeValue.domainId = _domainId;
@@ -43,11 +43,17 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
                 });
             return attribValue;
         }
-
-        public override object GetValue(AttributeValue value)
+        public override IHaveNameAndId FromAttributeValue(AttributeValue value)
         {
-            var typedValue = GetValue<DomainValue>(value);
-            return typedValue != null ? typedValue.name : string.Empty;
+            return value == null ? null : WithValue((value.attributeValue as DomainValue).name);
+        }
+
+        public override IHaveNameAndId WithValue(object value)
+        {
+            return new DomainAttr(Attribute,_getDomainValues)
+            {
+                Value = value
+            };
         }
     }
 }

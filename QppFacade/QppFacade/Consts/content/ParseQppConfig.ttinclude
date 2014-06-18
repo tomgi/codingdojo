@@ -1,0 +1,61 @@
+﻿<#@ IntelliSenseLanguage processor="tangibleT4Editor" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.IO" #>
+<#@ assembly name="$(ProjectDir)\bin\Debug\QppFacade.dll" #>
+<#@ import namespace="IHS.Phoenix.QPP.Formatters" #>
+<#@ include file="ReadQppConfig.ttinclude" #>
+<#+public void Generate(IFormatters formatters, string fileName)
+{
+	Foo(ReadConfig(fileName),formatters, 1);
+}
+
+	public void Foo(YamlNode node, IFormatters formatters, int indent)
+	{
+	var yamlMappingNode = node as YamlMappingNode;
+	var yamlSequenceNode = node as YamlSequenceNode;
+
+	if (yamlMappingNode != null)
+	{
+        foreach (var keyValuePair in yamlMappingNode.Children)
+		{
+            #><#=string.Join(string.Empty, Enumerable.Repeat(" ", indent * 4))#><#+
+			//just scalar
+			if (keyValuePair.Value is YamlScalarNode)
+			{
+				if (false == keyValuePair.Equals(yamlMappingNode.Children.First())) #><#=formatters.Separator#><#+
+				#><#=formatters.StringFormatter(keyValuePair.Key.ToString(), keyValuePair.Value.ToString())#><#="\n"#><#+
+				continue;
+			}
+			var valueAsSequence = keyValuePair.Value as YamlSequenceNode;
+			//array of scalars
+			if (valueAsSequence != null && valueAsSequence.Children.First() is YamlScalarNode)
+			{
+				if (false == keyValuePair.Equals(yamlMappingNode.Children.First())) #><#=formatters.Separator#><#+
+				#><#=formatters.StringArrayFormatter(keyValuePair.Key.ToString(), string.Join(",", valueAsSequence.Children.Select(c => string.Format("\"{0}\"", c))))#><#="\n"#><#+
+				continue;
+			}
+			if (false == keyValuePair.Equals(yamlMappingNode.Children.First())) #><#=formatters.Separator#><#+
+			#><#=formatters.TypeFormatter(keyValuePair.Key.ToString())#><#="\n"#><#+
+			//array of sub-types or properties
+			if (valueAsSequence != null)
+			{
+				//foreach (var child in valueAsSequence.Children)
+				Foo(keyValuePair.Value, formatters, indent + 1);
+			}
+			//just a property or subtype
+			else if (keyValuePair.Value is YamlMappingNode)
+			{
+				Foo(keyValuePair.Value, formatters, indent + 1);
+			}
+            #><#=string.Join(string.Empty, Enumerable.Repeat(" ", indent * 4))#><#+
+			#><#="}\n"#><#+
+		}
+	}
+	else if (yamlSequenceNode != null)
+	{
+		var tempNode = new YamlMappingNode(yamlSequenceNode.Children.SelectMany(c => ((YamlMappingNode)c).Children));
+		Foo(tempNode, formatters, indent);
+	}
+}#>

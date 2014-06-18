@@ -20,9 +20,9 @@ namespace QppFacade
         public Topic(XDocument xml)
         {
             _xml = xml;
-            this.With(DefaultAttributes.WORKFLOW, "Document Workflow")
-                .With(DefaultAttributes.STATUS, "Published")
-                .With(DefaultAttributes.FILE_EXTENSION, "xml");            
+            this.With(PhoenixAttributes.WORKFLOW.WithValue( "Document Workflow"))
+                .With(PhoenixAttributes.STATUS.WithValue( "Published"))
+                .With(PhoenixAttributes.FILE_EXTENSION.WithValue( "xml"));            
         }
 
         public Topic WithPictureReference(XmlReference<Picture> pictureReference)
@@ -32,7 +32,7 @@ namespace QppFacade
         }        
         public Topic WithPicture(Picture picture)
         {
-            var imageTag = _xml.Descendants("image").FirstOrDefault(image => image.Attribute("href").Value.ToLower() == ((string)picture.Attributes[DefaultAttributes.NAME]).ToLower());
+            var imageTag = _xml.Descendants("image").FirstOrDefault(image => image.Attribute("href").Value.ToLower() == ((string)picture[PhoenixAttributes.NAME]).ToLower());
             _pictures.Add(new XmlReference<Picture>(imageTag.AbsoluteXPath(),picture));
             return this;
         }
@@ -59,15 +59,15 @@ namespace QppFacade
 
         public Topic WithTableSpreadsheet(FileAsset tableSpreadsheet)
         {
-            var tables = _xml.Descendants("table").Where(image => image.Attribute("Location").Value.ToLower() == ((string)tableSpreadsheet.Attributes[DefaultAttributes.NAME]).ToLower());
+            var tables = _xml.Descendants("table").Where(image => image.Attribute("Location").Value.ToLower() == ((string)tableSpreadsheet[PhoenixAttributes.NAME]).ToLower());
             foreach (var tableTag in tables)
             {
                 _tables.Add(
                     new TableSourceReference(tableSpreadsheet)
-                        .With("XPath", tableTag.AbsoluteXPath())
-                        .With("InRangeName", tableTag.Attribute("InRangeName").Value)
-                        .With("InRangeValue", tableTag.Attribute("InRangeValue").Value)
-                        .With("OutRange", tableTag.Attribute("OutRange").Value)
+                        .With(PhoenixAttributes.XPATH.WithValue( tableTag.AbsoluteXPath()))
+                        .With(PhoenixAttributes.InRangeName.WithValue(tableTag.Attribute("InRangeName").Value))
+                        .With(PhoenixAttributes.InRangeValue.WithValue( tableTag.Attribute("InRangeValue").Value))
+                        .With(PhoenixAttributes.OutRange.WithValue( tableTag.Attribute("OutRange").Value))
                     );
             }
             return this;
@@ -75,8 +75,8 @@ namespace QppFacade
 
         public Topic WithChart(Picture chart, FileAsset fromSpreadsheet)
         {
-            var spreadsheetName = ((string)fromSpreadsheet.Attributes[DefaultAttributes.NAME]);
-            var chartName = ((string)chart.Attributes[DefaultAttributes.NAME]);
+            var spreadsheetName = ((string)fromSpreadsheet[PhoenixAttributes.NAME]);
+            var chartName = ((string)chart[PhoenixAttributes.NAME]);
             var chartTag = _xml.Descendants("image").SingleOrDefault(image => image.HasAttribute("Location") && 
                                                                               image.HasAttribute("href") &&
                                                                               String.Equals(image.Attribute("Location").Value, spreadsheetName, StringComparison.CurrentCultureIgnoreCase) && 
@@ -85,10 +85,10 @@ namespace QppFacade
                 throw new ApplicationException("Unable to find chart in content");
 
             chart.WithChartReference(new ChartSourceReference(fromSpreadsheet)
-                .With("InRangeName", chartTag.Attribute("InRangeName").Value)
-                .With("InRangeValue", chartTag.Attribute("InRangeValue").Value)
-                .With("OutSheet", chartTag.Attribute("OutSheet").Value)
-                .With("OutChartName", chartTag.Attribute("OutChartName").Value));
+                .With(PhoenixAttributes.InRangeName.WithValue( chartTag.Attribute("InRangeName").Value))
+                .With(PhoenixAttributes.InRangeValue.WithValue( chartTag.Attribute("InRangeValue").Value))
+                .With(PhoenixAttributes.OutSheet.WithValue( chartTag.Attribute("OutSheet").Value))
+                .With(PhoenixAttributes.OutChartName.WithValue( chartTag.Attribute("OutChartName").Value)));
 
             _pictures.Add(new XmlReference<Picture>(chartTag.AbsoluteXPath(), chart));
             return this;

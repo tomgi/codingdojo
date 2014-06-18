@@ -5,12 +5,17 @@ using Attribute = com.quark.qpp.core.attribute.service.dto.Attribute;
 
 namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
 {
-    public interface IAttributeIdentifier
+    public interface IHaveNameAndId
     {
         long Id { get; }
         string Name { get; }
+        object Value { get; }
+        IHaveNameAndId WithValue(object value);
+        IHaveNameAndId FromAttributeValue(AttributeValue value);
+        AttributeValue ToAttributeValue();
+        bool CanBeUpdated();
     }
-    public abstract class BaseAttribute : IAttributeIdentifier
+    public abstract class BaseAttribute : IHaveNameAndId
     {
         public override int GetHashCode()
         {
@@ -32,7 +37,7 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
             }
         }
 
-        public bool Equals(IAttributeIdentifier other)
+        public bool Equals(IHaveNameAndId other)
         {
             return Id == other.Id || string.Equals(Name, other.Name);
         }
@@ -43,17 +48,24 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
                 return false;
             if (ReferenceEquals(this, obj))
                 return true;
-            return Equals((IAttributeIdentifier)obj);
+            return Equals((IHaveNameAndId)obj);
         }
 
+        public object Value { get; protected set; }
 
         protected BaseAttribute(Attribute attribute)
         {
             Attribute = attribute;
         }
-        public abstract AttributeValue CreateValue(object value);
 
-        protected AttributeValue CreateValue<TValue>(Action<TValue> setValue)
+        public abstract AttributeValue ToAttributeValue();
+        
+        public static implicit operator AttributeValue(BaseAttribute attribute)
+        {
+            return attribute.ToAttributeValue();
+        }
+
+        protected AttributeValue ToAttributeValue<TValue>(Action<TValue> setValue)
             where TValue : Value
         {
             var attributeValue = new AttributeValue
@@ -73,13 +85,7 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
         {
             return Attribute.constraintsChangeable;
         }
-
-        protected TValue GetValue<TValue>(AttributeValue value)
-            where TValue : Value
-        {
-            return value != null ? value.attributeValue as TValue : default(TValue);
-        }
-
-        public abstract object GetValue(AttributeValue value);
+        public abstract IHaveNameAndId FromAttributeValue(AttributeValue value);
+        public abstract IHaveNameAndId WithValue(object value);
     }
 }

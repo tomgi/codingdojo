@@ -19,23 +19,29 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
             _getCollectionValues = getCollectionValues;
         }
 
-        public override AttributeValue CreateValue(object value)
+        public override AttributeValue ToAttributeValue()
         {
-            var domainValue = _getCollectionValues(value.ToString());
-            var attribValue = CreateValue<DomainValue>(
+            var domainValue = _getCollectionValues(Value.ToString());
+            var attribValue = ToAttributeValue<DomainValue>(
                 attributeValue =>
                 {
                     attributeValue.domainId = _collectionId;
                     attributeValue.id = domainValue;
-                    attributeValue.name = (string)value;
+                    attributeValue.name = (string)Value;
                 });
             return attribValue;
         }
-
-        public override object GetValue(AttributeValue value)
+        public override IHaveNameAndId FromAttributeValue(AttributeValue value)
         {
-            var typedValue = GetValue<DomainValue>(value);
-            return typedValue != null ? typedValue.name : string.Empty;
+            return value == null ? null : WithValue((value.attributeValue as DomainValue).name);
+        }
+
+        public override IHaveNameAndId WithValue(object value)
+        {
+            return new CollectionAttr(Attribute, _getCollectionValues)
+            {
+                Value = value
+            };
         }
     }
 }

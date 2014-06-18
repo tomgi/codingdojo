@@ -43,7 +43,7 @@ namespace QppFacade
         {
             var asset = new Asset
             {
-                attributeValues = assetModel.Attributes.Select(item => _qppAttributes.Find(item.Key).CreateValue(item.Value)).ToArray()
+                attributeValues = assetModel.Attributes.Select(item => item.ToAttributeValue()).ToArray()
             };
             return CheckInNewAsset(asset, assetModel.Content,null);
         }
@@ -53,7 +53,7 @@ namespace QppFacade
             {
                 var asset = new Asset
                 {
-                    attributeValues = assetModel.Attributes.Select(item => _qppAttributes.Find(item.Key).CreateValue(item.Value)).ToArray(),
+                    attributeValues = assetModel.Attributes.Select(item => item.ToAttributeValue()).ToArray(),
                 };
                 var spreadsheetId = Upload(assetModel.Chart.AssetModel);
                 return CheckInNewAsset(
@@ -65,7 +65,7 @@ namespace QppFacade
                         {
                             childAssetId = spreadsheetId,
                             relationTypeId = assetModel.Chart.RelationType,
-                            relationAttributes = assetModel.Chart.Attributes.Select(item => _qppAttributes.Find(item.Key).CreateValue(item.Value)).ToArray()
+                            relationAttributes = assetModel.Chart.Attributes.Select(item => item.ToAttributeValue()).ToArray()
                         }
                     });
             }
@@ -76,7 +76,7 @@ namespace QppFacade
         {
             var asset = new Asset
             {
-                attributeValues = assetModel.Attributes.Select(item => _qppAttributes.Find(item.Key).CreateValue(item.Value)).ToArray(),
+                attributeValues = assetModel.Attributes.Select(item => item.ToAttributeValue()).ToArray(),
             };
             var assetRelations = new List<AssetRelation>();
             foreach (var xmlReference in assetModel.Pictures)
@@ -86,7 +86,7 @@ namespace QppFacade
                 {
                     childAssetId = pictureId,
                     relationTypeId = xmlReference.RelationType,
-                    relationAttributes = xmlReference.Attributes.Select(item => _qppAttributes.Find(item.Key).CreateValue(item.Value)).ToArray()
+                    relationAttributes = xmlReference.Attributes.Select(item => item.ToAttributeValue()).ToArray()
                 });
             }
 
@@ -97,7 +97,7 @@ namespace QppFacade
                 {
                     childAssetId = pictureId,
                     relationTypeId = tableReference.RelationType,
-                    relationAttributes = tableReference.Attributes.Select(item => _qppAttributes.Find(item.Key).CreateValue(item.Value)).ToArray()
+                    relationAttributes = tableReference.Attributes.Select(item => item.ToAttributeValue()).ToArray()
                 });
 
             }
@@ -208,12 +208,9 @@ namespace QppFacade
             var attributeValues = new List<AttributeValue>();
             foreach (var attribute in assetModel.Attributes)
             {
-                var attrInfo = _qppAttributes.Find(attribute.Key);
-                if (attrInfo == null)
+                if (false == attribute.CanBeUpdated())
                     continue;
-                if (false == attrInfo.CanBeUpdated())
-                    continue;
-                var attributeValue = attrInfo.CreateValue(attribute.Value);
+                var attributeValue = attribute.ToAttributeValue();
                 if (attributeValue != null)
                     attributeValues.Add(attributeValue);
             }
@@ -255,10 +252,10 @@ namespace QppFacade
         {
             foreach (var attributeValue in attributes)
             {
-                var attrInfo = _qppAttributes.Find(attributeValue.attributeId);
+                var attrInfo = PhoenixAttributes.ById[attributeValue.attributeId];
                 if (attrInfo == null)
                     continue;
-                model.With(attrInfo.Id, attrInfo.GetValue(attributeValue));
+                model.With(attrInfo.FromAttributeValue(attributeValue));
             }
         }
 

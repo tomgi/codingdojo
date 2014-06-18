@@ -108,9 +108,25 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="YamlDotNet">
+      <HintPath>..\packages\YamlDotNet.3.2.0\lib\net35\YamlDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="YamlDotNet.Dynamic">
+      <HintPath>..\packages\YamlDotNet.Dynamic.3.1.1\lib\net40\YamlDotNet.Dynamic.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes.cs" />
     <Compile Include="AttributesBag.cs" />
+    <Compile Include="Consts\CustomConstsCs.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CustomConstsCs.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Consts\Formatters\CsharpFormatter.cs" />
+    <Compile Include="Consts\Formatters\IFormatters.cs" />
+    <Compile Include="Consts\Formatters\JavaFormatter.cs" />
+    <Compile Include="Consts\Formatters\JavaScriptFormatter.cs" />
     <Compile Include="Models\AttributeBag.cs" />
     <Compile Include="Models\ChartSourceReference.cs" />
     <Compile Include="Models\DitaMap.cs" />
@@ -136,7 +152,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Consts\content\ParseQppConfig.ttinclude" />
+    <None Include="Consts\content\ReadQppConfig.ttinclude" />
+    <None Include="CustomAttributes.yml" />
+    <None Include="Consts\CustomConstsCs.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>CustomConstsCs.cs</LastGenOutput>
+    </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

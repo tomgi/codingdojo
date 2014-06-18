@@ -1,0 +1,48 @@
+﻿SourceDocumentId: Source Document Id
+GeographyId: Geography Id
+Geography: Geography
+
+PublishedDate: Published Date
+UserSetPublishedDate: User-Set Published Date
+UserProposedPublishedDate : User-Proposed Published Date
+DontUpdatePublishedDate: Don't Update Published Date
+HiddenUpdate: Hidden Update
+
+InRangeName: InRangeName
+InRangeValue: InRangeValue
+OutSheet: OutSheet
+OutRange: OutRange
+OutChartName: OutChartName
+OutImageName: OutImageName
+
+PdfBusinessLine: PDF Business Line
+PdfReportType: PDF Report Type
+PdfReportTitle: PDF Report Title
+PdfSubheading: PDF Subheading
+PdfDate: PDF Date
+PdfAddressBar: PDF Address Bar
+Location: Location
+
+UploaderVersion: Uploader Version
+AnalystWhoSentForReviewId: Analyst who sent for review id
+EditorWhoSentBackToAnalystId: Editor who sent back to Analyst id
+
+PublishFailReason: Publishing fail reason
+DataRefreshStart: Data refresh started
+DataRefreshEnd: Data refresh ended
+DataRefreshExcelPull: Data refresh excels pulled
+DataRefreshFailReason: Data refresh fail reason
+ChemicalProductAndMarket: Chemical Product and Market(Taxonomy)
+
+BrandTaxonomy: Brand(Taxonomy)
+DomainsTaxonomy: Domain(Taxonomy)
+ContentTypeTaxonomy: Content Type(Taxonomy)
+FileClassificationTaxonomy: File Classification(Taxonomy)
+PublishFrequencyTaxonomy: Publish Frequency(Taxonomy)
+AuthorizationCode : Authorization Code
+Authors: Authors
+DomainUrl: Domain Url
+HardCopyPublicationDate: Hardcopy Publication Date
+
+BrandDisplayName: Brand
+DomainsDisplayName: Domains 

@@ -1,45 +1,42 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using com.quark.qpp.core.attribute.service.constants;
+using IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes;
 
 namespace QppFacade
 {
     public interface IAttributeBag
     {
-        Dictionary<object, object> Attributes {get;}
+        ISet<IHaveNameAndId> Attributes { get; }
     }
 
     public static class AssetExtensions
     {
-        private static T With<T>(T asset, object attributeId, object attributeValue) where T : IAttributeBag
+        public static T With<T>(this T asset, IHaveNameAndId attributeId) where T : IAttributeBag
         {
-            if (false == asset.Attributes.ContainsKey(attributeId))
-                asset.Attributes.Add(attributeId, attributeValue);
-            asset.Attributes[attributeId] = attributeValue;
+            if (asset.Attributes.Contains(attributeId))
+                asset.Attributes.Remove(attributeId);
+            asset.Attributes.Add(attributeId);
             return asset;
-        }
-
-        public static T With<T>(this T asset, long attributeId, object attributeValue) where T : IAttributeBag
-        {
-            With(asset, attributeId as object, attributeValue);
-            return asset;
-        }
-
-        public static T With<T>(this T asset, string attributeName, object attributeValue) where T : IAttributeBag
-        {
-            With(asset, attributeName as object, attributeValue);
-            return asset;
-        }
-        
+        }        
     }
 
     public class FileAsset : IAttributeBag
     {
         public long Id { get; set; }
-        private readonly Dictionary<object, object> _attributes = new Dictionary<object, object>();
+        private readonly ISet<IHaveNameAndId> _attributes = new HashSet<IHaveNameAndId>();
         private readonly string _filePath;
 
-        public Dictionary<object, object> Attributes
+        public object this[IHaveNameAndId index]
+        {
+            get
+            {
+                return Attributes.First(elem => Equals(elem, index)).Value;
+            }
+        }
+
+        public ISet<IHaveNameAndId> Attributes
         {
             get { return _attributes; }
         }
@@ -54,9 +51,9 @@ namespace QppFacade
         public FileAsset(string filePath)
         {
             _filePath = filePath;
-            this.With(DefaultAttributes.NAME, Path.GetFileName(filePath))
-                .With(DefaultAttributes.ORIGINAL_FILENAME, Path.GetFileName(filePath))
-                .With(DefaultAttributes.FILE_EXTENSION, Path.GetExtension(filePath));
+            this.With(PhoenixAttributes.NAME.WithValue(Path.GetFileName(filePath)))
+                .With(PhoenixAttributes.ORIGINAL_FILENAME.WithValue(Path.GetFileName(filePath)))
+                .With(PhoenixAttributes.FILE_EXTENSION.WithValue(Path.GetExtension(filePath)));
         }
 
         public FileAsset()

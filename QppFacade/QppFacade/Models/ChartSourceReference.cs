@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes;
 
 namespace QppFacade
 {
@@ -12,9 +13,8 @@ namespace QppFacade
                 return 1001;
             }
         }
-        private readonly Dictionary<object, object> _attributes = new Dictionary<object, object>();
-
-        public Dictionary<object, object> Attributes
+        private readonly ISet<IHaveNameAndId> _attributes = new HashSet<IHaveNameAndId>();
+        public ISet<IHaveNameAndId> Attributes
         {
             get { return _attributes; }
         }

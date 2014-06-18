@@ -101,6 +101,7 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade
                 Component.For<Qpp>().ImplementedBy<Qpp>()
                 );
             container.Resolve<Qpp>().LogIn();
+            PhoenixAttributes.Init(getAttributes, resolveDomain, resolveCollection);
         }
 
     }
