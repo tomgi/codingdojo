@@ -12,24 +12,17 @@ namespace QppFacade
     {
         public long Id { get; set; }
         public string Name { get; set; }
-        public object Value { get; set; }
-
-        public void InitFromAttributeValue(AttributeValue value)
+        public object FromAttributeValue(AttributeValue value)
         {
             throw new NotImplementedException();
         }
 
-        public AttributeValue ToAttributeValue()
+        public AttributeValue ToAttributeValue(object value)
         {
             throw new NotImplementedException();
         }
 
         public bool CanBeUpdated()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IAttribute New()
         {
             throw new NotImplementedException();
         }

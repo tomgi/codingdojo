@@ -96,7 +96,6 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade
                 Component.For<Func<IEnumerable<Attribute>>>().Instance(getAttributes),
                 Component.For<Func<int, IEnumerable<DomainValue>>>().Instance(resolveDomain),
                 Component.For<Func<string, long>>().Instance(resolveCollection),
-                Component.For<QppAttributes.QppAttributes>().ImplementedBy<QppAttributes.QppAttributes>(),
                 Component.For<FileTransferGatewayConnector>().LifestyleSingleton().DependsOn(Dependency.OnValue<string>(_qppHost)),
                 Component.For<Qpp>().ImplementedBy<Qpp>()
                 );

@@ -14,7 +14,6 @@ using com.quark.qpp.core.collection.service.remote;
 using com.quark.qpp.core.relation.service.constants;
 using com.quark.qpp.core.security.service.remote;
 using com.quark.qpp.FileTransferGateway;
-using IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes;
 using QppFacade.Models;
 
 namespace QppFacade
@@ -23,20 +22,17 @@ namespace QppFacade
     {
         private readonly SessionService _sessionService;
         private readonly AssetService _assetService;
-        private readonly QppAttributes _qppAttributes;
         private readonly FileTransferGatewayConnector _fileTransferGatewayConnector;
         private readonly CollectionService _collectionService;
 
         public Qpp(
             SessionService sessionService,
             AssetService assetService,
-            QppAttributes qppAttributes,
             FileTransferGatewayConnector fileTransferGatewayConnector,
             CollectionService collectionService)
         {
             _sessionService = sessionService;
             _assetService = assetService;
-            _qppAttributes = qppAttributes;
             _fileTransferGatewayConnector = fileTransferGatewayConnector;
             _collectionService = collectionService;
         }
@@ -60,7 +56,7 @@ namespace QppFacade
                         {
                             childAssetId = spreadsheetId,
                             relationTypeId = assetModel.Chart.RelationType,
-                            relationAttributes = assetModel.Chart.Attributes.Select(item => item.ToAttributeValue()).ToArray()
+                            relationAttributes = assetModel.Chart.GimmeAttributeValues()
                         }
                     });
             }
@@ -78,7 +74,7 @@ namespace QppFacade
                     {
                         childAssetId = pictureId,
                         relationTypeId = xmlReference.RelationType,
-                        relationAttributes = xmlReference.Attributes.ToAttributeValues()
+                        relationAttributes = xmlReference.GimmeAttributeValues()
                     });
             }
 
@@ -90,7 +86,7 @@ namespace QppFacade
                     {
                         childAssetId = pictureId,
                         relationTypeId = tableReference.RelationType,
-                        relationAttributes = tableReference.Attributes.ToAttributeValues()
+                        relationAttributes = tableReference.GimmeAttributeValues()
                     });
             }
             return CheckInNewAsset(assetModel, assetRelations.ToArray());
@@ -198,16 +194,8 @@ namespace QppFacade
             {
                 assetId = assetModel.Id
             };
-            var attributeValues = new List<AttributeValue>();
-            foreach (var attribute in assetModel.Attributes)
-            {
-                if (false == attribute.CanBeUpdated())
-                    continue;
-                var attributeValue = attribute.ToAttributeValue();
-                if (attributeValue != null)
-                    attributeValues.Add(attributeValue);
-            }
-            asset.attributeValues = attributeValues.ToArray();
+
+            asset.attributeValues = assetModel.GimmeAttributeValuesForUpdate();
             _assetService.updateAsset(asset);
             _assetService.unlockAsset(assetModel.Id);
         }
@@ -241,14 +229,14 @@ namespace QppFacade
             return topic;
         }
 
-        private void PushAttributes(IEnumerable<AttributeValue> attributes, IAttributeBag model)
+        private void PushAttributes(IEnumerable<AttributeValue> attributes, AttributeBag model)
         {
             foreach (var attributeValue in attributes)
             {
                 var attrInfo = PhoenixAttributes.ById[attributeValue.attributeId];
                 if (attrInfo == null)
                     continue;
-                model[attrInfo].InitFromAttributeValue(attributeValue);
+                model[attrInfo] = attrInfo.FromAttributeValue(attributeValue);
             }
         }
 
@@ -278,7 +266,7 @@ namespace QppFacade
                     {
                         childAssetId = topicId,
                         relationTypeId = topicReference.RelationType,
-                        relationAttributes = topicReference.Attributes.ToAttributeValues()
+                        relationAttributes = topicReference.GimmeAttributeValues()
                     });
             }
 

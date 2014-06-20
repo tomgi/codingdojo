@@ -9,11 +9,9 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
     {
         long Id { get; }
         string Name { get; }
-        object Value { get; set; }
-        void InitFromAttributeValue(AttributeValue value);
-        AttributeValue ToAttributeValue();
+        object FromAttributeValue(AttributeValue value);
+        AttributeValue ToAttributeValue(object value);
         bool CanBeUpdated();
-        IAttribute New();
     }
 
     public abstract class BaseAttribute : IAttribute
@@ -48,20 +46,15 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
                 return true;
             return Equals((IAttribute) obj);
         }
-
-        public object Value { get; set; }
-
+        
         protected BaseAttribute(Attribute attribute)
         {
             Attribute = attribute;
         }
 
-        public abstract AttributeValue ToAttributeValue();
+        public abstract object FromAttributeValue(AttributeValue value);
+        public abstract AttributeValue ToAttributeValue(object value);
 
-//        public static implicit operator AttributeValue(BaseAttribute attribute)
-//        {
-//            return attribute.ToAttributeValue();
-//        }
         protected AttributeValue ToAttributeValue<TValue>(Action<TValue> setValue)
             where TValue : Value
         {
@@ -83,7 +76,5 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
             return Attribute.constraintsChangeable;
         }
 
-        public abstract void InitFromAttributeValue(AttributeValue value);
-        public abstract IAttribute New();
     }
 }

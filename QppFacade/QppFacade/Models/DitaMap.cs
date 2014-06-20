@@ -45,7 +45,7 @@ namespace QppFacade.Models
         {
             var imageTag =
                 _xml.Descendants("topicref")
-                    .FirstOrDefault(topicRef => topicRef.Attribute("href").Value.ToLower() == ((string) topic[PhoenixAttributes.NAME].Value).ToLower());
+                    .FirstOrDefault(topicRef => topicRef.Attribute("href").Value.ToLower() == ((string) topic[PhoenixAttributes.NAME]).ToLower());
             return AddTopicReference(new XmlReference<Topic>(imageTag.AbsoluteXPath(), topic));
         }
     }

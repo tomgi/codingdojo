@@ -1,35 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes;
+using com.quark.qpp.core.attribute.service.dto;
 
 namespace QppFacade
 {
-    public class FileAsset : IAttributeBag
+    public class FileAsset : AttributeBag
     {
         public long Id { get; set; }
-        private readonly ISet<IAttribute> _attributes = new HashSet<IAttribute>();
         private readonly string _filePath;
-
-        public IAttribute this[IAttribute index]
-        {
-            get
-            {
-                var attributeValue = Attributes.FirstOrDefault(attr => attr.Equals(index));
-                if (attributeValue == null)
-                {
-                    attributeValue = index.New();
-                    Attributes.Add(attributeValue);
-                }
-                return attributeValue;
-            }
-        }
-
-        public ISet<IAttribute> Attributes
-        {
-            get { return _attributes; }
-        }
 
         protected virtual Stream CreateStream()
         {
@@ -54,6 +33,20 @@ namespace QppFacade
             {
                 streamAction(stream);
             }
+        }
+
+        public AttributeValue[] GimmeAttributeValuesForUpdate()
+        {
+            var attributeValues = new List<AttributeValue>();
+            foreach (var attribute in _attributes)
+            {
+                if (false == attribute.Key.CanBeUpdated())
+                    continue;
+                var attributeValue = attribute.Key.ToAttributeValue(attribute.Value);
+                if (attributeValue != null)
+                    attributeValues.Add(attributeValue);
+            }
+            return attributeValues.ToArray();
         }
     }
 }

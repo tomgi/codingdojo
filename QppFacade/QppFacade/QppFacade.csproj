@@ -117,7 +117,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes.cs" />
-    <Compile Include="AttributesBag.cs" />
     <Compile Include="Consts\CustomConstsCs.cs" />
     <Compile Include="Consts\PhoenixValue.cs" />
     <Compile Include="Consts\PhoenixValuesInitializer.cs" />
@@ -138,10 +137,8 @@
     <Compile Include="QppAttributes\DateTimeAttr.cs" />
     <Compile Include="QppAttributes\DomainAttr.cs" />
     <Compile Include="QppAttributes\NumAttr.cs" />
-    <Compile Include="QppAttributes\QppAttributes.cs" />
     <Compile Include="QppAttributes\TextAttr.cs" />
     <Compile Include="QppFacadeWindsorInstaller.cs" />
-    <Compile Include="UberUploader.cs" />
     <Compile Include="XElementExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

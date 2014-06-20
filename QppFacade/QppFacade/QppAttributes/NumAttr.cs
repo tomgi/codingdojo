@@ -12,22 +12,17 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
         {
         }
 
-        public override AttributeValue ToAttributeValue()
+        public override object FromAttributeValue(AttributeValue value)
         {
-            if (Value != null && false == (Value is long))
+            return (value.attributeValue as NumericValue).value;
+        }
+
+        public override AttributeValue ToAttributeValue(object value)
+        {
+            if (value != null && false == (value is long))
                 throw new ApplicationException("Attempt was made to initialize QPP Text Attribute with non string value");
-            return ToAttributeValue<NumericValue>(attributeValue => attributeValue.value = (long) Value);
+            return ToAttributeValue<NumericValue>(attributeValue => attributeValue.value = (long) value);
         }
 
-        public override void InitFromAttributeValue(AttributeValue value)
-        {
-            if (value != null)
-                Value = (value.attributeValue as NumericValue).value;
-        }
-
-        public override IAttribute New()
-        {
-            return new NumAttr(Attribute);
-        }
     }
 }

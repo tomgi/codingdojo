@@ -17,28 +17,23 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
             _getCollectionValues = getCollectionValues;
         }
 
-        public override AttributeValue ToAttributeValue()
+        public override object FromAttributeValue(AttributeValue value)
         {
-            var domainValue = _getCollectionValues(Value.ToString());
+            return (value.attributeValue as DomainValue).name;
+        }
+
+        public override AttributeValue ToAttributeValue(object value)
+        {
+            var domainValue = _getCollectionValues(value.ToString());
             var attribValue = ToAttributeValue<DomainValue>(
                 attributeValue =>
                 {
                     attributeValue.domainId = _collectionId;
                     attributeValue.id = domainValue;
-                    attributeValue.name = (string) Value;
+                    attributeValue.name = (string) value;
                 });
             return attribValue;
         }
 
-        public override void InitFromAttributeValue(AttributeValue value)
-        {
-            if (value != null)
-                Value = (value.attributeValue as DomainValue).name;
-        }
-
-        public override IAttribute New()
-        {
-            return new CollectionAttr(Attribute, _getCollectionValues);
-        }
     }
 }

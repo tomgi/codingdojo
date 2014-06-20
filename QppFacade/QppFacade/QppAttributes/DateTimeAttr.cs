@@ -13,26 +13,20 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
         {
         }
 
-        public override AttributeValue ToAttributeValue()
+        public override object FromAttributeValue(AttributeValue value)
         {
-            if (Value != null && false == (Value is DateTime))
+            return
+                (DateTime?)
+                    DateTime.ParseExact((value.attributeValue as DateTimeValue).value, "yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'", CultureInfo.InvariantCulture);
+        }
+
+        public override AttributeValue ToAttributeValue(object value)
+        {
+            if (value != null && false == (value is DateTime))
                 throw new ApplicationException("Attempt was made to initialize QPP Text Attribute with non string value");
             return
                 ToAttributeValue<DateTimeValue>(
-                    attributeValue => attributeValue.value = ((DateTime) Value).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'", CultureInfo.InvariantCulture));
-        }
-
-        public override void InitFromAttributeValue(AttributeValue value)
-        {
-            if (value != null)
-                Value =
-                    (DateTime?)
-                        DateTime.ParseExact((value.attributeValue as DateTimeValue).value, "yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'", CultureInfo.InvariantCulture);
-        }
-
-        public override IAttribute New()
-        {
-            return new DateTimeAttr(Attribute);
+                    attributeValue => attributeValue.value = ((DateTime) value).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'", CultureInfo.InvariantCulture));
         }
     }
 }

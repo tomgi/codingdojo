@@ -11,22 +11,17 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
         {
         }
 
-        public override AttributeValue ToAttributeValue()
+        public override object FromAttributeValue(AttributeValue value)
         {
-            if (Value != null && false == (Value is string))
+            return (value.attributeValue as TextValue).value;
+        }
+
+        public override AttributeValue ToAttributeValue(object value)
+        {
+            if (value != null && false == (value is string))
                 throw new ApplicationException("Attempt was made to initialize QPP Text Attribute with non string value");
-            return ToAttributeValue<TextValue>(attributeValue => attributeValue.value = (string) Value);
+            return ToAttributeValue<TextValue>(attributeValue => attributeValue.value = (string) value);
         }
 
-        public override void InitFromAttributeValue(AttributeValue value)
-        {
-            if (value != null)
-                Value = (value.attributeValue as TextValue).value;
-        }
-
-        public override IAttribute New()
-        {
-            return new TextAttr(Attribute);
-        }
     }
 }

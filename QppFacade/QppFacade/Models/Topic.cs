@@ -34,7 +34,7 @@ namespace QppFacade
         {
             var imageTag =
                 _xml.Descendants("image")
-                    .FirstOrDefault(image => image.Attribute("href").Value.ToLower() == ((string) picture[PhoenixAttributes.NAME].Value).ToLower());
+                    .FirstOrDefault(image => image.Attribute("href").Value.ToLower() == ((string) picture[PhoenixAttributes.NAME]).ToLower());
             return AddPictureReference(new XmlReference<Picture>(imageTag.AbsoluteXPath(), picture));
         }
 
@@ -66,7 +66,7 @@ namespace QppFacade
         {
             var tables =
                 _xml.Descendants("table")
-                    .Where(image => image.Attribute("Location").Value.ToLower() == ((string) tableSpreadsheet[PhoenixAttributes.NAME].Value).ToLower());
+                    .Where(image => image.Attribute("Location").Value.ToLower() == ((string) tableSpreadsheet[PhoenixAttributes.NAME]).ToLower());
             foreach (var tableTag in tables)
             {
                 _tables.Add(
@@ -82,8 +82,8 @@ namespace QppFacade
 
         public Topic WithChart(Picture chart, FileAsset fromSpreadsheet)
         {
-            var spreadsheetName = ((string) fromSpreadsheet[PhoenixAttributes.NAME].Value);
-            var chartName = ((string) chart[PhoenixAttributes.NAME].Value);
+            var spreadsheetName = ((string) fromSpreadsheet[PhoenixAttributes.NAME]);
+            var chartName = ((string) chart[PhoenixAttributes.NAME]);
             var chartTag = _xml.Descendants("image").SingleOrDefault(
                 image => image.HasAttribute("Location") &&
                          image.HasAttribute("href") &&

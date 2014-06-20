@@ -4,7 +4,7 @@ using IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes;
 
 namespace QppFacade
 {
-    public class ChartSourceReference : IReference<FileAsset>, IAttributeBag
+    public class ChartSourceReference : AttributeBag, IReference<FileAsset>
     {
         public FileAsset AssetModel { get; private set; }
 
@@ -13,26 +13,7 @@ namespace QppFacade
             get { return 1001; }
         }
 
-        private readonly ISet<IAttribute> _attributes = new HashSet<IAttribute>();
-
-        public ISet<IAttribute> Attributes
-        {
-            get { return _attributes; }
-        }
-
-        public IAttribute this[IAttribute index]
-        {
-            get
-            {
-                var attributeValue = Attributes.FirstOrDefault(attr => attr.Equals(index));
-                if (attributeValue == null)
-                {
-                    attributeValue = index.New();
-                    Attributes.Add(attributeValue);
-                }
-                return attributeValue;
-            }
-        }
+        private readonly IDictionary<IAttribute, object> _attributes = new Dictionary<IAttribute, object>();
 
         public ChartSourceReference(FileAsset assetModel)
         {
