@@ -7,11 +7,7 @@ Topic
 - TableSourceReference<Tables>
 Picture
 - ChartSourceReference<Chart>
-File
-
-
-
-
+FileAsset
 
 
 Bad
@@ -33,8 +29,6 @@ EcrCMASpreadsheet
 MissingPictureAsset
 ExcelPictureAsset
 
-po chuj PDF Publication Template
-
-
+a po co a dlaczego PDF Publication Template
 
 Unify ChartSourceRefrence and ImageSourceReference (introduce ChartOrImage)

@@ -8,19 +8,19 @@ namespace QppFacade
 {
     public interface IAttributeBag
     {
-        ISet<IHaveNameAndId> Attributes { get; }
-        IHaveNameAndId this[IHaveNameAndId index] { get; }    
+        ISet<IAttribute> Attributes { get; }
+        IAttribute this[IAttribute index] { get; }
     }
 
     public static class AssetExtensions
     {
-        public static T With<T>(this T asset, IHaveNameAndId attributeId, object value) where T : IAttributeBag
+        public static T With<T>(this T asset, IAttribute attributeId, object value) where T : IAttributeBag
         {
             asset[attributeId].Value = value;
             return asset;
         }
 
-        public static AttributeValue[] ToAttributeValues(this IEnumerable<IHaveNameAndId> bag)
+        public static AttributeValue[] ToAttributeValues(this IEnumerable<IAttribute> bag)
         {
             return bag.Select(attr => attr.ToAttributeValue()).ToArray();
         }
@@ -31,7 +31,6 @@ namespace QppFacade
             {
                 assetId = assetModel.Id,
                 attributeValues = assetModel.Attributes.ToAttributeValues()
-                
             };
         }
     }

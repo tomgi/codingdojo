@@ -16,15 +16,16 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
         {
             if (Value != null && false == (Value is long))
                 throw new ApplicationException("Attempt was made to initialize QPP Text Attribute with non string value");
-            return ToAttributeValue<NumericValue>(attributeValue => attributeValue.value = (long)Value);
+            return ToAttributeValue<NumericValue>(attributeValue => attributeValue.value = (long) Value);
         }
+
         public override void InitFromAttributeValue(AttributeValue value)
         {
-            if(value != null) 
+            if (value != null)
                 Value = (value.attributeValue as NumericValue).value;
         }
 
-        public override IHaveNameAndId New()
+        public override IAttribute New()
         {
             return new NumAttr(Attribute);
         }

@@ -5,7 +5,7 @@ using Attribute = com.quark.qpp.core.attribute.service.dto.Attribute;
 
 namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
 {
-    public interface IHaveNameAndId
+    public interface IAttribute
     {
         long Id { get; }
         string Name { get; }
@@ -13,9 +13,10 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
         void InitFromAttributeValue(AttributeValue value);
         AttributeValue ToAttributeValue();
         bool CanBeUpdated();
-        IHaveNameAndId New();
+        IAttribute New();
     }
-    public abstract class BaseAttribute : IHaveNameAndId
+
+    public abstract class BaseAttribute : IAttribute
     {
         public override int GetHashCode()
         {
@@ -23,21 +24,18 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
         }
 
         protected readonly Attribute Attribute;
-        public string Name {
-            get
-            {
-                return Attribute.name;
-            }
-        }
-        public long Id
+
+        public string Name
         {
-            get
-            {
-                return Attribute.id;
-            }
+            get { return Attribute.name; }
         }
 
-        public bool Equals(IHaveNameAndId other)
+        public long Id
+        {
+            get { return Attribute.id; }
+        }
+
+        public bool Equals(IAttribute other)
         {
             return Id == other.Id || string.Equals(Name, other.Name);
         }
@@ -48,7 +46,7 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
                 return false;
             if (ReferenceEquals(this, obj))
                 return true;
-            return Equals((IHaveNameAndId)obj);
+            return Equals((IAttribute) obj);
         }
 
         public object Value { get; set; }
@@ -59,7 +57,7 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
         }
 
         public abstract AttributeValue ToAttributeValue();
-        
+
 //        public static implicit operator AttributeValue(BaseAttribute attribute)
 //        {
 //            return attribute.ToAttributeValue();
@@ -78,13 +76,14 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
                 throw new ApplicationException(string.Format("Failed to set value to an attribute of type id {0}", Attribute.id));
             setValue(value);
             return attributeValue;
-
         }
+
         public bool CanBeUpdated()
         {
             return Attribute.constraintsChangeable;
         }
+
         public abstract void InitFromAttributeValue(AttributeValue value);
-        public abstract IHaveNameAndId New();
+        public abstract IAttribute New();
     }
 }

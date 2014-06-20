@@ -3,7 +3,6 @@ using System.IO;
 using System.Text;
 using AutoMapper;
 using Castle.Windsor;
-using com.quark.qpp.core.attribute.service.constants;
 using IHS.Phoenix.QPP.Facade.SoapFacade;
 using Machine.Specifications;
 
@@ -23,20 +22,20 @@ namespace QppFacade.Tests
         private Because of = () =>
             _assetId = _sut.Upload(
                 new FileAsset("asset.txt")
-                    .With(PhoenixAttributes.CONTENT_TYPE,"Chemical Report")
-                    .With(PhoenixAttributes.NAME,"acetic acid2")
-                    .With(PhoenixAttributes.WORKFLOW,"Default Workflow")
-                    .With(PhoenixAttributes.STATUS,"Default")
-                    .With(PhoenixAttributes.COLLECTION,"Home/Test")
-                    .With(PhoenixAttributes.FILE_EXTENSION,"txt")
-                    .With(PhoenixAttributes.ORIGINAL_FILENAME,"acetic acid2")
-                    .With(PhoenixAttributes.DITA_TITLE,"acetic acid2")
+                    .With(PhoenixAttributes.CONTENT_TYPE, "Chemical Report")
+                    .With(PhoenixAttributes.NAME, "acetic acid2")
+                    .With(PhoenixAttributes.WORKFLOW, "Default Workflow")
+                    .With(PhoenixAttributes.STATUS, "Default")
+                    .With(PhoenixAttributes.COLLECTION, "Home/Test")
+                    .With(PhoenixAttributes.FILE_EXTENSION, "txt")
+                    .With(PhoenixAttributes.ORIGINAL_FILENAME, "acetic acid2")
+                    .With(PhoenixAttributes.DITA_TITLE, "acetic acid2")
                 );
 
         private It should_upload_asset_properly = () =>
         {
             var file = _sut.GetFile<FileAsset>(_assetId);
-            file.With(PhoenixAttributes.DITA_TITLE,"dupa");
+            file.With(PhoenixAttributes.DITA_TITLE, "dupa");
             _sut.UpdateFile(file);
             _fileUpdated = _sut.GetFile<FileAsset>(_assetId);
             _fileUpdated[PhoenixAttributes.DITA_TITLE].Value.ShouldEqual("dupa");
@@ -54,7 +53,7 @@ namespace QppFacade.Tests
                   .ForMember(dest => dest.DitaTitle, opts => opts.MapFrom(fileAsset => fileAsset[PhoenixAttributes.DITA_TITLE]))
                   .ForMember(dest => dest.Name, opts => opts.MapFrom(fileAsset => fileAsset[PhoenixAttributes.NAME]));
 
-            var modelAutoMapper = Mapper.Map<FileAsset,DatabaseModel>(_fileUpdated);
+            var modelAutoMapper = Mapper.Map<FileAsset, DatabaseModel>(_fileUpdated);
             modelAutoMapper.Id.ShouldEqual(_fileUpdated.Id);
         };
 
@@ -69,7 +68,6 @@ namespace QppFacade.Tests
         {
             return new MemoryStream(Encoding.UTF8.GetBytes(value ?? ""));
         }
-
     }
 
     public class DatabaseModel

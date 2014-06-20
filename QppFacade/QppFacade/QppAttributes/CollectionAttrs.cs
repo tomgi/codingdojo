@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using com.quark.qpp.common.dto;
 using com.quark.qpp.core.attribute.service.dto;
-using Attribute = System.Attribute;
+using Attribute = com.quark.qpp.core.attribute.service.dto.Attribute;
 
 namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
 {
@@ -12,7 +10,7 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
         private readonly Func<string, long> _getCollectionValues;
         private readonly int _collectionId;
 
-        public CollectionAttr(com.quark.qpp.core.attribute.service.dto.Attribute attribute, Func<string, long> getCollectionValues)
+        public CollectionAttr(Attribute attribute, Func<string, long> getCollectionValues)
             : base(attribute)
         {
             _collectionId = (Attribute.defaultValuePreference as DomainValuePreferences).domainId;
@@ -27,20 +25,20 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
                 {
                     attributeValue.domainId = _collectionId;
                     attributeValue.id = domainValue;
-                    attributeValue.name = (string)Value;
+                    attributeValue.name = (string) Value;
                 });
             return attribValue;
         }
+
         public override void InitFromAttributeValue(AttributeValue value)
         {
             if (value != null)
                 Value = (value.attributeValue as DomainValue).name;
         }
 
-        public override IHaveNameAndId New()
+        public override IAttribute New()
         {
             return new CollectionAttr(Attribute, _getCollectionValues);
-
         }
     }
 }

@@ -8,7 +8,7 @@ using Attribute = com.quark.qpp.core.attribute.service.dto.Attribute;
 
 namespace QppFacade
 {
-    public class AttributePlaceholder : IHaveNameAndId
+    public class AttributePlaceholder : IAttribute
     {
         public long Id { get; set; }
         public string Name { get; set; }
@@ -29,7 +29,7 @@ namespace QppFacade
             throw new NotImplementedException();
         }
 
-        public IHaveNameAndId New()
+        public IAttribute New()
         {
             throw new NotImplementedException();
         }
@@ -44,7 +44,7 @@ namespace QppFacade
         private static bool Initialized = false;
 
         public static void Init(
-            Func<IEnumerable<Attribute>> getQppAttributes,
+            System.Func<IEnumerable<Attribute>> getQppAttributes,
             Func<int, IEnumerable<DomainValue>> getDomainValues,
             Func<string, long> getCollectionValues)
         {
@@ -87,7 +87,7 @@ namespace QppFacade
                 }
             }
 
-            foreach (var fieldInfo in typeof(PhoenixAttributes).GetFields())
+            foreach (var fieldInfo in typeof (PhoenixAttributes).GetFields())
             {
                 var attributePlaceholder = (AttributePlaceholder) fieldInfo.GetValue(null);
                 BaseAttribute attribute = null;
@@ -101,187 +101,187 @@ namespace QppFacade
                     if (ByName.ContainsKey(attributePlaceholder.Name))
                         attribute = ByName[attributePlaceholder.Name];
                 }
-                if(attribute!=null)
-                    fieldInfo.SetValue(null,attribute);
+                if (attribute != null)
+                    fieldInfo.SetValue(null, attribute);
             }
         }
     }
 
     public static partial class PhoenixAttributes
     {
-        public static IHaveNameAndId APP_STUDIO_ISSUE_URN = new AttributePlaceholder { Id = 180L };
-        public static IHaveNameAndId ARTICLE_COMP_REFRENCE_ASSET_ID = new AttributePlaceholder { Id = 0x19eL };
-        public static IHaveNameAndId ARTICLE_COMP_REFRENCE_ASSET_MAJ_VERSION = new AttributePlaceholder { Id = 0x19fL };
-        public static IHaveNameAndId ARTICLE_COMP_REFRENCE_ASSET_MIN_VERSION = new AttributePlaceholder { Id = 0x1a0L };
-        public static IHaveNameAndId ARTICLE_COMPONENT_ID = new AttributePlaceholder { Id = 0x131L };
-        public static IHaveNameAndId ARTICLE_ID = new AttributePlaceholder { Id = 0x19dL };
-        public static IHaveNameAndId ASSET_CHECKSUM = new AttributePlaceholder { Id = 0x197L };
-        public static IHaveNameAndId ASSIGNED_LENGTH = new AttributePlaceholder { Id = 0x166L };
-        public static IHaveNameAndId ATTACHED_COMPONENT_ID = new AttributePlaceholder { Id = 0x19cL };
-        public static IHaveNameAndId ATTACHED_LAYOUT_ID = new AttributePlaceholder { Id = 0x191L };
-        public static IHaveNameAndId ATTACHMENT_CHECKSUM = new AttributePlaceholder { Id = 0x198L };
-        public static IHaveNameAndId AUXILIARY_DATA = new AttributePlaceholder { Id = 0x199L };
-        public static IHaveNameAndId BOX_HEIGHT = new AttributePlaceholder { Id = 0x196L };
-        public static IHaveNameAndId BOX_ID = new AttributePlaceholder { Id = 0x192L };
-        public static IHaveNameAndId BOX_WIDTH = new AttributePlaceholder { Id = 0x195L };
-        public static IHaveNameAndId CHARACTER_COUNT = new AttributePlaceholder { Id = 0x164L };
-        public static IHaveNameAndId CHECK_OUT_DATE_TIME = new AttributePlaceholder { Id = 0x11L };
-        public static IHaveNameAndId CHECKED_OUT_APPLICATION = new AttributePlaceholder { Id = 0x22L };
-        public static IHaveNameAndId CHECKED_OUT_BY = new AttributePlaceholder { Id = 14L };
-        public static IHaveNameAndId CHECKED_OUT_DURATION = new AttributePlaceholder { Id = 0x23L };
-        public static IHaveNameAndId CHECKED_OUT_FILE_PATH = new AttributePlaceholder { Id = 0x10L };
-        public static IHaveNameAndId CHECKED_OUT_MACHINE_NAME = new AttributePlaceholder { Id = 15L };
-        public static IHaveNameAndId COLLECTION = new AttributePlaceholder { Id = 0x37L };
-        public static IHaveNameAndId COLLECTION_PATH = new AttributePlaceholder { Id = 0x39L };
-        public static IHaveNameAndId COLLECTION_TEMPLATE = new AttributePlaceholder { Id = 0x3aL };
-        public static IHaveNameAndId COLOR_DEPTH = new AttributePlaceholder { Id = 0xccL };
-        public static IHaveNameAndId COLOR_SPACE = new AttributePlaceholder { Id = 0xcdL };
-        public static IHaveNameAndId COLUMN_WIDTH = new AttributePlaceholder { Id = 0x163L };
-        public static IHaveNameAndId COMPONENT_NAME = new AttributePlaceholder { Id = 0x12fL };
-        public static IHaveNameAndId COMPONENT_POSITION = new AttributePlaceholder { Id = 0x12eL };
-        public static IHaveNameAndId CONTENT_CREATOR = new AttributePlaceholder { Id = 0x20L };
-        public static IHaveNameAndId CONTENT_TYPE = new AttributePlaceholder { Id = 0x3eL };
-        public static IHaveNameAndId CONTENT_TYPE_HIERARCHY = new AttributePlaceholder { Id = 0x3fL };
-        public static IHaveNameAndId CREATED = new AttributePlaceholder { Id = 3L };
-        public static IHaveNameAndId CREATOR = new AttributePlaceholder { Id = 5L };
-        public static IHaveNameAndId CURRENT_BILLABLE_HOURS = new AttributePlaceholder { Id = 0x24L };
-        public static IHaveNameAndId CURRENT_LENGTH = new AttributePlaceholder { Id = 0x165L };
-        public static IHaveNameAndId DEPENDENT_ON_COLLECTION_RESOURCES = new AttributePlaceholder { Id = 0x1a2L };
-        public static IHaveNameAndId DEVICE_NAME = new AttributePlaceholder { Id = 0x9eL };
-        public static IHaveNameAndId DITA_AUDIENCE = new AttributePlaceholder { Id = 0x1c4L };
-        public static IHaveNameAndId DITA_AUTHOR = new AttributePlaceholder { Id = 0x1c5L };
-        public static IHaveNameAndId DITA_BRAND = new AttributePlaceholder { Id = 0x1c6L };
-        public static IHaveNameAndId DITA_CATEGORY = new AttributePlaceholder { Id = 0x1c7L };
-        public static IHaveNameAndId DITA_ID = new AttributePlaceholder { Id = 0x1c8L };
-        public static IHaveNameAndId DITA_IMPORTANCE = new AttributePlaceholder { Id = 0x1d2L };
-        public static IHaveNameAndId DITA_KEYWORDS = new AttributePlaceholder { Id = 0x1c9L };
-        public static IHaveNameAndId DITA_LANGUAGE = new AttributePlaceholder { Id = 0x1d0L };
-        public static IHaveNameAndId DITA_NAVIGATION_TITLE = new AttributePlaceholder { Id = 0x1caL };
-        public static IHaveNameAndId DITA_OTHER_PROPERTIES = new AttributePlaceholder { Id = 0x1d1L };
-        public static IHaveNameAndId DITA_PLATFORM = new AttributePlaceholder { Id = 0x1cbL };
-        public static IHaveNameAndId DITA_PRODUCT_NAME = new AttributePlaceholder { Id = 460L };
-        public static IHaveNameAndId DITA_PUBLISHING_CONTENT = new AttributePlaceholder { Id = 0x1cfL };
-        public static IHaveNameAndId DITA_SEARCH_TITLE = new AttributePlaceholder { Id = 0x1cdL };
-        public static IHaveNameAndId DITA_TITLE = new AttributePlaceholder { Id = 0x1ceL };
-        public static IHaveNameAndId DUE_DATE = new AttributePlaceholder { Id = 0x29L };
-        public static IHaveNameAndId DUE_TIME = new AttributePlaceholder { Id = 0x2aL };
-        public static IHaveNameAndId FILE_EXTENSION = new AttributePlaceholder { Id = 11L };
-        public static IHaveNameAndId FILE_PATH = new AttributePlaceholder { Id = 8L };
-        public static IHaveNameAndId FILE_SIZE = new AttributePlaceholder { Id = 12L };
-        public static IHaveNameAndId FIRST_PAGE = new AttributePlaceholder { Id = 0x33L };
-        public static IHaveNameAndId GLOBAL_ID = new AttributePlaceholder { Id = 0x42L };
-        public static IHaveNameAndId HAS_CHILDREN = new AttributePlaceholder { Id = 0x41L };
-        public static IHaveNameAndId ID = new AttributePlaceholder { Id = 1L };
-        public static IHaveNameAndId INDESIGN_OBJECT_UID = new AttributePlaceholder { Id = 0x1a3L };
-        public static IHaveNameAndId INDEXING_STATUS = new AttributePlaceholder { Id = 0x1dL };
-        public static IHaveNameAndId IPTC_BY_LINE = new AttributePlaceholder { Id = 0xd5L };
-        public static IHaveNameAndId IPTC_BY_LINE_TITLE = new AttributePlaceholder { Id = 0xd6L };
-        public static IHaveNameAndId IPTC_CAPTION = new AttributePlaceholder { Id = 0xdfL };
-        public static IHaveNameAndId IPTC_CATEGORY = new AttributePlaceholder { Id = 0xd0L };
-        public static IHaveNameAndId IPTC_CITY = new AttributePlaceholder { Id = 0xd7L };
-        public static IHaveNameAndId IPTC_COPYRIGHT_NOTICE = new AttributePlaceholder { Id = 0xdeL };
-        public static IHaveNameAndId IPTC_COUNTRY = new AttributePlaceholder { Id = 0xd9L };
-        public static IHaveNameAndId IPTC_CREDIT = new AttributePlaceholder { Id = 220L };
-        public static IHaveNameAndId IPTC_DATE_CREATED = new AttributePlaceholder { Id = 0xd4L };
-        public static IHaveNameAndId IPTC_HEADLINE = new AttributePlaceholder { Id = 0xdbL };
-        public static IHaveNameAndId IPTC_KEYWORDS = new AttributePlaceholder { Id = 210L };
-        public static IHaveNameAndId IPTC_OBJECT_NAME = new AttributePlaceholder { Id = 0xceL };
-        public static IHaveNameAndId IPTC_ORIGINAL_TRANSMISSION_REFERENCE = new AttributePlaceholder { Id = 0xdaL };
-        public static IHaveNameAndId IPTC_PROVINCE = new AttributePlaceholder { Id = 0xd8L };
-        public static IHaveNameAndId IPTC_SOURCE = new AttributePlaceholder { Id = 0xddL };
-        public static IHaveNameAndId IPTC_SPECIAL_INSTRUCTIONS = new AttributePlaceholder { Id = 0xd3L };
-        public static IHaveNameAndId IPTC_SUPPLEMENTAL_CATEGORIES = new AttributePlaceholder { Id = 0xd1L };
-        public static IHaveNameAndId IPTC_URGENCY = new AttributePlaceholder { Id = 0xcfL };
-        public static IHaveNameAndId IPTC_WRITER = new AttributePlaceholder { Id = 0xe0L };
-        public static IHaveNameAndId IS_CHECKED_OUT = new AttributePlaceholder { Id = 13L };
-        public static IHaveNameAndId IS_COLLECTED = new AttributePlaceholder { Id = 0x12L };
-        public static IHaveNameAndId IS_COLLECTION_TEMPLATE = new AttributePlaceholder { Id = 0x3bL };
-        public static IHaveNameAndId IS_PLACEHOLDER = new AttributePlaceholder { Id = 30L };
-        public static IHaveNameAndId ISSUE = new AttributePlaceholder { Id = 0x1aL };
-        public static IHaveNameAndId ITEM_NAME = new AttributePlaceholder { Id = 410L };
-        public static IHaveNameAndId ITEM_TYPE = new AttributePlaceholder { Id = 0x19bL };
-        public static IHaveNameAndId JOB_JACKET = new AttributePlaceholder { Id = 0x2cL };
-        public static IHaveNameAndId JOB_TICKET_TEMPLATE_NAME = new AttributePlaceholder { Id = 0x2dL };
-        public static IHaveNameAndId LAST_CONTENT_UPDATE = new AttributePlaceholder { Id = 0x13L };
-        public static IHaveNameAndId LAST_CONTENT_UPDATED_BY = new AttributePlaceholder { Id = 20L };
-        public static IHaveNameAndId LAST_GEOMETRY_UPDATE = new AttributePlaceholder { Id = 0x15L };
-        public static IHaveNameAndId LAST_JOB_JACKET_MODIFIED = new AttributePlaceholder { Id = 10L };
-        public static IHaveNameAndId LAST_MODIFIED = new AttributePlaceholder { Id = 4L };
-        public static IHaveNameAndId LAST_MODIFIER = new AttributePlaceholder { Id = 6L };
-        public static IHaveNameAndId LAST_PAGE = new AttributePlaceholder { Id = 0x34L };
-        public static IHaveNameAndId LAYOUT_GEOMETRY_DIFFERS = new AttributePlaceholder { Id = 0x97L };
-        public static IHaveNameAndId LAYOUT_NAME = new AttributePlaceholder { Id = 0x9dL };
-        public static IHaveNameAndId LINE_COUNT = new AttributePlaceholder { Id = 0x162L };
-        public static IHaveNameAndId MAC_CREATOR_TYPE = new AttributePlaceholder { Id = 0x2fL };
-        public static IHaveNameAndId MAC_OS_TYPE = new AttributePlaceholder { Id = 0x2eL };
-        public static IHaveNameAndId MAJOR_VERSION = new AttributePlaceholder { Id = 7L };
-        public static IHaveNameAndId MIME_TYPE = new AttributePlaceholder { Id = 0x30L };
-        public static IHaveNameAndId MINOR_VERSION = new AttributePlaceholder { Id = 0x3dL };
-        public static IHaveNameAndId NAME = new AttributePlaceholder { Id = 2L };
-        public static IHaveNameAndId NUMBER_OF_LAYOUTS = new AttributePlaceholder { Id = 60L };
-        public static IHaveNameAndId NUMBER_OF_PAGES = new AttributePlaceholder { Id = 0x2bL };
-        public static IHaveNameAndId ORIENTATION = new AttributePlaceholder { Id = 0x99L };
-        public static IHaveNameAndId ORIGINAL_FILENAME = new AttributePlaceholder { Id = 0x21L };
-        public static IHaveNameAndId PAGE_HEIGHT = new AttributePlaceholder { Id = 0x9cL };
-        public static IHaveNameAndId PAGE_INDEX = new AttributePlaceholder { Id = 0x194L };
-        public static IHaveNameAndId PAGE_NAME = new AttributePlaceholder { Id = 0x193L };
-        public static IHaveNameAndId PAGE_WIDTH = new AttributePlaceholder { Id = 0x9bL };
-        public static IHaveNameAndId PIXEL_HEIGHT = new AttributePlaceholder { Id = 0xcaL };
-        public static IHaveNameAndId PIXEL_WIDTH = new AttributePlaceholder { Id = 0xc9L };
-        public static IHaveNameAndId RELATION_STATUS = new AttributePlaceholder { Id = 0x40L };
-        public static IHaveNameAndId REPOSITORY = new AttributePlaceholder { Id = 0x1cL };
-        public static IHaveNameAndId REPOSITORY_TYPE = new AttributePlaceholder { Id = 0x1bL };
-        public static IHaveNameAndId RESOLUTION = new AttributePlaceholder { Id = 0xcbL };
-        public static IHaveNameAndId REVISION_COMMENTS = new AttributePlaceholder { Id = 0x1fL };
-        public static IHaveNameAndId ROUTED_TO = new AttributePlaceholder { Id = 0x19L };
-        public static IHaveNameAndId STATUS = new AttributePlaceholder { Id = 0x18L };
-        public static IHaveNameAndId STORY_DIRECTION = new AttributePlaceholder { Id = 0x9aL };
-        public static IHaveNameAndId TEXT_INDEXING_STATUS = new AttributePlaceholder { Id = 0x35L };
-        public static IHaveNameAndId TEXT_PREVIEW = new AttributePlaceholder { Id = 0x160L };
-        public static IHaveNameAndId TOTAL_BILLABLE_HOURS = new AttributePlaceholder { Id = 0x25L };
-        public static IHaveNameAndId WORD_COUNT = new AttributePlaceholder { Id = 0x161L };
-        public static IHaveNameAndId WORKFLOW = new AttributePlaceholder { Id = 0x36L };
-        public static IHaveNameAndId XPATH = new AttributePlaceholder { Id = 0x1a1L };
-        public static IHaveNameAndId SourceDocumentId = new AttributePlaceholder { Name = "Source Document Id" };
-        public static IHaveNameAndId GeographyId = new AttributePlaceholder { Name = "Geography Id" };
-        public static IHaveNameAndId Geography = new AttributePlaceholder { Name = "Geography" };
-        public static IHaveNameAndId PublishedDate = new AttributePlaceholder { Name = "Published Date" };
-        public static IHaveNameAndId UserSetPublishedDate = new AttributePlaceholder { Name = "User-Set Published Date" };
-        public static IHaveNameAndId UserProposedPublishedDate = new AttributePlaceholder { Name = "User-Proposed Published Date" };
-        public static IHaveNameAndId DontUpdatePublishedDate = new AttributePlaceholder { Name = "Don't Update Published Date" };
-        public static IHaveNameAndId HiddenUpdate = new AttributePlaceholder { Name = "Hidden Update" };
-        public static IHaveNameAndId InRangeName = new AttributePlaceholder { Name = "InRangeName" };
-        public static IHaveNameAndId InRangeValue = new AttributePlaceholder { Name = "InRangeValue" };
-        public static IHaveNameAndId OutSheet = new AttributePlaceholder { Name = "OutSheet" };
-        public static IHaveNameAndId OutRange = new AttributePlaceholder { Name = "OutRange" };
-        public static IHaveNameAndId OutChartName = new AttributePlaceholder { Name = "OutChartName" };
-        public static IHaveNameAndId OutImageName = new AttributePlaceholder { Name = "OutImageName" };
-        public static IHaveNameAndId PdfBusinessLine = new AttributePlaceholder { Name = "PDF Business Line" };
-        public static IHaveNameAndId PdfReportType = new AttributePlaceholder { Name = "PDF Report Type" };
-        public static IHaveNameAndId PdfReportTitle = new AttributePlaceholder { Name = "PDF Report Title" };
-        public static IHaveNameAndId PdfSubheading = new AttributePlaceholder { Name = "PDF Subheading" };
-        public static IHaveNameAndId PdfDate = new AttributePlaceholder { Name = "PDF Date" };
-        public static IHaveNameAndId PdfAddressBar = new AttributePlaceholder { Name = "PDF Address Bar" };
-        public static IHaveNameAndId Location = new AttributePlaceholder { Name = "Location" };
-        public static IHaveNameAndId UploaderVersion = new AttributePlaceholder { Name = "Uploader Version" };
-        public static IHaveNameAndId AnalystWhoSentForReviewId = new AttributePlaceholder { Name = "Analyst who sent for review id" };
-        public static IHaveNameAndId EditorWhoSentBackToAnalystId = new AttributePlaceholder { Name = "Editor who sent back to Analyst id" };
-        public static IHaveNameAndId PublishFailReason = new AttributePlaceholder { Name = "Publishing fail reason" };
-        public static IHaveNameAndId DataRefreshStart = new AttributePlaceholder { Name = "Data refresh started" };
-        public static IHaveNameAndId DataRefreshEnd = new AttributePlaceholder { Name = "Data refresh ended" };
-        public static IHaveNameAndId DataRefreshExcelPull = new AttributePlaceholder { Name = "Data refresh excels pulled" };
-        public static IHaveNameAndId DataRefreshFailReason = new AttributePlaceholder { Name = "Data refresh fail reason" };
-        public static IHaveNameAndId ChemicalProductAndMarket = new AttributePlaceholder { Name = "Chemical Product and Market(Taxonomy)" };
-        public static IHaveNameAndId BrandTaxonomy = new AttributePlaceholder { Name = "Brand(Taxonomy)" };
-        public static IHaveNameAndId DomainsTaxonomy = new AttributePlaceholder { Name = "Domain(Taxonomy)" };
-        public static IHaveNameAndId ContentTypeTaxonomy = new AttributePlaceholder { Name = "Content Type(Taxonomy)" };
-        public static IHaveNameAndId FileClassificationTaxonomy = new AttributePlaceholder { Name = "File Classification(Taxonomy)" };
-        public static IHaveNameAndId PublishFrequencyTaxonomy = new AttributePlaceholder { Name = "Publish Frequency(Taxonomy)" };
-        public static IHaveNameAndId AuthorizationCode = new AttributePlaceholder { Name = "Authorization Code" };
-        public static IHaveNameAndId Authors = new AttributePlaceholder { Name = "Authors" };
-        public static IHaveNameAndId DomainUrl = new AttributePlaceholder { Name = "Domain Url" };
-        public static IHaveNameAndId HardCopyPublicationDate = new AttributePlaceholder { Name = "Hardcopy Publication Date" };
-        public static IHaveNameAndId BrandDisplayName = new AttributePlaceholder { Name = "Brand" };
-        public static IHaveNameAndId DomainsDisplayName = new AttributePlaceholder { Name = "Domains" };
+        public static IAttribute APP_STUDIO_ISSUE_URN = new AttributePlaceholder {Id = 180L};
+        public static IAttribute ARTICLE_COMP_REFRENCE_ASSET_ID = new AttributePlaceholder {Id = 0x19eL};
+        public static IAttribute ARTICLE_COMP_REFRENCE_ASSET_MAJ_VERSION = new AttributePlaceholder {Id = 0x19fL};
+        public static IAttribute ARTICLE_COMP_REFRENCE_ASSET_MIN_VERSION = new AttributePlaceholder {Id = 0x1a0L};
+        public static IAttribute ARTICLE_COMPONENT_ID = new AttributePlaceholder {Id = 0x131L};
+        public static IAttribute ARTICLE_ID = new AttributePlaceholder {Id = 0x19dL};
+        public static IAttribute ASSET_CHECKSUM = new AttributePlaceholder {Id = 0x197L};
+        public static IAttribute ASSIGNED_LENGTH = new AttributePlaceholder {Id = 0x166L};
+        public static IAttribute ATTACHED_COMPONENT_ID = new AttributePlaceholder {Id = 0x19cL};
+        public static IAttribute ATTACHED_LAYOUT_ID = new AttributePlaceholder {Id = 0x191L};
+        public static IAttribute ATTACHMENT_CHECKSUM = new AttributePlaceholder {Id = 0x198L};
+        public static IAttribute AUXILIARY_DATA = new AttributePlaceholder {Id = 0x199L};
+        public static IAttribute BOX_HEIGHT = new AttributePlaceholder {Id = 0x196L};
+        public static IAttribute BOX_ID = new AttributePlaceholder {Id = 0x192L};
+        public static IAttribute BOX_WIDTH = new AttributePlaceholder {Id = 0x195L};
+        public static IAttribute CHARACTER_COUNT = new AttributePlaceholder {Id = 0x164L};
+        public static IAttribute CHECK_OUT_DATE_TIME = new AttributePlaceholder {Id = 0x11L};
+        public static IAttribute CHECKED_OUT_APPLICATION = new AttributePlaceholder {Id = 0x22L};
+        public static IAttribute CHECKED_OUT_BY = new AttributePlaceholder {Id = 14L};
+        public static IAttribute CHECKED_OUT_DURATION = new AttributePlaceholder {Id = 0x23L};
+        public static IAttribute CHECKED_OUT_FILE_PATH = new AttributePlaceholder {Id = 0x10L};
+        public static IAttribute CHECKED_OUT_MACHINE_NAME = new AttributePlaceholder {Id = 15L};
+        public static IAttribute COLLECTION = new AttributePlaceholder {Id = 0x37L};
+        public static IAttribute COLLECTION_PATH = new AttributePlaceholder {Id = 0x39L};
+        public static IAttribute COLLECTION_TEMPLATE = new AttributePlaceholder {Id = 0x3aL};
+        public static IAttribute COLOR_DEPTH = new AttributePlaceholder {Id = 0xccL};
+        public static IAttribute COLOR_SPACE = new AttributePlaceholder {Id = 0xcdL};
+        public static IAttribute COLUMN_WIDTH = new AttributePlaceholder {Id = 0x163L};
+        public static IAttribute COMPONENT_NAME = new AttributePlaceholder {Id = 0x12fL};
+        public static IAttribute COMPONENT_POSITION = new AttributePlaceholder {Id = 0x12eL};
+        public static IAttribute CONTENT_CREATOR = new AttributePlaceholder {Id = 0x20L};
+        public static IAttribute CONTENT_TYPE = new AttributePlaceholder {Id = 0x3eL};
+        public static IAttribute CONTENT_TYPE_HIERARCHY = new AttributePlaceholder {Id = 0x3fL};
+        public static IAttribute CREATED = new AttributePlaceholder {Id = 3L};
+        public static IAttribute CREATOR = new AttributePlaceholder {Id = 5L};
+        public static IAttribute CURRENT_BILLABLE_HOURS = new AttributePlaceholder {Id = 0x24L};
+        public static IAttribute CURRENT_LENGTH = new AttributePlaceholder {Id = 0x165L};
+        public static IAttribute DEPENDENT_ON_COLLECTION_RESOURCES = new AttributePlaceholder {Id = 0x1a2L};
+        public static IAttribute DEVICE_NAME = new AttributePlaceholder {Id = 0x9eL};
+        public static IAttribute DITA_AUDIENCE = new AttributePlaceholder {Id = 0x1c4L};
+        public static IAttribute DITA_AUTHOR = new AttributePlaceholder {Id = 0x1c5L};
+        public static IAttribute DITA_BRAND = new AttributePlaceholder {Id = 0x1c6L};
+        public static IAttribute DITA_CATEGORY = new AttributePlaceholder {Id = 0x1c7L};
+        public static IAttribute DITA_ID = new AttributePlaceholder {Id = 0x1c8L};
+        public static IAttribute DITA_IMPORTANCE = new AttributePlaceholder {Id = 0x1d2L};
+        public static IAttribute DITA_KEYWORDS = new AttributePlaceholder {Id = 0x1c9L};
+        public static IAttribute DITA_LANGUAGE = new AttributePlaceholder {Id = 0x1d0L};
+        public static IAttribute DITA_NAVIGATION_TITLE = new AttributePlaceholder {Id = 0x1caL};
+        public static IAttribute DITA_OTHER_PROPERTIES = new AttributePlaceholder {Id = 0x1d1L};
+        public static IAttribute DITA_PLATFORM = new AttributePlaceholder {Id = 0x1cbL};
+        public static IAttribute DITA_PRODUCT_NAME = new AttributePlaceholder {Id = 460L};
+        public static IAttribute DITA_PUBLISHING_CONTENT = new AttributePlaceholder {Id = 0x1cfL};
+        public static IAttribute DITA_SEARCH_TITLE = new AttributePlaceholder {Id = 0x1cdL};
+        public static IAttribute DITA_TITLE = new AttributePlaceholder {Id = 0x1ceL};
+        public static IAttribute DUE_DATE = new AttributePlaceholder {Id = 0x29L};
+        public static IAttribute DUE_TIME = new AttributePlaceholder {Id = 0x2aL};
+        public static IAttribute FILE_EXTENSION = new AttributePlaceholder {Id = 11L};
+        public static IAttribute FILE_PATH = new AttributePlaceholder {Id = 8L};
+        public static IAttribute FILE_SIZE = new AttributePlaceholder {Id = 12L};
+        public static IAttribute FIRST_PAGE = new AttributePlaceholder {Id = 0x33L};
+        public static IAttribute GLOBAL_ID = new AttributePlaceholder {Id = 0x42L};
+        public static IAttribute HAS_CHILDREN = new AttributePlaceholder {Id = 0x41L};
+        public static IAttribute ID = new AttributePlaceholder {Id = 1L};
+        public static IAttribute INDESIGN_OBJECT_UID = new AttributePlaceholder {Id = 0x1a3L};
+        public static IAttribute INDEXING_STATUS = new AttributePlaceholder {Id = 0x1dL};
+        public static IAttribute IPTC_BY_LINE = new AttributePlaceholder {Id = 0xd5L};
+        public static IAttribute IPTC_BY_LINE_TITLE = new AttributePlaceholder {Id = 0xd6L};
+        public static IAttribute IPTC_CAPTION = new AttributePlaceholder {Id = 0xdfL};
+        public static IAttribute IPTC_CATEGORY = new AttributePlaceholder {Id = 0xd0L};
+        public static IAttribute IPTC_CITY = new AttributePlaceholder {Id = 0xd7L};
+        public static IAttribute IPTC_COPYRIGHT_NOTICE = new AttributePlaceholder {Id = 0xdeL};
+        public static IAttribute IPTC_COUNTRY = new AttributePlaceholder {Id = 0xd9L};
+        public static IAttribute IPTC_CREDIT = new AttributePlaceholder {Id = 220L};
+        public static IAttribute IPTC_DATE_CREATED = new AttributePlaceholder {Id = 0xd4L};
+        public static IAttribute IPTC_HEADLINE = new AttributePlaceholder {Id = 0xdbL};
+        public static IAttribute IPTC_KEYWORDS = new AttributePlaceholder {Id = 210L};
+        public static IAttribute IPTC_OBJECT_NAME = new AttributePlaceholder {Id = 0xceL};
+        public static IAttribute IPTC_ORIGINAL_TRANSMISSION_REFERENCE = new AttributePlaceholder {Id = 0xdaL};
+        public static IAttribute IPTC_PROVINCE = new AttributePlaceholder {Id = 0xd8L};
+        public static IAttribute IPTC_SOURCE = new AttributePlaceholder {Id = 0xddL};
+        public static IAttribute IPTC_SPECIAL_INSTRUCTIONS = new AttributePlaceholder {Id = 0xd3L};
+        public static IAttribute IPTC_SUPPLEMENTAL_CATEGORIES = new AttributePlaceholder {Id = 0xd1L};
+        public static IAttribute IPTC_URGENCY = new AttributePlaceholder {Id = 0xcfL};
+        public static IAttribute IPTC_WRITER = new AttributePlaceholder {Id = 0xe0L};
+        public static IAttribute IS_CHECKED_OUT = new AttributePlaceholder {Id = 13L};
+        public static IAttribute IS_COLLECTED = new AttributePlaceholder {Id = 0x12L};
+        public static IAttribute IS_COLLECTION_TEMPLATE = new AttributePlaceholder {Id = 0x3bL};
+        public static IAttribute IS_PLACEHOLDER = new AttributePlaceholder {Id = 30L};
+        public static IAttribute ISSUE = new AttributePlaceholder {Id = 0x1aL};
+        public static IAttribute ITEM_NAME = new AttributePlaceholder {Id = 410L};
+        public static IAttribute ITEM_TYPE = new AttributePlaceholder {Id = 0x19bL};
+        public static IAttribute JOB_JACKET = new AttributePlaceholder {Id = 0x2cL};
+        public static IAttribute JOB_TICKET_TEMPLATE_NAME = new AttributePlaceholder {Id = 0x2dL};
+        public static IAttribute LAST_CONTENT_UPDATE = new AttributePlaceholder {Id = 0x13L};
+        public static IAttribute LAST_CONTENT_UPDATED_BY = new AttributePlaceholder {Id = 20L};
+        public static IAttribute LAST_GEOMETRY_UPDATE = new AttributePlaceholder {Id = 0x15L};
+        public static IAttribute LAST_JOB_JACKET_MODIFIED = new AttributePlaceholder {Id = 10L};
+        public static IAttribute LAST_MODIFIED = new AttributePlaceholder {Id = 4L};
+        public static IAttribute LAST_MODIFIER = new AttributePlaceholder {Id = 6L};
+        public static IAttribute LAST_PAGE = new AttributePlaceholder {Id = 0x34L};
+        public static IAttribute LAYOUT_GEOMETRY_DIFFERS = new AttributePlaceholder {Id = 0x97L};
+        public static IAttribute LAYOUT_NAME = new AttributePlaceholder {Id = 0x9dL};
+        public static IAttribute LINE_COUNT = new AttributePlaceholder {Id = 0x162L};
+        public static IAttribute MAC_CREATOR_TYPE = new AttributePlaceholder {Id = 0x2fL};
+        public static IAttribute MAC_OS_TYPE = new AttributePlaceholder {Id = 0x2eL};
+        public static IAttribute MAJOR_VERSION = new AttributePlaceholder {Id = 7L};
+        public static IAttribute MIME_TYPE = new AttributePlaceholder {Id = 0x30L};
+        public static IAttribute MINOR_VERSION = new AttributePlaceholder {Id = 0x3dL};
+        public static IAttribute NAME = new AttributePlaceholder {Id = 2L};
+        public static IAttribute NUMBER_OF_LAYOUTS = new AttributePlaceholder {Id = 60L};
+        public static IAttribute NUMBER_OF_PAGES = new AttributePlaceholder {Id = 0x2bL};
+        public static IAttribute ORIENTATION = new AttributePlaceholder {Id = 0x99L};
+        public static IAttribute ORIGINAL_FILENAME = new AttributePlaceholder {Id = 0x21L};
+        public static IAttribute PAGE_HEIGHT = new AttributePlaceholder {Id = 0x9cL};
+        public static IAttribute PAGE_INDEX = new AttributePlaceholder {Id = 0x194L};
+        public static IAttribute PAGE_NAME = new AttributePlaceholder {Id = 0x193L};
+        public static IAttribute PAGE_WIDTH = new AttributePlaceholder {Id = 0x9bL};
+        public static IAttribute PIXEL_HEIGHT = new AttributePlaceholder {Id = 0xcaL};
+        public static IAttribute PIXEL_WIDTH = new AttributePlaceholder {Id = 0xc9L};
+        public static IAttribute RELATION_STATUS = new AttributePlaceholder {Id = 0x40L};
+        public static IAttribute REPOSITORY = new AttributePlaceholder {Id = 0x1cL};
+        public static IAttribute REPOSITORY_TYPE = new AttributePlaceholder {Id = 0x1bL};
+        public static IAttribute RESOLUTION = new AttributePlaceholder {Id = 0xcbL};
+        public static IAttribute REVISION_COMMENTS = new AttributePlaceholder {Id = 0x1fL};
+        public static IAttribute ROUTED_TO = new AttributePlaceholder {Id = 0x19L};
+        public static IAttribute STATUS = new AttributePlaceholder {Id = 0x18L};
+        public static IAttribute STORY_DIRECTION = new AttributePlaceholder {Id = 0x9aL};
+        public static IAttribute TEXT_INDEXING_STATUS = new AttributePlaceholder {Id = 0x35L};
+        public static IAttribute TEXT_PREVIEW = new AttributePlaceholder {Id = 0x160L};
+        public static IAttribute TOTAL_BILLABLE_HOURS = new AttributePlaceholder {Id = 0x25L};
+        public static IAttribute WORD_COUNT = new AttributePlaceholder {Id = 0x161L};
+        public static IAttribute WORKFLOW = new AttributePlaceholder {Id = 0x36L};
+        public static IAttribute XPATH = new AttributePlaceholder {Id = 0x1a1L};
+        public static IAttribute SourceDocumentId = new AttributePlaceholder {Name = "Source Document Id"};
+        public static IAttribute GeographyId = new AttributePlaceholder {Name = "Geography Id"};
+        public static IAttribute Geography = new AttributePlaceholder {Name = "Geography"};
+        public static IAttribute PublishedDate = new AttributePlaceholder {Name = "Published Date"};
+        public static IAttribute UserSetPublishedDate = new AttributePlaceholder {Name = "User-Set Published Date"};
+        public static IAttribute UserProposedPublishedDate = new AttributePlaceholder {Name = "User-Proposed Published Date"};
+        public static IAttribute DontUpdatePublishedDate = new AttributePlaceholder {Name = "Don't Update Published Date"};
+        public static IAttribute HiddenUpdate = new AttributePlaceholder {Name = "Hidden Update"};
+        public static IAttribute InRangeName = new AttributePlaceholder {Name = "InRangeName"};
+        public static IAttribute InRangeValue = new AttributePlaceholder {Name = "InRangeValue"};
+        public static IAttribute OutSheet = new AttributePlaceholder {Name = "OutSheet"};
+        public static IAttribute OutRange = new AttributePlaceholder {Name = "OutRange"};
+        public static IAttribute OutChartName = new AttributePlaceholder {Name = "OutChartName"};
+        public static IAttribute OutImageName = new AttributePlaceholder {Name = "OutImageName"};
+        public static IAttribute PdfBusinessLine = new AttributePlaceholder {Name = "PDF Business Line"};
+        public static IAttribute PdfReportType = new AttributePlaceholder {Name = "PDF Report Type"};
+        public static IAttribute PdfReportTitle = new AttributePlaceholder {Name = "PDF Report Title"};
+        public static IAttribute PdfSubheading = new AttributePlaceholder {Name = "PDF Subheading"};
+        public static IAttribute PdfDate = new AttributePlaceholder {Name = "PDF Date"};
+        public static IAttribute PdfAddressBar = new AttributePlaceholder {Name = "PDF Address Bar"};
+        public static IAttribute Location = new AttributePlaceholder {Name = "Location"};
+        public static IAttribute UploaderVersion = new AttributePlaceholder {Name = "Uploader Version"};
+        public static IAttribute AnalystWhoSentForReviewId = new AttributePlaceholder {Name = "Analyst who sent for review id"};
+        public static IAttribute EditorWhoSentBackToAnalystId = new AttributePlaceholder {Name = "Editor who sent back to Analyst id"};
+        public static IAttribute PublishFailReason = new AttributePlaceholder {Name = "Publishing fail reason"};
+        public static IAttribute DataRefreshStart = new AttributePlaceholder {Name = "Data refresh started"};
+        public static IAttribute DataRefreshEnd = new AttributePlaceholder {Name = "Data refresh ended"};
+        public static IAttribute DataRefreshExcelPull = new AttributePlaceholder {Name = "Data refresh excels pulled"};
+        public static IAttribute DataRefreshFailReason = new AttributePlaceholder {Name = "Data refresh fail reason"};
+        public static IAttribute ChemicalProductAndMarket = new AttributePlaceholder {Name = "Chemical Product and Market(Taxonomy)"};
+        public static IAttribute BrandTaxonomy = new AttributePlaceholder {Name = "Brand(Taxonomy)"};
+        public static IAttribute DomainsTaxonomy = new AttributePlaceholder {Name = "Domain(Taxonomy)"};
+        public static IAttribute ContentTypeTaxonomy = new AttributePlaceholder {Name = "Content Type(Taxonomy)"};
+        public static IAttribute FileClassificationTaxonomy = new AttributePlaceholder {Name = "File Classification(Taxonomy)"};
+        public static IAttribute PublishFrequencyTaxonomy = new AttributePlaceholder {Name = "Publish Frequency(Taxonomy)"};
+        public static IAttribute AuthorizationCode = new AttributePlaceholder {Name = "Authorization Code"};
+        public static IAttribute Authors = new AttributePlaceholder {Name = "Authors"};
+        public static IAttribute DomainUrl = new AttributePlaceholder {Name = "Domain Url"};
+        public static IAttribute HardCopyPublicationDate = new AttributePlaceholder {Name = "Hardcopy Publication Date"};
+        public static IAttribute BrandDisplayName = new AttributePlaceholder {Name = "Brand"};
+        public static IAttribute DomainsDisplayName = new AttributePlaceholder {Name = "Domains"};
     }
 }

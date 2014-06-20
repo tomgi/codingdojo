@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using com.quark.qpp.core.attribute.service.constants;
 using com.quark.qpp.core.relation.service.constants;
 using IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes;
 
@@ -10,20 +9,19 @@ namespace QppFacade
     {
         public TAssetModel AssetModel { get; set; }
 
-        public long RelationType {
-            get
-            {
-                return DefaultRelationTypes.XML_COMP_REFERENCE;
-            }
+        public long RelationType
+        {
+            get { return DefaultRelationTypes.XML_COMP_REFERENCE; }
         }
 
-        private readonly ISet<IHaveNameAndId> _attributes = new HashSet<IHaveNameAndId>();
-        public ISet<IHaveNameAndId> Attributes
+        private readonly ISet<IAttribute> _attributes = new HashSet<IAttribute>();
+
+        public ISet<IAttribute> Attributes
         {
             get { return _attributes; }
         }
 
-        public IHaveNameAndId this[IHaveNameAndId index]
+        public IAttribute this[IAttribute index]
         {
             get
             {
@@ -40,8 +38,9 @@ namespace QppFacade
         public XmlReference(string xPath, TAssetModel assetModel)
         {
             AssetModel = assetModel;
-            this.With(PhoenixAttributes.XPATH,xPath);
+            this.With(PhoenixAttributes.XPATH, xPath);
         }
+
         public XmlReference(TAssetModel assetModel)
         {
             AssetModel = assetModel;

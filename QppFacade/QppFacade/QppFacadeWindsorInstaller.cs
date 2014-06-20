@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using Castle.DynamicProxy;
+using System.Security.Permissions;
+using System.Web.Services.Protocols;
+using Castle.DynamicProxy.Generators;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
@@ -29,20 +31,20 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade
         {
             {typeof (SessionService), ServiceNames.SESSION_SERVICE},
             {typeof (QueryService), ServiceNames.QUERY_SERVICE},
-            {typeof(PublishingService), ServiceNames.PUBLISHING_SERVICE},
-            {typeof(AssetService), ServiceNames.ASSET_SERVICE},
-            {typeof(AttributeService), ServiceNames.ATTRIBUTE_SERVICE},
-            {typeof(AttributeDomainService), ServiceNames.ATTRIBUTE_DOMAIN_SERVICE},
-            {typeof(ContentStructureService), ServiceNames.CONTENT_STRUCTURE_SERVICE},
-            {typeof(TrusteeService), ServiceNames.TRUSTEE_SERVICE},
-            {typeof(CollectionService), ServiceNames.COLLECTION_SERVICE},
-            {typeof(RelationService), ServiceNames.RELATION_SERVICE},
-            {typeof(WorkflowService), ServiceNames.WORKFLOW_SERVICE}
+            {typeof (PublishingService), ServiceNames.PUBLISHING_SERVICE},
+            {typeof (AssetService), ServiceNames.ASSET_SERVICE},
+            {typeof (AttributeService), ServiceNames.ATTRIBUTE_SERVICE},
+            {typeof (AttributeDomainService), ServiceNames.ATTRIBUTE_DOMAIN_SERVICE},
+            {typeof (ContentStructureService), ServiceNames.CONTENT_STRUCTURE_SERVICE},
+            {typeof (TrusteeService), ServiceNames.TRUSTEE_SERVICE},
+            {typeof (CollectionService), ServiceNames.COLLECTION_SERVICE},
+            {typeof (RelationService), ServiceNames.RELATION_SERVICE},
+            {typeof (WorkflowService), ServiceNames.WORKFLOW_SERVICE}
         };
 
         public static TService GetService<TService>(this ServiceFactory serviceFactory) where TService : QppSOAPClientProtocol
         {
-            var type = typeof(TService);
+            var type = typeof (TService);
             string serviceName;
             if (ServicesTypesToNamesMap.TryGetValue(type, out serviceName) == false)
             {
@@ -59,7 +61,6 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade
         private string _qppHost;
 
 
-
         public QppFacadeWindsorInstaller(string qppHost)
         {
             _qppHost = qppHost;
@@ -67,18 +68,17 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade
 
         public QppFacadeWindsorInstaller()
         {
-            _qppHost = "gda-phx-09.globalintech.pl";
+            _qppHost = "localhost";
         }
 
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            Castle.DynamicProxy.Generators.AttributesToAvoidReplicating.Add(typeof (System.Security.Permissions.PermissionSetAttribute));
+            AttributesToAvoidReplicating.Add(typeof (PermissionSetAttribute));
             var serviceFactory = new ServiceFactory(_qppHost, 61400, false, new CookieContainer());
 
             Func<int, IEnumerable<DomainValue>> resolveDomain = domainId => container.Resolve<AttributeDomainService>().getDomainValues(domainId);
             Func<string, long> resolveCollection = collectionId => container.Resolve<Qpp>().GetCollectionIdByPath(collectionId);
             Func<IEnumerable<Attribute>> getAttributes = () => container.Resolve<AttributeService>().getAllAttributes();
-
 
 
             container.Register(
@@ -102,7 +102,7 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade
                 );
             container.Resolve<Qpp>().LogIn();
             PhoenixAttributes.Init(getAttributes, resolveDomain, resolveCollection);
+            PhoenixValuesInitializer.Initialize(s => (SoapHttpClientProtocol) serviceFactory.GetService(s));
         }
-
     }
 }

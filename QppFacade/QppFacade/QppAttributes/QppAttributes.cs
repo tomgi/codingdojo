@@ -10,12 +10,15 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
     {
         private IDictionary<string, BaseAttribute> _attributesByName;
         private IDictionary<long, BaseAttribute> _attributesById;
-        private readonly Func<IEnumerable<Attribute>> _getQppAttributes;
+        private readonly System.Func<IEnumerable<Attribute>> _getQppAttributes;
         private readonly Func<int, IEnumerable<DomainValue>> _getDomainValues;
-        private readonly Func<string, long> _getCollectionValues; 
+        private readonly Func<string, long> _getCollectionValues;
 
 
-        public QppAttributes(Func<IEnumerable<Attribute>> getQppAttributes, Func<int, IEnumerable<DomainValue>> getDomainValues, Func<string, long> getCollectionValues)
+        public QppAttributes(
+            Func<IEnumerable<Attribute>> getQppAttributes,
+            Func<int, IEnumerable<DomainValue>> getDomainValues,
+            Func<string, long> getCollectionValues)
         {
             _getQppAttributes = getQppAttributes;
             _getDomainValues = getDomainValues;
@@ -46,16 +49,16 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
         {
             _attributesByName = new Dictionary<string, BaseAttribute>();
             _attributesById = new Dictionary<long, BaseAttribute>();
-            foreach (Attribute qppAttribute in _getQppAttributes())
+            foreach (var qppAttribute in _getQppAttributes())
             {
                 BaseAttribute attribute = null;
                 if (qppAttribute.valueType == AttributeValueTypes.TEXT)
                 {
-                        attribute = new TextAttr(qppAttribute);
+                    attribute = new TextAttr(qppAttribute);
                 }
                 else if (qppAttribute.valueType == AttributeValueTypes.NUMERIC)
                 {
-                        attribute = new NumAttr(qppAttribute);
+                    attribute = new NumAttr(qppAttribute);
                 }
                 else if (qppAttribute.valueType == AttributeValueTypes.BOOLEAN)
                 {
@@ -67,7 +70,7 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
                 }
                 else if (qppAttribute.valueType == AttributeValueTypes.DOMAIN)
                 {
-                    if(qppAttribute.id == DefaultAttributes.COLLECTION)
+                    if (qppAttribute.id == DefaultAttributes.COLLECTION)
                         attribute = new CollectionAttr(qppAttribute, _getCollectionValues);
                     else
                         attribute = new DomainAttr(qppAttribute, _getDomainValues);
@@ -98,11 +101,11 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
         public BaseAttribute Find(object attributeIdentifier)
         {
             if (attributeIdentifier is long)
-                return FindById((long)attributeIdentifier);
-            
-            if (false == string.IsNullOrEmpty((string)attributeIdentifier))
+                return FindById((long) attributeIdentifier);
+
+            if (false == string.IsNullOrEmpty((string) attributeIdentifier))
                 return FindByName((string) attributeIdentifier);
-            
+
             return null;
         }
     }

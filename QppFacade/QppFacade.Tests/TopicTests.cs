@@ -3,14 +3,12 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using Castle.Windsor;
-using com.quark.qpp.core.attribute.service.constants;
-using com.quark.qpp.core.content.service.constants;
 using IHS.Phoenix.QPP.Facade.SoapFacade;
 using Machine.Specifications;
 
 namespace QppFacade.Tests
 {
-    [Subject(typeof(Topic), "Category")]
+    [Subject(typeof (Topic), "Category")]
     public class when_doing_different_things_with_topic
     {
         private Establish context = () =>
@@ -25,27 +23,28 @@ namespace QppFacade.Tests
         {
             _assetId = _sut.UploadTopic(
                 new Topic(XDocument.Parse(File.ReadAllText("Assets\\topic.xml")))
-                    .With(PhoenixAttributes.CONTENT_TYPE,"IHS Document")
-                    .With(PhoenixAttributes.NAME,"topic.xml")
-                    .With(PhoenixAttributes.COLLECTION,"Home/Test")
-                    .With(PhoenixAttributes.ORIGINAL_FILENAME,"topic.xml")
-                    .With(PhoenixAttributes.DITA_TITLE,"topic")
-                    .WithPicture(new Picture("Assets\\just_image.jpg")
-                                    .With(PhoenixAttributes.COLLECTION,"Home/Test"))
+                    .With(PhoenixAttributes.CONTENT_TYPE, "IHS Document")
+                    .With(PhoenixAttributes.NAME, "topic.xml")
+                    .With(PhoenixAttributes.COLLECTION, "Home/Test")
+                    .With(PhoenixAttributes.ORIGINAL_FILENAME, "topic.xml")
+                    .With(PhoenixAttributes.DITA_TITLE, "topic")
+                    .WithPicture(
+                        new Picture("Assets\\just_image.jpg")
+                            .With(PhoenixAttributes.COLLECTION, "Home/Test"))
                     .WithTableSpreadsheet(
                         new FileAsset("Assets\\tableSpreadsheet.xlsx")
-                            .With(PhoenixAttributes.CONTENT_TYPE,"Object Source Spreadsheet")
-                            .With(PhoenixAttributes.WORKFLOW,"Object Source Workflow")
-                            .With(PhoenixAttributes.STATUS,"Ready For Data Admin Update")
-                            .With(PhoenixAttributes.COLLECTION,"Home/Test"))
+                            .With(PhoenixAttributes.CONTENT_TYPE, "Object Source Spreadsheet")
+                            .With(PhoenixAttributes.WORKFLOW, "Object Source Workflow")
+                            .With(PhoenixAttributes.STATUS, "Ready For Data Admin Update")
+                            .With(PhoenixAttributes.COLLECTION, "Home/Test"))
                     .WithChart(
-                        chart:          new Picture("Assets\\chart.jpg").With(PhoenixAttributes.COLLECTION,"Home/Test"),                            
-                        fromSpreadsheet:new FileAsset("Assets\\excelChartSpreadsheet.xlsx")
-                            .With(PhoenixAttributes.CONTENT_TYPE,"Object Source Spreadsheet")
-                            .With(PhoenixAttributes.WORKFLOW,"Object Source Workflow")
-                            .With(PhoenixAttributes.STATUS,"Ready For Data Admin Update")
-                            .With(PhoenixAttributes.COLLECTION,"Home/Test"))
-                    );
+                        chart: new Picture("Assets\\chart.jpg").With(PhoenixAttributes.COLLECTION, "Home/Test"),
+                        fromSpreadsheet: new FileAsset("Assets\\excelChartSpreadsheet.xlsx")
+                            .With(PhoenixAttributes.CONTENT_TYPE, "Object Source Spreadsheet")
+                            .With(PhoenixAttributes.WORKFLOW, "Object Source Workflow")
+                            .With(PhoenixAttributes.STATUS, "Ready For Data Admin Update")
+                            .With(PhoenixAttributes.COLLECTION, "Home/Test"))
+                );
             _topic = _sut.GetTopicWithReferencedItems(_assetId);
         };
 
@@ -68,7 +67,5 @@ namespace QppFacade.Tests
         {
             return new MemoryStream(Encoding.UTF8.GetBytes(value ?? ""));
         }
-
     }
-
 }

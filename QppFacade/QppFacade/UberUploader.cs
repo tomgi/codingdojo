@@ -4,11 +4,10 @@
     {
         public void UploadPicture()
         {
-            
         }
+
         public void UploadChemicalReportSection()
         {
-
         }
     }
 }

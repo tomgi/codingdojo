@@ -7,20 +7,20 @@ namespace QppFacade
     public class TableSourceReference : IReference<FileAsset>, IAttributeBag
     {
         public FileAsset AssetModel { get; private set; }
+
         public long RelationType
         {
-            get
-            {
-                return 1000;
-            }
+            get { return 1000; }
         }
-        private readonly ISet<IHaveNameAndId> _attributes = new HashSet<IHaveNameAndId>();
-        public ISet<IHaveNameAndId> Attributes
+
+        private readonly ISet<IAttribute> _attributes = new HashSet<IAttribute>();
+
+        public ISet<IAttribute> Attributes
         {
             get { return _attributes; }
         }
 
-        public IHaveNameAndId this[IHaveNameAndId index]
+        public IAttribute this[IAttribute index]
         {
             get
             {
