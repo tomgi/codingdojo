@@ -18,12 +18,12 @@ namespace QppFacade
         public Picture(string filePath)
             : base(filePath)
         {
-            this.With(PhoenixAttributes.CONTENT_TYPE.WithValue(DefaultContentTypes.PICTURE))
-            .With(PhoenixAttributes.NAME.WithValue(Path.GetFileName(filePath)))
-            .With(PhoenixAttributes.ORIGINAL_FILENAME.WithValue(Path.GetFileName(filePath)))
-            .With(PhoenixAttributes.FILE_EXTENSION.WithValue( Path.GetExtension(filePath)))
-            .With(PhoenixAttributes.WORKFLOW.WithValue( "Default Workflow"))
-            .With(PhoenixAttributes.STATUS.WithValue( "Default"));
+            this.With(PhoenixAttributes.CONTENT_TYPE,DefaultContentTypes.PICTURE)
+            .With(PhoenixAttributes.NAME,Path.GetFileName(filePath))
+            .With(PhoenixAttributes.ORIGINAL_FILENAME,Path.GetFileName(filePath))
+            .With(PhoenixAttributes.FILE_EXTENSION,Path.GetExtension(filePath))
+            .With(PhoenixAttributes.WORKFLOW,"Default Workflow")
+            .With(PhoenixAttributes.STATUS,"Default");
         }
 
         public Picture WithChartReference(ChartSourceReference chartReference)

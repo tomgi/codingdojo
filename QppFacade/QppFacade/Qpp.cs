@@ -41,23 +41,15 @@ namespace QppFacade
 
         public long Upload(FileAsset assetModel)
         {
-            var asset = new Asset
-            {
-                attributeValues = assetModel.Attributes.Select(item => item.ToAttributeValue()).ToArray()
-            };
-            return CheckInNewAsset(asset, assetModel.Content,null);
+            return CheckInNewAsset(assetModel.ToAsset(), assetModel.Content,null);
         }
         public long Upload(Picture assetModel)
         {
             if (assetModel.IsChart)
             {
-                var asset = new Asset
-                {
-                    attributeValues = assetModel.Attributes.Select(item => item.ToAttributeValue()).ToArray(),
-                };
                 var spreadsheetId = Upload(assetModel.Chart.AssetModel);
                 return CheckInNewAsset(
-                    asset,
+                    assetModel.ToAsset(),
                     assetModel.Content,
                     new[]
                     {
@@ -74,10 +66,7 @@ namespace QppFacade
 
         public long UploadTopic(Topic assetModel)
         {
-            var asset = new Asset
-            {
-                attributeValues = assetModel.Attributes.Select(item => item.ToAttributeValue()).ToArray(),
-            };
+            var asset = assetModel.ToAsset();
             var assetRelations = new List<AssetRelation>();
             foreach (var xmlReference in assetModel.Pictures)
             {
@@ -86,7 +75,7 @@ namespace QppFacade
                 {
                     childAssetId = pictureId,
                     relationTypeId = xmlReference.RelationType,
-                    relationAttributes = xmlReference.Attributes.Select(item => item.ToAttributeValue()).ToArray()
+                    relationAttributes = xmlReference.Attributes.ToAttributeValues()
                 });
             }
 
@@ -97,7 +86,7 @@ namespace QppFacade
                 {
                     childAssetId = pictureId,
                     relationTypeId = tableReference.RelationType,
-                    relationAttributes = tableReference.Attributes.Select(item => item.ToAttributeValue()).ToArray()
+                    relationAttributes = tableReference.Attributes.ToAttributeValues()
                 });
 
             }
@@ -255,7 +244,7 @@ namespace QppFacade
                 var attrInfo = PhoenixAttributes.ById[attributeValue.attributeId];
                 if (attrInfo == null)
                     continue;
-                model.With(attrInfo.FromAttributeValue(attributeValue));
+                model[attrInfo].InitFromAttributeValue(attributeValue);
             }
         }
 

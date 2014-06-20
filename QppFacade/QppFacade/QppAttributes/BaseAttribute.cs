@@ -9,11 +9,11 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
     {
         long Id { get; }
         string Name { get; }
-        object Value { get; }
-        IHaveNameAndId WithValue(object value);
-        IHaveNameAndId FromAttributeValue(AttributeValue value);
+        object Value { get; set; }
+        void InitFromAttributeValue(AttributeValue value);
         AttributeValue ToAttributeValue();
         bool CanBeUpdated();
+        IHaveNameAndId New();
     }
     public abstract class BaseAttribute : IHaveNameAndId
     {
@@ -51,7 +51,7 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
             return Equals((IHaveNameAndId)obj);
         }
 
-        public object Value { get; protected set; }
+        public object Value { get; set; }
 
         protected BaseAttribute(Attribute attribute)
         {
@@ -60,11 +60,10 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
 
         public abstract AttributeValue ToAttributeValue();
         
-        public static implicit operator AttributeValue(BaseAttribute attribute)
-        {
-            return attribute.ToAttributeValue();
-        }
-
+//        public static implicit operator AttributeValue(BaseAttribute attribute)
+//        {
+//            return attribute.ToAttributeValue();
+//        }
         protected AttributeValue ToAttributeValue<TValue>(Action<TValue> setValue)
             where TValue : Value
         {
@@ -85,7 +84,7 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
         {
             return Attribute.constraintsChangeable;
         }
-        public abstract IHaveNameAndId FromAttributeValue(AttributeValue value);
-        public abstract IHaveNameAndId WithValue(object value);
+        public abstract void InitFromAttributeValue(AttributeValue value);
+        public abstract IHaveNameAndId New();
     }
 }

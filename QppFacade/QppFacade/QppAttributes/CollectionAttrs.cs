@@ -31,17 +31,16 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
                 });
             return attribValue;
         }
-        public override IHaveNameAndId FromAttributeValue(AttributeValue value)
+        public override void InitFromAttributeValue(AttributeValue value)
         {
-            return value == null ? null : WithValue((value.attributeValue as DomainValue).name);
+            if (value != null)
+                Value = (value.attributeValue as DomainValue).name;
         }
 
-        public override IHaveNameAndId WithValue(object value)
+        public override IHaveNameAndId New()
         {
-            return new CollectionAttr(Attribute, _getCollectionValues)
-            {
-                Value = value
-            };
+            return new CollectionAttr(Attribute, _getCollectionValues);
+
         }
     }
 }

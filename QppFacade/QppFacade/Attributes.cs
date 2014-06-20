@@ -14,12 +14,7 @@ namespace QppFacade
         public string Name { get; set; }
         public object Value { get; set; }
 
-        public IHaveNameAndId WithValue(object value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IHaveNameAndId FromAttributeValue(AttributeValue value)
+        public void InitFromAttributeValue(AttributeValue value)
         {
             throw new NotImplementedException();
         }
@@ -30,6 +25,11 @@ namespace QppFacade
         }
 
         public bool CanBeUpdated()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IHaveNameAndId New()
         {
             throw new NotImplementedException();
         }

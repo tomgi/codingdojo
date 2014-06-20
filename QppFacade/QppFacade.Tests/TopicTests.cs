@@ -25,25 +25,26 @@ namespace QppFacade.Tests
         {
             _assetId = _sut.UploadTopic(
                 new Topic(XDocument.Parse(File.ReadAllText("Assets\\topic.xml")))
-                    .With(PhoenixAttributes.CONTENT_TYPE.WithValue("IHS Document"))
-                    .With(PhoenixAttributes.NAME.WithValue("topic.xml"))
-                    .With(PhoenixAttributes.COLLECTION.WithValue("Home/Test"))
-                    .With(PhoenixAttributes.ORIGINAL_FILENAME.WithValue("topic.xml"))
-                    .With(PhoenixAttributes.DITA_TITLE.WithValue("topic"))
-                    .WithPicture(new Picture("Assets\\just_image.jpg").With(PhoenixAttributes.COLLECTION.WithValue("Home/Test")))
+                    .With(PhoenixAttributes.CONTENT_TYPE,"IHS Document")
+                    .With(PhoenixAttributes.NAME,"topic.xml")
+                    .With(PhoenixAttributes.COLLECTION,"Home/Test")
+                    .With(PhoenixAttributes.ORIGINAL_FILENAME,"topic.xml")
+                    .With(PhoenixAttributes.DITA_TITLE,"topic")
+                    .WithPicture(new Picture("Assets\\just_image.jpg")
+                                    .With(PhoenixAttributes.COLLECTION,"Home/Test"))
                     .WithTableSpreadsheet(
                         new FileAsset("Assets\\tableSpreadsheet.xlsx")
-                            .With(PhoenixAttributes.CONTENT_TYPE.WithValue("Object Source Spreadsheet"))
-                            .With(PhoenixAttributes.WORKFLOW.WithValue("Object Source Workflow"))
-                            .With(PhoenixAttributes.STATUS.WithValue("Ready For Data Admin Update"))
-                            .With(PhoenixAttributes.COLLECTION.WithValue("Home/Test")))
+                            .With(PhoenixAttributes.CONTENT_TYPE,"Object Source Spreadsheet")
+                            .With(PhoenixAttributes.WORKFLOW,"Object Source Workflow")
+                            .With(PhoenixAttributes.STATUS,"Ready For Data Admin Update")
+                            .With(PhoenixAttributes.COLLECTION,"Home/Test"))
                     .WithChart(
-                        chart:          new Picture("Assets\\chart.jpg").With(PhoenixAttributes.COLLECTION.WithValue("Home/Test")),                            
+                        chart:          new Picture("Assets\\chart.jpg").With(PhoenixAttributes.COLLECTION,"Home/Test"),                            
                         fromSpreadsheet:new FileAsset("Assets\\excelChartSpreadsheet.xlsx")
-                            .With(PhoenixAttributes.CONTENT_TYPE.WithValue("Object Source Spreadsheet"))
-                            .With(PhoenixAttributes.WORKFLOW.WithValue("Object Source Workflow"))
-                            .With(PhoenixAttributes.STATUS.WithValue("Ready For Data Admin Update"))
-                            .With(PhoenixAttributes.COLLECTION.WithValue("Home/Test")))
+                            .With(PhoenixAttributes.CONTENT_TYPE,"Object Source Spreadsheet")
+                            .With(PhoenixAttributes.WORKFLOW,"Object Source Workflow")
+                            .With(PhoenixAttributes.STATUS,"Ready For Data Admin Update")
+                            .With(PhoenixAttributes.COLLECTION,"Home/Test"))
                     );
             _topic = _sut.GetTopicWithReferencedItems(_assetId);
         };

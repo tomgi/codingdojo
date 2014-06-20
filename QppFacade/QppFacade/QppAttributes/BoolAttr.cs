@@ -18,17 +18,15 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
             return ToAttributeValue<BooleanValue>(attributeValue => attributeValue.value = (bool)Value);
 
         }
-        public override IHaveNameAndId FromAttributeValue(AttributeValue value)
+        public override void InitFromAttributeValue(AttributeValue value)
         {
-            return value == null ? null : WithValue((value.attributeValue as BooleanValue).value);
+            if(value != null) Value=(value.attributeValue as BooleanValue).value;
         }
 
-        public override IHaveNameAndId WithValue(object value)
+        public override IHaveNameAndId New()
         {
-            return new BoolAttr(Attribute)
-            {
-                Value = value
-            };
+            return new BoolAttr(Attribute);
+
         }
     }
 }

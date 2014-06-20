@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes;
 
 namespace QppFacade
@@ -17,6 +18,20 @@ namespace QppFacade
         public ISet<IHaveNameAndId> Attributes
         {
             get { return _attributes; }
+        }
+
+        public IHaveNameAndId this[IHaveNameAndId index]
+        {
+            get
+            {
+                var attributeValue = Attributes.FirstOrDefault(attr => attr.Equals(index));
+                if (attributeValue == null)
+                {
+                    attributeValue = index.New();
+                    Attributes.Add(attributeValue);
+                }
+                return attributeValue;
+            }
         }
 
         public ChartSourceReference(FileAsset assetModel)

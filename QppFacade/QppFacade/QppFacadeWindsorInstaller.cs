@@ -67,7 +67,7 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade
 
         public QppFacadeWindsorInstaller()
         {
-            _qppHost = "localhost";
+            _qppHost = "gda-phx-09.globalintech.pl";
         }
 
         public void Install(IWindsorContainer container, IConfigurationStore store)
