@@ -9,12 +9,16 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
     {
         long Id { get; }
         string Name { get; }
-        object FromAttributeValue(AttributeValue value);
-        AttributeValue ToAttributeValue(object value);
+    }
+
+    public interface IAttribute<OurAttributeValueType> : IAttribute
+    {
+        OurAttributeValueType FromAttributeValue(AttributeValue value);
+        AttributeValue ToAttributeValue(OurAttributeValueType value);
         bool CanBeUpdated();
     }
 
-    public abstract class BaseAttribute : IAttribute
+    public abstract class BaseAttribute<OurAttributeValueType> : IAttribute<OurAttributeValueType>
     {
         public override int GetHashCode()
         {
@@ -33,7 +37,7 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
             get { return Attribute.id; }
         }
 
-        public bool Equals(IAttribute other)
+        public bool Equals(IAttribute<OurAttributeValueType> other)
         {
             return Id == other.Id || string.Equals(Name, other.Name);
         }
@@ -44,7 +48,7 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
                 return false;
             if (ReferenceEquals(this, obj))
                 return true;
-            return Equals((IAttribute) obj);
+            return Equals((IAttribute<OurAttributeValueType>) obj);
         }
         
         protected BaseAttribute(Attribute attribute)
@@ -52,8 +56,8 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
             Attribute = attribute;
         }
 
-        public abstract object FromAttributeValue(AttributeValue value);
-        public abstract AttributeValue ToAttributeValue(object value);
+        public abstract OurAttributeValueType FromAttributeValue(AttributeValue value);
+        public abstract AttributeValue ToAttributeValue(OurAttributeValueType value);
 
         protected AttributeValue ToAttributeValue<TValue>(Action<TValue> setValue)
             where TValue : Value

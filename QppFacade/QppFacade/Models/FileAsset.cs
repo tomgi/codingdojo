@@ -40,11 +40,11 @@ namespace QppFacade
             var attributeValues = new List<AttributeValue>();
             foreach (var attribute in _attributes)
             {
-                if (false == attribute.Key.CanBeUpdated())
-                    continue;
-                var attributeValue = attribute.Key.ToAttributeValue(attribute.Value);
-                if (attributeValue != null)
-                    attributeValues.Add(attributeValue);
+//                if (false == attribute.Key.CanBeUpdated())
+//                    continue;
+//                var attributeValue = attribute.Key.ToAttributeValue(attribute.Value);
+//                if (attributeValue != null)
+//                    attributeValues.Add(attributeValue);
             }
             return attributeValues.ToArray();
         }

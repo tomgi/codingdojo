@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using com.quark.qpp.core.asset.service.dto;
+using com.quark.qpp.core.attribute.service.constants;
 using com.quark.qpp.core.attribute.service.dto;
 using IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes;
 
@@ -8,7 +10,13 @@ namespace QppFacade
 {
     public abstract class AttributeBag
     {
+        private IDictionary<Type, Func<Type, AttributeValue>> _funcs;
         protected readonly IDictionary<IAttribute, object> _attributes = new Dictionary<IAttribute, object>();
+
+        public AttributeBag()
+        {
+            _funcs.Add(typeof(string), type => new AttributeValue{type = AttributeValueTypes.TEXT,});
+        }
 
         public object this[IAttribute index]
         {
@@ -22,9 +30,20 @@ namespace QppFacade
             }
         }
 
+        public T Get<T>(IAttribute<T> attribute)
+        {
+            return default(T);
+        }
+
+        public void Set<T>(IAttribute<T> attribute, T value)
+        {
+            _attributes[attribute] = value;
+        }
+
         public AttributeValue[] GimmeAttributeValues()
         {
-            return _attributes.Select(attr => attr.Key.ToAttributeValue(attr.Value)).ToArray();
+            return null;
+            //TODO _attributes.Select(attr => _funcs[attr.Value.GetType()].ToAttributeValue(attr.Value)).ToArray();
         }
     }
 
@@ -33,6 +52,12 @@ namespace QppFacade
         public static T With<T>(this T asset, IAttribute attributeId, object value) where T : AttributeBag
         {
             asset[attributeId] = value;
+            return asset;
+        }
+
+        public static T With<T,TValue>(this T asset, IAttribute<TValue> attributeId, TValue value) where T : AttributeBag
+        {
+            asset.Set(attributeId, value);
             return asset;
         }
 

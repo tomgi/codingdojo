@@ -236,7 +236,8 @@ namespace QppFacade
                 var attrInfo = PhoenixAttributes.ById[attributeValue.attributeId];
                 if (attrInfo == null)
                     continue;
-                model[attrInfo] = attrInfo.FromAttributeValue(attributeValue);
+                //attrInfo => IAttribute<string>, "FromAttributeValue"
+//                model[attrInfo] = attrInfo.FromAttributeValue(attributeValue);
             }
         }
 

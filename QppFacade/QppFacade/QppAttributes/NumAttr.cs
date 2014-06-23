@@ -5,19 +5,19 @@ using Attribute = com.quark.qpp.core.attribute.service.dto.Attribute;
 
 namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
 {
-    public class NumAttr : BaseAttribute
+    public class NumAttr : BaseAttribute<long>
     {
         public NumAttr(Attribute attribute)
             : base(attribute)
         {
         }
 
-        public override object FromAttributeValue(AttributeValue value)
+        public override long FromAttributeValue(AttributeValue value)
         {
             return (value.attributeValue as NumericValue).value;
         }
 
-        public override AttributeValue ToAttributeValue(object value)
+        public override AttributeValue ToAttributeValue(long value)
         {
             if (value != null && false == (value is long))
                 throw new ApplicationException("Attempt was made to initialize QPP Text Attribute with non string value");

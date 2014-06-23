@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using com.quark.qpp.common.dto;
 using com.quark.qpp.core.attribute.service.constants;
 using com.quark.qpp.core.attribute.service.dto;
@@ -8,7 +9,7 @@ using Attribute = com.quark.qpp.core.attribute.service.dto.Attribute;
 
 namespace QppFacade
 {
-    public class AttributePlaceholder : IAttribute
+    public class AttributePlaceholder : IAttribute<object>
     {
         public long Id { get; set; }
         public string Name { get; set; }
@@ -30,9 +31,9 @@ namespace QppFacade
 
     public static partial class PhoenixAttributes
     {
-        public static Dictionary<string, BaseAttribute> ByName { get; private set; }
+        public static Dictionary<string, IAttribute> ByName { get; private set; }
 
-        public static Dictionary<long, BaseAttribute> ById { get; private set; }
+        public static Dictionary<long, IAttribute> ById { get; private set; }
 
         private static bool Initialized = false;
 
@@ -44,12 +45,13 @@ namespace QppFacade
             if (Initialized)
                 return;
             Initialized = true;
-            ByName = new Dictionary<string, BaseAttribute>();
-            ById = new Dictionary<long, BaseAttribute>();
+            ByName = new Dictionary<string, IAttribute>();
+            ById = new Dictionary<long, IAttribute>();
 
+            var builder = new StringBuilder();
             foreach (var qppAttribute in getQppAttributes())
             {
-                BaseAttribute attribute = null;
+                IAttribute attribute = null;
                 if (qppAttribute.valueType == AttributeValueTypes.TEXT)
                 {
                     attribute = new TextAttr(qppAttribute);
@@ -71,7 +73,7 @@ namespace QppFacade
                     if (qppAttribute.id == DefaultAttributes.COLLECTION)
                         attribute = new CollectionAttr(qppAttribute, getCollectionValues);
                     else
-                        attribute = new DomainAttr(qppAttribute, getDomainValues);
+                        attribute = new DomainAttr(qppAttribute);
                 }
                 if (attribute != null)
                 {
@@ -83,7 +85,7 @@ namespace QppFacade
             foreach (var fieldInfo in typeof (PhoenixAttributes).GetFields())
             {
                 var attributePlaceholder = (AttributePlaceholder) fieldInfo.GetValue(null);
-                BaseAttribute attribute = null;
+                IAttribute attribute = null;
                 if (attributePlaceholder.Id != 0)
                 {
                     if (ById.ContainsKey(attributePlaceholder.Id))
@@ -96,7 +98,19 @@ namespace QppFacade
                 }
                 if (attribute != null)
                     fieldInfo.SetValue(null, attribute);
+                builder.AppendLine(string.Format("public static IAttribute<{0}> {1} = new AttributePlaceholder \{Id={2},Name={3}\}",GetAttributeType(attribute),fieldInfo.Name));
             }
+        }
+
+        private static string GetAttributeType(IAttribute attribute)
+        {
+            if (attribute.GetType() == typeof (TextAttr)) return "string";
+            if (attribute.GetType() == typeof (NumAttr)) return "long";
+            if (attribute.GetType() == typeof (BoolAttr)) return "bool";
+            if (attribute.GetType() == typeof (DomainAttr)) return "PhoenixValue";
+            if (attribute.GetType() == typeof (DateTimeAttr)) return "DateTime";
+            if (attribute.GetType() == typeof (CollectionAttr)) return "CollectionValue";
+            return string.Empty;
         }
     }
 

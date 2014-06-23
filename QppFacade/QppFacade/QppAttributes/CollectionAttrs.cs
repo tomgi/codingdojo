@@ -1,36 +1,35 @@
 ﻿using System;
 using com.quark.qpp.common.dto;
+using com.quark.qpp.core.attribute.service.constants;
 using com.quark.qpp.core.attribute.service.dto;
 using Attribute = com.quark.qpp.core.attribute.service.dto.Attribute;
 
 namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
 {
-    public class CollectionAttr : BaseAttribute
+    public class CollectionAttr : BaseAttribute<string>
     {
         private readonly Func<string, long> _getCollectionValues;
-        private readonly int _collectionId;
 
         public CollectionAttr(Attribute attribute, Func<string, long> getCollectionValues)
             : base(attribute)
         {
-            _collectionId = (Attribute.defaultValuePreference as DomainValuePreferences).domainId;
             _getCollectionValues = getCollectionValues;
         }
 
-        public override object FromAttributeValue(AttributeValue value)
+        public override string FromAttributeValue(AttributeValue value)
         {
             return (value.attributeValue as DomainValue).name;
         }
 
-        public override AttributeValue ToAttributeValue(object value)
+        public override AttributeValue ToAttributeValue(string value)
         {
-            var domainValue = _getCollectionValues(value.ToString());
+            var collectionId = _getCollectionValues(value);
             var attribValue = ToAttributeValue<DomainValue>(
                 attributeValue =>
                 {
-                    attributeValue.domainId = _collectionId;
-                    attributeValue.id = domainValue;
-                    attributeValue.name = (string) value;
+                    attributeValue.domainId = DefaultDomains.COLLECTIONS;
+                    attributeValue.id = collectionId;
+                    attributeValue.name = value;
                 });
             return attribValue;
         }
