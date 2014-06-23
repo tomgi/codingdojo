@@ -2,11 +2,12 @@
 using com.quark.qpp.common.dto;
 using com.quark.qpp.core.attribute.service.constants;
 using com.quark.qpp.core.attribute.service.dto;
+using QppFacade;
 using Attribute = com.quark.qpp.core.attribute.service.dto.Attribute;
 
 namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
 {
-    public class CollectionAttr : BaseAttribute<string>
+    public class CollectionAttr : BaseAttribute<CollectionValue>
     {
         private readonly Func<string, long> _getCollectionValues;
 
@@ -16,12 +17,12 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
             _getCollectionValues = getCollectionValues;
         }
 
-        public override string FromAttributeValue(AttributeValue value)
+        public override CollectionValue FromAttributeValue(AttributeValue value)
         {
-            return (value.attributeValue as DomainValue).name;
+            return new CollectionValue((value.attributeValue as DomainValue).name);
         }
 
-        public override AttributeValue ToAttributeValue(string value)
+        public override AttributeValue ToAttributeValue(CollectionValue value)
         {
             var collectionId = _getCollectionValues(value);
             var attribValue = ToAttributeValue<DomainValue>(
