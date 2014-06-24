@@ -1,4 +1,5 @@
 ﻿using com.quark.qpp.common.dto;
+using com.quark.qpp.core.attribute.service.constants;
 using com.quark.qpp.core.attribute.service.dto;
 
 namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
@@ -28,6 +29,11 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
                     attributeValue.name = value;
                 });
             return attribValue;
+        }
+
+        public override int Type
+        {
+            get { return AttributeValueTypes.DOMAIN; }
         }
     }
 }

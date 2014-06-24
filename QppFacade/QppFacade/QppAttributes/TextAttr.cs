@@ -1,5 +1,6 @@
 using System;
 using com.quark.qpp.common.dto;
+using com.quark.qpp.core.attribute.service.constants;
 using com.quark.qpp.core.attribute.service.dto;
 using Attribute = com.quark.qpp.core.attribute.service.dto.Attribute;
 
@@ -21,5 +22,9 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
             return ToAttributeValue<TextValue>(attributeValue => attributeValue.value = (string) value);
         }
 
+        public override int Type
+        {
+            get { return AttributeValueTypes.TEXT; }
+        }
     }
 }

@@ -16,6 +16,7 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
         OurAttributeValueType FromAttributeValue(AttributeValue value);
         AttributeValue ToAttributeValue(OurAttributeValueType value);
         bool CanBeUpdated();
+        int Type { get; }
     }
 
     public abstract class BaseAttribute<OurAttributeValueType> : IAttribute<OurAttributeValueType>
@@ -37,6 +38,8 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
             get { return Attribute.id; }
         }
 
+        public abstract int Type { get;}
+
         public bool Equals(IAttribute<OurAttributeValueType> other)
         {
             return Id == other.Id || string.Equals(Name, other.Name);
@@ -50,7 +53,7 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
                 return true;
             return Equals((IAttribute<OurAttributeValueType>) obj);
         }
-        
+
         protected BaseAttribute(Attribute attribute)
         {
             Attribute = attribute;
@@ -79,6 +82,5 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
         {
             return Attribute.constraintsChangeable;
         }
-
     }
 }

@@ -31,6 +31,8 @@ namespace QppFacade
         {
             throw new NotImplementedException();
         }
+
+         public int Type { get; private set; }
     }
 
 

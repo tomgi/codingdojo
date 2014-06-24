@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web.Services.Protocols;
 using com.quark.qpp.common.constants;
+using com.quark.qpp.core.attribute.service.constants;
 using com.quark.qpp.core.attribute.service.remote;
 using com.quark.qpp.core.content.service.remote;
 using com.quark.qpp.core.privilege.service.remote;
@@ -32,6 +33,18 @@ namespace IHS.Phoenix.QPP
         }
 
         private static Func<string, SoapHttpClientProtocol> _getService;
+       
+        private static readonly IDictionary<Type, int> DomainIdByCustomValuesType = new Dictionary<Type, int>
+        {
+            {typeof(CustomAttributes), 0}, // TODO: Attributes should not be phoenix values
+            {typeof(CustomContentTypes), DefaultDomains.CONTENT_TYPES},
+            {typeof(CustomPrivilegeGroups), 0}, // TODO: What here?
+            {typeof(CustomPrivileges), 0}, // TODO: What here?
+            {typeof(CustomRelations), 0}, // TODO: What here?
+            {typeof(CustomRoles), 0}, // TODO: What here?
+            {typeof(CustomStatuses), DefaultDomains.STATUSES}, 
+            {typeof(CustomWorkflows), DefaultDomains.WORKFLOWS}, 
+        };
 
         public static bool IsInitialized { get; private set; }
 
@@ -113,6 +126,7 @@ namespace IHS.Phoenix.QPP
                 if (dictionary.ContainsKey(value))
                 {
                     var actualValue = dictionary[value];
+                    actualValue.DomainId = DomainIdByCustomValuesType[type];
                     if (actualValue != null)
                         defaultField.SetValue(null, actualValue);
                 }

@@ -35,5 +35,9 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
             return attribValue;
         }
 
+        public override int Type
+        {
+            get { return AttributeValueTypes.DOMAIN; }
+        }
     }
 }

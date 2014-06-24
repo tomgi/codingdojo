@@ -20,5 +20,7 @@
         {
             return phoenixValue._name;
         }
+
+        public int DomainId { get; set; }
     }
 }
