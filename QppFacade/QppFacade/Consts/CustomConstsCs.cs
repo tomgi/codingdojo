@@ -101,4 +101,9 @@
         public static readonly PhoenixValue ObjectSource = new PhoenixValue(-69, "Object Source Workflow");
         public static readonly PhoenixValue DataRefresh = new PhoenixValue(-70, "Data Refresh Workflow");
     }
+
+    public static class CustomCollections
+    {
+        public static readonly PhoenixValue HomeTest = new PhoenixValue(-71, "Home/Test");
+    }
 }

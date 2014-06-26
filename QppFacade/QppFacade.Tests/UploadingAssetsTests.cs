@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using AutoMapper;
 using Castle.Windsor;
+using IHS.Phoenix.QPP;
 using IHS.Phoenix.QPP.Facade.SoapFacade;
 using Machine.Specifications;
 
@@ -22,11 +23,11 @@ namespace QppFacade.Tests
         private Because of = () =>
             _assetId = _sut.Upload(
                 new FileAsset("asset.txt")
-                    .With(PhoenixAttributes.CONTENT_TYPE, "Chemical Report")
+                    .With(PhoenixAttributes.CONTENT_TYPE, CustomContentTypes.Report)
                     .With(PhoenixAttributes.NAME, "acetic acid2")
-                    .With(PhoenixAttributes.WORKFLOW, "Default Workflow")
-                    .With(PhoenixAttributes.STATUS, "Default")
-                    .With(PhoenixAttributes.COLLECTION, "Home/Test")
+                    .With(PhoenixAttributes.WORKFLOW, CustomWorkflows.Default)
+                    .With(PhoenixAttributes.STATUS, CustomStatuses.Default)
+                    .With(PhoenixAttributes.COLLECTION, CustomCollections.HomeTest)
                     .With(PhoenixAttributes.FILE_EXTENSION, "txt")
                     .With(PhoenixAttributes.ORIGINAL_FILENAME, "acetic acid2")
                     .With(PhoenixAttributes.DITA_TITLE, "acetic acid2")
@@ -38,7 +39,7 @@ namespace QppFacade.Tests
             file.With(PhoenixAttributes.DITA_TITLE, "dupa");
             _sut.UpdateFile(file);
             _fileUpdated = _sut.GetFile<FileAsset>(_assetId);
-            _fileUpdated[PhoenixAttributes.DITA_TITLE].ShouldEqual("dupa");
+            _fileUpdated.Get(PhoenixAttributes.DITA_TITLE).ShouldEqual("dupa");
         };
 
         private It should_map_things_nicely = () =>
@@ -46,12 +47,12 @@ namespace QppFacade.Tests
             var model = new DatabaseModel()
             {
                 Id = _fileUpdated.Id,
-                DitaTitle = (string) _fileUpdated[PhoenixAttributes.DITA_TITLE],
-                Name = (string) _fileUpdated[PhoenixAttributes.NAME]
+                DitaTitle = (string) _fileUpdated.Get(PhoenixAttributes.DITA_TITLE),
+                Name = (string) _fileUpdated.Get(PhoenixAttributes.NAME)
             };
             Mapper.CreateMap<FileAsset, DatabaseModel>()
-                  .ForMember(dest => dest.DitaTitle, opts => opts.MapFrom(fileAsset => fileAsset[PhoenixAttributes.DITA_TITLE]))
-                  .ForMember(dest => dest.Name, opts => opts.MapFrom(fileAsset => fileAsset[PhoenixAttributes.NAME]));
+                  .ForMember(dest => dest.DitaTitle, opts => opts.MapFrom(fileAsset => fileAsset.Get(PhoenixAttributes.DITA_TITLE)))
+                  .ForMember(dest => dest.Name, opts => opts.MapFrom(fileAsset => fileAsset.Get(PhoenixAttributes.NAME)));
 
             var modelAutoMapper = Mapper.Map<FileAsset, DatabaseModel>(_fileUpdated);
             modelAutoMapper.Id.ShouldEqual(_fileUpdated.Id);

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using IHS.Phoenix.QPP;
 
 namespace QppFacade.Models
 {
@@ -17,8 +18,8 @@ namespace QppFacade.Models
         public DitaMap(XDocument xml)
         {
             _xml = xml;
-            this.With(PhoenixAttributes.WORKFLOW, "Document Workflow")
-                .With(PhoenixAttributes.STATUS, "Published")
+            this.With(PhoenixAttributes.WORKFLOW, CustomWorkflows.Document)
+                .With(PhoenixAttributes.STATUS, CustomStatuses.Published)
                 .With(PhoenixAttributes.FILE_EXTENSION, "xml");
         }
 
@@ -45,7 +46,7 @@ namespace QppFacade.Models
         {
             var imageTag =
                 _xml.Descendants("topicref")
-                    .FirstOrDefault(topicRef => topicRef.Attribute("href").Value.ToLower() == ((string) topic[PhoenixAttributes.NAME]).ToLower());
+                    .FirstOrDefault(topicRef => topicRef.Attribute("href").Value.ToLower() == ((string) topic.Get(PhoenixAttributes.NAME).ToLower()));
             return AddTopicReference(new XmlReference<Topic>(imageTag.AbsoluteXPath(), topic));
         }
     }

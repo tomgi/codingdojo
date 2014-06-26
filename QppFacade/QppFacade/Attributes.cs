@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
-using System.Text;
 using com.quark.qpp.common.dto;
 using com.quark.qpp.core.attribute.service.constants;
 using com.quark.qpp.core.attribute.service.dto;
@@ -76,10 +74,7 @@ namespace QppFacade
                 }
                 else if (qppAttribute.valueType == AttributeValueTypes.DOMAIN)
                 {
-                    if (qppAttribute.id == DefaultAttributes.COLLECTION)
-                        attribute = new CollectionAttr(qppAttribute, getCollectionValues);
-                    else
-                        attribute = new DomainAttr(qppAttribute);
+                    attribute = new DomainAttr(qppAttribute);
                 }
                 if (attribute != null)
                 {
@@ -116,17 +111,6 @@ namespace QppFacade
             }
             //Debug.Write(builder.ToString());
         }
-
-        private static string GetAttributeType(IAttribute attribute)
-        {
-            if (attribute.GetType() == typeof (TextAttr)) return "string";
-            if (attribute.GetType() == typeof (NumAttr)) return "long";
-            if (attribute.GetType() == typeof (BoolAttr)) return "bool";
-            if (attribute.GetType() == typeof (DomainAttr)) return "PhoenixValue";
-            if (attribute.GetType() == typeof (DateTimeAttr)) return "DateTime";
-            if (attribute.GetType() == typeof (CollectionAttr)) return "CollectionValue";
-            return string.Empty;
-        }
     }
 
     public static partial class PhoenixAttributes
@@ -150,7 +134,7 @@ namespace QppFacade
         public static IAttribute<long> CHECKED_OUT_DURATION = new AttributePlaceholder<long> { Id = 35, Name = "Checked out duration" };
         public static IAttribute<string> CHECKED_OUT_FILE_PATH = new AttributePlaceholder<string> { Id = 16, Name = "Checked out file path" };
         public static IAttribute<string> CHECKED_OUT_MACHINE_NAME = new AttributePlaceholder<string> { Id = 15, Name = "Checked out machine name" };
-        public static IAttribute<CollectionValue> COLLECTION = new AttributePlaceholder<CollectionValue> { Id = 55, Name = "Collection" };
+        public static IAttribute<PhoenixValue> COLLECTION = new AttributePlaceholder<PhoenixValue> { Id = 55, Name = "Collection" };
         public static IAttribute<string> COLLECTION_PATH = new AttributePlaceholder<string> { Id = 57, Name = "Collection Path" };
         public static IAttribute<PhoenixValue> COLLECTION_TEMPLATE = new AttributePlaceholder<PhoenixValue> { Id = 58, Name = "Collection Template" };
         public static IAttribute<long> COLOR_DEPTH = new AttributePlaceholder<long> { Id = 204, Name = "Color depth" };

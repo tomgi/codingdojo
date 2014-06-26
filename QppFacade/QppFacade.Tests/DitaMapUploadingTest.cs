@@ -27,14 +27,14 @@ namespace QppFacade.Tests
                 new DitaMap(XDocument.Parse(File.ReadAllText("Assets\\ditamap.xml")))
                     .With(PhoenixAttributes.CONTENT_TYPE, CustomContentTypes.IHSDocumentMap)
                     .With(PhoenixAttributes.NAME, "ditamap.xml")
-                    .With(PhoenixAttributes.COLLECTION, "Home/Test")
+                    .With(PhoenixAttributes.COLLECTION,  CustomCollections.HomeTest)
                     .With(PhoenixAttributes.ORIGINAL_FILENAME, "ditamap.xml")
                     .With(PhoenixAttributes.DITA_TITLE, "ditamap")
                     .WithTopic(
                         new Topic(XDocument.Parse(File.ReadAllText("Assets\\topic1.xml")))
-                            .With(PhoenixAttributes.CONTENT_TYPE, "IHS Document")
+                            .With(PhoenixAttributes.CONTENT_TYPE, CustomContentTypes.IHSDocument)
                             .With(PhoenixAttributes.NAME, "topic1.xml")
-                            .With(PhoenixAttributes.COLLECTION, "Home/Test")
+                            .With(PhoenixAttributes.COLLECTION,  CustomCollections.HomeTest)
                             .With(PhoenixAttributes.ORIGINAL_FILENAME, "topic1.xml")
                             .With(PhoenixAttributes.DITA_TITLE, "topic"))
                 );

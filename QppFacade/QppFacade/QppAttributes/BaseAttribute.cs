@@ -1,6 +1,7 @@
 using System;
 using com.quark.qpp.common.dto;
 using com.quark.qpp.core.attribute.service.dto;
+using QppFacade;
 using Attribute = com.quark.qpp.core.attribute.service.dto.Attribute;
 
 namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
@@ -57,6 +58,7 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
         protected BaseAttribute(Attribute attribute)
         {
             Attribute = attribute;
+            AttributeBag.ModifiableAttributes[attribute.id] = attribute.constraintsChangeable;
         }
 
         public abstract OurAttributeValueType FromAttributeValue(AttributeValue value);

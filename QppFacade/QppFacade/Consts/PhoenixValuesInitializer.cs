@@ -7,6 +7,8 @@ using System.Web.Services.Protocols;
 using com.quark.qpp.common.constants;
 using com.quark.qpp.core.attribute.service.constants;
 using com.quark.qpp.core.attribute.service.remote;
+using com.quark.qpp.core.collection.service.dto;
+using com.quark.qpp.core.collection.service.remote;
 using com.quark.qpp.core.content.service.remote;
 using com.quark.qpp.core.privilege.service.remote;
 using com.quark.qpp.core.relation.service.remote;
@@ -28,12 +30,13 @@ namespace IHS.Phoenix.QPP
             Init<UserClassService>(typeof (CustomRoles), ServiceNames.USER_CLASS_SERVICE, GetAllRoles);
             Init<WorkflowService>(typeof (CustomStatuses), ServiceNames.WORKFLOW_SERVICE, GetAllStatuses);
             Init<WorkflowService>(typeof (CustomWorkflows), ServiceNames.WORKFLOW_SERVICE, GetAllWorkflows);
+            InitCollections(typeof(CustomCollections));
 
             IsInitialized = true;
         }
 
         private static Func<string, SoapHttpClientProtocol> _getService;
-       
+
         private static readonly IDictionary<Type, int> DomainIdByCustomValuesType = new Dictionary<Type, int>
         {
             {typeof(CustomAttributes), 0}, // TODO: Attributes should not be phoenix values
@@ -44,6 +47,7 @@ namespace IHS.Phoenix.QPP
             {typeof(CustomRoles), 0}, // TODO: What here?
             {typeof(CustomStatuses), DefaultDomains.STATUSES}, 
             {typeof(CustomWorkflows), DefaultDomains.WORKFLOWS}, 
+            {typeof(CustomCollections), DefaultDomains.COLLECTIONS}
         };
 
         public static bool IsInitialized { get; private set; }
@@ -55,6 +59,45 @@ namespace IHS.Phoenix.QPP
             var values = getValues(service);
 
             Replace(valuesType, values);
+        }
+
+        private static void InitCollections(Type valuesType)
+        {
+            foreach (var defaultField in valuesType
+                .GetFields(BindingFlags.Static | BindingFlags.Public)
+                .Where(FieldHasDefaultId))
+            {
+                var value = (PhoenixValue)defaultField.GetValue(null);
+                var collectionService = (CollectionService) _getService(ServiceNames.COLLECTION_SERVICE);
+                var collectionId = GetCollectionIdByPath(value, collectionService);
+                var actualValue = new PhoenixValue(collectionId, value) {DomainId = DefaultDomains.COLLECTIONS};
+
+                defaultField.SetValue(null, actualValue);
+            }
+        }
+
+
+        private static long GetCollectionIdByPath(string collectionPath, CollectionService collectionService)
+        {
+            var collections = collectionPath.Split('/');
+            return FindCollectionRecursive(collectionService, null, collections, 0);
+        }
+
+        private static long FindCollectionRecursive(CollectionService collectionService, CollectionInfo collectionInfo, string[] collections, int i)
+        {
+            var childCollections = i == 0
+                ? collectionService.getAccessibleTopLevelCollections()
+                : collectionService.getAccessibleImmediateChildCollections(collectionInfo.id);
+
+            var collection = childCollections == null ? null : childCollections.SingleOrDefault(c => c.name == collections[i]);
+
+            if (collection == null)
+                throw new InvalidOperationException(String.Format("Collection {0} not found", String.Join("//", collections.Take(i + 1))));
+
+            if (i == collections.Length - 1)
+                return collection.id;
+
+            return FindCollectionRecursive(collectionService, collection, collections, ++i);
         }
 
         private static IEnumerable<PhoenixValue> GetAllAttributes(AttributeService attributeService)

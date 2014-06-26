@@ -195,7 +195,7 @@ namespace QppFacade
                 assetId = assetModel.Id
             };
 
-            asset.attributeValues = assetModel.GimmeAttributeValuesForUpdate();
+            asset.attributeValues = assetModel.GimmeModifiableAttributeValues();
             _assetService.updateAsset(asset);
             _assetService.unlockAsset(assetModel.Id);
         }
@@ -236,8 +236,7 @@ namespace QppFacade
                 var attrInfo = PhoenixAttributes.ById[attributeValue.attributeId];
                 if (attrInfo == null)
                     continue;
-                //attrInfo => IAttribute<string>, "FromAttributeValue"
-//                model[attrInfo] = attrInfo.FromAttributeValue(attributeValue);
+                model.Set(attributeValue);
             }
         }
 

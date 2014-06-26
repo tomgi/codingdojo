@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using com.quark.qpp.common.dto;
 using com.quark.qpp.core.asset.service.dto;
 using com.quark.qpp.core.attribute.service.constants;
 using com.quark.qpp.core.attribute.service.dto;
@@ -12,88 +15,205 @@ namespace QppFacade
 {
     public abstract class AttributeBag
     {
-        protected readonly IDictionary<IAttribute, object> _attributes = new Dictionary<IAttribute, object>();
+        private readonly Asset _asset;
 
-        private readonly Dictionary<Type, IDictionary> _nonGenDict = new Dictionary<Type, IDictionary>();
-        private readonly Dictionary<IAttribute<string>, string> _str = new Dictionary<IAttribute<string>, string>();
-        private readonly Dictionary<IAttribute<long>, long> _long = new Dictionary<IAttribute<long>, long>();
-        private readonly Dictionary<IAttribute<bool>, bool> _bools = new Dictionary<IAttribute<bool>, bool>();
-        private readonly Dictionary<IAttribute<DateTime>, DateTime> _dateTimes = new Dictionary<IAttribute<DateTime>, DateTime>();
-        private readonly Dictionary<IAttribute<PhoenixValue>, PhoenixValue> _phxVals = new Dictionary<IAttribute<PhoenixValue>, PhoenixValue>();
-        private readonly Dictionary<IAttribute<CollectionValue>, CollectionValue> _collections = new Dictionary<IAttribute<CollectionValue>, CollectionValue>();
-
-   
-        public AttributeBag()
+        static AttributeBag ()
         {
-            _nonGenDict = new Dictionary<Type, IDictionary>
-            {
-                {typeof(string), _str},
-                {typeof(long), _long},
-                {typeof(bool), _bools},
-                {typeof(DateTime), _dateTimes},
-                {typeof(PhoenixValue), _phxVals},
-                {typeof(CollectionValue), _collections},
-            };
+            ModifiableAttributes = new Dictionary<long, bool>();
         }
 
-        public object this[IAttribute index]
+        protected AttributeBag()
         {
-            get
+            _asset = new Asset {attributeValues = new AttributeValue[] {}};
+        }
+        
+        public void Set<T>(IAttribute<T> attribute, T value)
+        {
+            var existingAttr = _asset.attributeValues.FirstOrDefault(a => a.attributeId == attribute.Id);
+            if (existingAttr == null)
             {
-                return _attributes[index];
+                AddNewAttribute(attribute, value);
             }
-            set
+            else
             {
-                _attributes[index] = value;
+                UpdateExistingAttribute(existingAttr, value);
+            }
+        }
+
+        public void Set(AttributeValue attributeValue)
+        {
+            if (_asset.attributeValues.Any(a => a.attributeId == attributeValue.attributeId))
+            {
+                _asset.attributeValues =
+                    _asset.attributeValues.Where(a => a.attributeId != attributeValue.attributeId)
+                        .Union(new[] {attributeValue}).ToArray();
+            }
+            else
+            {
+                _asset.attributeValues =
+                    _asset.attributeValues
+                        .Union(new[] { attributeValue }).ToArray();
             }
         }
 
         public T Get<T>(IAttribute<T> attribute)
         {
-            return (T) _nonGenDict[typeof(T)][attribute];
-        }
-
-        public void Set<T>(IAttribute<T> attribute, T value)
-        {
-            _nonGenDict[typeof (T)][attribute] = value;
-            
-            _attributes[attribute] = value;
+            var attr = _asset.attributeValues.SingleOrDefault(a => a.attributeId == attribute.Id);
+            if (attr != null)
+            {
+                return GenericValueExtractor.Extract<T>(attr);
+            }
+            return default(T);
         }
 
         public AttributeValue[] GimmeAttributeValues()
         {
-
-            return _str.ToAttributeValues()
-                .Union(_long.ToAttributeValues())
-                .Union(_bools.ToAttributeValues())
-                .Union(_collections.ToAttributeValues())
-                .Union(_dateTimes.ToAttributeValues())
-                .Union(_phxVals.ToAttributeValues())
-                .ToArray();
-            //TODO _attributes.Select(attr => _funcs[attr.Value.GetType()].ToAttributeValue(attr.Value)).ToArray();
+            return _asset.attributeValues;
         }
 
+        public AttributeValue[] GimmeModifiableAttributeValues()
+        {
+            return _asset.attributeValues
+                .Where(a => ModifiableAttributes[a.attributeId])
+                .ToArray();
+        }
+
+        public static Dictionary<long,bool> ModifiableAttributes { get; private set; }
+
+
+        private void AddNewAttribute<T>(IAttribute<T> attribute, T value)
+        {
+            var newAttribute = new AttributeValue
+            {
+                attributeId = attribute.Id,
+                attributeValue = AttributeValueFactory.Create(value),
+                type = attribute.Type
+            };
+            _asset.attributeValues =
+                _asset.attributeValues.Union(new []{newAttribute}).ToArray();
+        }
+
+        private void UpdateExistingAttribute<T>(AttributeValue existingAttr, T value)
+        {
+            existingAttr.attributeValue = AttributeValueFactory.Create(value);
+        }
     }
+
+    internal static class GenericValueExtractor
+    {
+        private static IDictionary<int, Func<AttributeValue, object>> _map =
+            new Dictionary<int, Func<AttributeValue, object>>
+            {
+                {AttributeValueTypes.BOOLEAN, GetBool},
+                {AttributeValueTypes.NUMERIC, GetNum},
+                {AttributeValueTypes.DATETIME, GetDateTime},
+                {AttributeValueTypes.TEXT, GetText},
+                {AttributeValueTypes.DOMAIN, GetDomain},
+            };
+
+        private static object GetDomain(AttributeValue attribute)
+        {
+            var domainVal = (attribute.attributeValue as DomainValue);
+            return new PhoenixValue(domainVal.id, domainVal.name){ DomainId = domainVal.domainId};
+        }
+
+        private static object GetDateTime(AttributeValue attribute)
+        {
+            return DateTime.Parse((attribute.attributeValue as DateTimeValue).value);
+        }
+
+        private static object GetText(AttributeValue attribute)
+        {
+            return (attribute.attributeValue as TextValue).value;
+        }
+
+        private static object GetBool(AttributeValue attribute)
+        {
+            return (attribute.attributeValue as BooleanValue).value;
+        }
+
+        private static object GetNum(AttributeValue attribute)
+        {
+            return (attribute.attributeValue as NumericValue).value;
+        }
+
+        public static T Extract<T>(AttributeValue attributeValue)
+        {
+            return (T) _map[attributeValue.type](attributeValue);
+        }
+    }
+
+    internal static class AttributeValueFactory
+    {
+        public static Value Create<T>(T value)
+        {
+            var methodInfo = 
+                typeof (AttributeValueFactory)
+                .GetMethod("Create", new[] {typeof (T)});
+            return (Value) methodInfo.Invoke(null, new object[]{value});
+        }
+
+        public static Value Create(long value)
+        {
+            return new NumericValue{ value = value };
+        }
+
+        public static Value Create(string value)
+        {
+            return new TextValue { value = value };
+        }
+        
+        public static Value Create(bool value)
+        {
+            return new BooleanValue { value = value };
+        }
+
+        public static Value Create(DateTime value)
+        {
+            return new DateTimeValue { value = value.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'", CultureInfo.InvariantCulture) };
+        }
+
+        public static Value Create(PhoenixValue value)
+        {
+            return new DomainValue
+            {
+                domainId = value.DomainId,
+                id = value,
+                name = value
+            };
+        }
+    }
+
+    public static class AssetModelExtensions
+    {
+        public static TAsset With<TAsset,TValue>(this TAsset asset, IAttribute<TValue> attribute, TValue value)
+            where TAsset : AttributeBag
+        {
+            asset.Set(attribute, value);
+            return asset;
+        }
+    }
+
 
     public static class AssetExtensions
     {
-        public static AttributeValue[] ToAttributeValues<T>(
-            this IDictionary<IAttribute<T>, T> dictionary)
-        {
-            return dictionary.Select(kv => kv.Key.ToAttributeValue(kv.Value)).ToArray();
-        }
+        //public static AttributeValue[] ToAttributeValues<T>(
+        //    this IDictionary<IAttribute<T>, T> dictionary)
+        //{
+        //    return dictionary.Select(kv => kv.Key.ToAttributeValue(kv.Value)).ToArray();
+        //}
 
-        public static T With<T>(this T asset, IAttribute attributeId, object value) where T : AttributeBag
-        {
-            asset[attributeId] = value;
-            return asset;
-        }
+        //public static T With<T>(this T asset, IAttribute attributeId, object value) where T : AttributeBag
+        //{
+        //    asset[attributeId] = value;
+        //    return asset;
+        //}
 
-        public static T With<T,TValue>(this T asset, IAttribute<TValue> attributeId, TValue value) where T : AttributeBag
-        {
-            asset.Set(attributeId, value);
-            return asset;
-        }
+        //public static T With<T,TValue>(this T asset, IAttribute<TValue> attributeId, TValue value) where T : AttributeBag
+        //{
+        //    asset.Set(attributeId, value);
+        //    return asset;
+        //}
 
         public static Asset ToAsset(this FileAsset assetModel)
         {
