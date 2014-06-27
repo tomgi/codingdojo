@@ -1,0 +1,15 @@
+﻿@using IHS.ZlotePrzeboje.Models
+@model IEnumerable<IHS.ZlotePrzeboje.Models.Proposition>
+@{
+    ViewBag.Title = "Home Page";
+}
+
+@foreach (var proposition in Model)
+{
+    <hr/>
+    <h2>@proposition.URL</h2>
+    @proposition.VotesUP
+    @Html.ActionLink("Podbij", "VoteUP", new { id = @proposition.Id})
+}
+
+@Html.Partial("NewPropositionPartial", new Proposition())
