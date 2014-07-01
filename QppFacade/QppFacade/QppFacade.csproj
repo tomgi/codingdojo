@@ -126,7 +126,6 @@
     <Compile Include="Consts\CustomConstsCs.cs" />
     <Compile Include="Consts\PhoenixValue.cs" />
     <Compile Include="Consts\PhoenixValuesInitializer.cs" />
-    <Compile Include="Models\AssetModel.cs" />
     <Compile Include="Models\AttributeBag.cs" />
     <Compile Include="Models\ChartSourceReference.cs" />
     <Compile Include="Models\DitaMap.cs" />

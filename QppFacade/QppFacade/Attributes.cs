@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using com.quark.qpp.common.dto;
 using com.quark.qpp.core.attribute.service.constants;
-using com.quark.qpp.core.attribute.service.dto;
 using IHS.Phoenix.QPP;
 using IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes;
 using Attribute = com.quark.qpp.core.attribute.service.dto.Attribute;
@@ -15,47 +14,32 @@ namespace QppFacade
         public long Id { get; set; }
         public string Name { get; set; }
 
-        public AttributeValue ToAttributeValue(T value)
-        {
-            throw new NotImplementedException();
-        }
-
-        T IAttribute<T>.FromAttributeValue(AttributeValue value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool CanBeUpdated()
-        {
-            throw new NotImplementedException();
-        }
-
          public int Type { get; private set; }
     }
 
 
     public static partial class PhoenixAttributes
     {
-        public static Dictionary<string, IAttribute> ByName { get; private set; }
+        public static Dictionary<string, object> ByName { get; private set; }
 
-        public static Dictionary<long, IAttribute> ById { get; private set; }
+        public static Dictionary<long, object> ById { get; private set; }
 
         private static bool Initialized = false;
 
         public static void Init(
-            System.Func<IEnumerable<Attribute>> getQppAttributes,
+            Func<IEnumerable<Attribute>> getQppAttributes,
             Func<int, IEnumerable<DomainValue>> getDomainValues,
             Func<string, long> getCollectionValues)
         {
             if (Initialized)
                 return;
             Initialized = true;
-            ByName = new Dictionary<string, IAttribute>();
-            ById = new Dictionary<long, IAttribute>();
+            ByName = new Dictionary<string, object>();
+            ById = new Dictionary<long, object>();
 
             foreach (var qppAttribute in getQppAttributes())
             {
-                IAttribute attribute = null;
+                object attribute = null;
                 if (qppAttribute.valueType == AttributeValueTypes.TEXT)
                 {
                     attribute = new TextAttr(qppAttribute);
@@ -88,7 +72,7 @@ namespace QppFacade
             foreach (var fieldInfo in typeof(PhoenixAttributes).GetFields(BindingFlags.Public | BindingFlags.Static))
             {
                 var attributePlaceholder = (IAttribute) fieldInfo.GetValue(null);
-                IAttribute attribute = null;
+                object attribute = null;
                 if (attributePlaceholder.Id != 0)
                 {
                     if (ById.ContainsKey(attributePlaceholder.Id))

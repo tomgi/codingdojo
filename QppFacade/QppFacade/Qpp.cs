@@ -215,7 +215,7 @@ namespace QppFacade
                 }
                 var pictureReference = new XmlReference<Picture>(picture);
                 PushAttributes(assetRelation.relationAttributes, pictureReference);
-                topic.AddPictureReference(pictureReference);
+                topic.WithPicture(pictureReference);
             }
 
             var tableRelations = _assetService.getChildAssetRelationsOfType(assetId, new long[] {1000});
@@ -224,7 +224,7 @@ namespace QppFacade
                 var tableSpreadsheet = GetFile<FileAsset>(tableRelation.childAssetId);
                 var tableReference = new TableSourceReference(tableSpreadsheet);
                 PushAttributes(tableRelation.relationAttributes, tableReference);
-                topic.AddTableReference(tableReference);
+                topic.WithTableReference(tableReference);
             }
             return topic;
         }

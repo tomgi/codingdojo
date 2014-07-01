@@ -34,7 +34,5 @@ namespace QppFacade
                 streamAction(stream);
             }
         }
-
-
     }
 }

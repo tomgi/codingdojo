@@ -25,20 +25,6 @@ namespace QppFacade
                 .With(PhoenixAttributes.FILE_EXTENSION, "xml");
         }
 
-        public Topic AddPictureReference(XmlReference<Picture> pictureReference)
-        {
-            _pictures.Add(pictureReference);
-            return this;
-        }
-
-        public Topic WithPicture(Picture picture)
-        {
-            var imageTag =
-                _xml.Descendants("image")
-                    .FirstOrDefault(image => image.Attribute("href").Value.ToLower() == ((string) picture.Get(PhoenixAttributes.NAME).ToLower()));
-            return AddPictureReference(new XmlReference<Picture>(imageTag.AbsoluteXPath(), picture));
-        }
-
         protected override Stream CreateStream()
         {
             Stream stream = new MemoryStream();
@@ -57,7 +43,21 @@ namespace QppFacade
             get { return _tables; }
         }
 
-        public Topic AddTableReference(TableSourceReference tableReference)
+        public Topic WithPicture(XmlReference<Picture> pictureReference)
+        {
+            _pictures.Add(pictureReference);
+            return this;
+        }
+
+        public Topic WithPicture(Picture picture)
+        {
+            var imageTag =
+                _xml.Descendants("image")
+                    .FirstOrDefault(image => image.Attribute("href").Value.ToLower() == ((string) picture.Get(PhoenixAttributes.NAME).ToLower()));
+            return WithPicture(new XmlReference<Picture>(imageTag.AbsoluteXPath(), picture));
+        }
+
+        public Topic WithTableReference(TableSourceReference tableReference)
         {
             _tables.Add(tableReference);
             return this;

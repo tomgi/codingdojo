@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using com.quark.qpp.common.dto;
 using com.quark.qpp.core.asset.service.dto;
@@ -15,21 +13,40 @@ namespace QppFacade
 {
     public abstract class AttributeBag
     {
-        private readonly Asset _asset;
+        private readonly List<AttributeValue> _attributeValues = new List<AttributeValue>();
+
+        public static Dictionary<long,bool> ModifiableAttributes { get; private set; }
 
         static AttributeBag ()
         {
             ModifiableAttributes = new Dictionary<long, bool>();
         }
 
-        protected AttributeBag()
+        public AttributeValue[] GimmeAttributeValues()
         {
-            _asset = new Asset {attributeValues = new AttributeValue[] {}};
+            return _attributeValues.ToArray();
         }
-        
+
+        public AttributeValue[] GimmeModifiableAttributeValues()
+        {
+            return _attributeValues
+                .Where(a => ModifiableAttributes[a.attributeId])
+                .ToArray();
+        }
+
+        public T Get<T>(IAttribute<T> attribute)
+        {
+            var attr = _attributeValues.SingleOrDefault(a => a.attributeId == attribute.Id);
+            if (attr != null)
+            {
+                return GenericValueExtractor.Extract<T>(attr);
+            }
+            return default(T);
+        }
+
         public void Set<T>(IAttribute<T> attribute, T value)
         {
-            var existingAttr = _asset.attributeValues.FirstOrDefault(a => a.attributeId == attribute.Id);
+            var existingAttr = _attributeValues.SingleOrDefault(a => a.attributeId == attribute.Id);
             if (existingAttr == null)
             {
                 AddNewAttribute(attribute, value);
@@ -42,44 +59,16 @@ namespace QppFacade
 
         public void Set(AttributeValue attributeValue)
         {
-            if (_asset.attributeValues.Any(a => a.attributeId == attributeValue.attributeId))
+            var existingAttr = _attributeValues.SingleOrDefault(a => a.attributeId == attributeValue.attributeId);
+            if (existingAttr == null)
             {
-                _asset.attributeValues =
-                    _asset.attributeValues.Where(a => a.attributeId != attributeValue.attributeId)
-                        .Union(new[] {attributeValue}).ToArray();
+                _attributeValues.Add(attributeValue);
             }
             else
             {
-                _asset.attributeValues =
-                    _asset.attributeValues
-                        .Union(new[] { attributeValue }).ToArray();
+                existingAttr.attributeValue = attributeValue.attributeValue;
             }
         }
-
-        public T Get<T>(IAttribute<T> attribute)
-        {
-            var attr = _asset.attributeValues.SingleOrDefault(a => a.attributeId == attribute.Id);
-            if (attr != null)
-            {
-                return GenericValueExtractor.Extract<T>(attr);
-            }
-            return default(T);
-        }
-
-        public AttributeValue[] GimmeAttributeValues()
-        {
-            return _asset.attributeValues;
-        }
-
-        public AttributeValue[] GimmeModifiableAttributeValues()
-        {
-            return _asset.attributeValues
-                .Where(a => ModifiableAttributes[a.attributeId])
-                .ToArray();
-        }
-
-        public static Dictionary<long,bool> ModifiableAttributes { get; private set; }
-
 
         private void AddNewAttribute<T>(IAttribute<T> attribute, T value)
         {
@@ -89,8 +78,7 @@ namespace QppFacade
                 attributeValue = AttributeValueFactory.Create(value),
                 type = attribute.Type
             };
-            _asset.attributeValues =
-                _asset.attributeValues.Union(new []{newAttribute}).ToArray();
+            _attributeValues.Add(newAttribute);
         }
 
         private void UpdateExistingAttribute<T>(AttributeValue existingAttr, T value)
@@ -197,27 +185,9 @@ namespace QppFacade
 
     public static class AssetExtensions
     {
-        //public static AttributeValue[] ToAttributeValues<T>(
-        //    this IDictionary<IAttribute<T>, T> dictionary)
-        //{
-        //    return dictionary.Select(kv => kv.Key.ToAttributeValue(kv.Value)).ToArray();
-        //}
-
-        //public static T With<T>(this T asset, IAttribute attributeId, object value) where T : AttributeBag
-        //{
-        //    asset[attributeId] = value;
-        //    return asset;
-        //}
-
-        //public static T With<T,TValue>(this T asset, IAttribute<TValue> attributeId, TValue value) where T : AttributeBag
-        //{
-        //    asset.Set(attributeId, value);
-        //    return asset;
-        //}
-
         public static Asset ToAsset(this FileAsset assetModel)
         {
-            return new Asset()
+            return new Asset
             {
                 assetId = assetModel.Id,
                 attributeValues = assetModel.GimmeAttributeValues()

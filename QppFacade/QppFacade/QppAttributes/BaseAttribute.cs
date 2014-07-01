@@ -12,15 +12,12 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
         string Name { get; }
     }
 
-    public interface IAttribute<OurAttributeValueType> : IAttribute
+    public interface IAttribute<TAttributeValueType> : IAttribute
     {
-        OurAttributeValueType FromAttributeValue(AttributeValue value);
-        AttributeValue ToAttributeValue(OurAttributeValueType value);
-        bool CanBeUpdated();
         int Type { get; }
     }
 
-    public abstract class BaseAttribute<OurAttributeValueType> : IAttribute<OurAttributeValueType>
+    public abstract class BaseAttribute<TAttributeValueType> : IAttribute<TAttributeValueType>
     {
         public override int GetHashCode()
         {
@@ -41,7 +38,7 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
 
         public abstract int Type { get;}
 
-        public bool Equals(IAttribute<OurAttributeValueType> other)
+        public bool Equals(IAttribute<TAttributeValueType> other)
         {
             return Id == other.Id || string.Equals(Name, other.Name);
         }
@@ -52,7 +49,7 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
                 return false;
             if (ReferenceEquals(this, obj))
                 return true;
-            return Equals((IAttribute<OurAttributeValueType>) obj);
+            return Equals((IAttribute<TAttributeValueType>)obj);
         }
 
         protected BaseAttribute(Attribute attribute)
@@ -60,9 +57,6 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
             Attribute = attribute;
             AttributeBag.ModifiableAttributes[attribute.id] = attribute.constraintsChangeable;
         }
-
-        public abstract OurAttributeValueType FromAttributeValue(AttributeValue value);
-        public abstract AttributeValue ToAttributeValue(OurAttributeValueType value);
 
         protected AttributeValue ToAttributeValue<TValue>(Action<TValue> setValue)
             where TValue : Value
@@ -78,11 +72,6 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes
                 throw new ApplicationException(string.Format("Failed to set value to an attribute of type id {0}", Attribute.id));
             setValue(value);
             return attributeValue;
-        }
-
-        public bool CanBeUpdated()
-        {
-            return Attribute.constraintsChangeable;
         }
     }
 }
