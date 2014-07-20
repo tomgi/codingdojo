@@ -1,0 +1,5 @@
+﻿<map>
+  <title>Very simple book</title>
+  <topicref href="out_topic1.xml"/>
+  <topicref href="out_topic2.xml"/>
+</map>
