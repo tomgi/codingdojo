@@ -260,19 +260,4 @@ namespace QppFacade
         public static IAttribute<string> DomainsDisplayName = new AttributePlaceholder<string> { Id = 633, Name = "Domains" };
 
     }
-
-    public class CollectionValue
-    {
-        private readonly string _collection;
-
-        public CollectionValue(string collection)
-        {
-            _collection = collection;
-        }
-
-        public static implicit operator string(CollectionValue value)
-        {
-            return value._collection;
-        }
-    }
 }

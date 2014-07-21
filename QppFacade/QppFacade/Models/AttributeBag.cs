@@ -172,12 +172,22 @@ namespace QppFacade
         }
     }
 
-    public static class AssetModelExtensions
+    public static class AttrbiuteBagExtensions
     {
-        public static TAsset With<TAsset,TValue>(this TAsset asset, IAttribute<TValue> attribute, TValue value)
-            where TAsset : AttributeBag
+        public static TAttributeBag With<TAttributeBag,TValue>(this TAttributeBag asset, IAttribute<TValue> attribute, TValue value)
+            where TAttributeBag : AttributeBag
         {
             asset.Set(attribute, value);
+            return asset;
+        }
+
+        public static TAttributeBag With<TAttributeBag>(this TAttributeBag asset, AttributeValue[] attributes)
+            where TAttributeBag : AttributeBag
+        {
+            foreach (var attribute in attributes)
+            {
+                asset.Set(attribute);
+            }
             return asset;
         }
     }
@@ -185,7 +195,7 @@ namespace QppFacade
 
     public static class AssetExtensions
     {
-        public static Asset ToAsset(this FileAsset assetModel)
+        public static Asset ToAsset(this AssetModel assetModel)
         {
             return new Asset
             {

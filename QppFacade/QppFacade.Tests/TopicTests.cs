@@ -1,15 +1,18 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using Castle.Windsor;
+using com.quark.qpp.core.content.service.constants;
+using com.quark.qpp.core.relation.service.constants;
 using IHS.Phoenix.QPP;
 using IHS.Phoenix.QPP.Facade.SoapFacade;
 using Machine.Specifications;
 
 namespace QppFacade.Tests
 {
-    [Subject(typeof (Topic), "Category")]
+    [Subject(typeof (AssetModel), "Category")]
     public class when_doing_different_things_with_topic
     {
         private Establish context = () =>
@@ -22,38 +25,64 @@ namespace QppFacade.Tests
 
         private Because of = () =>
         {
-            _assetId = _sut.UploadTopic(
-                new Topic(XDocument.Parse(File.ReadAllText("Assets\\topic.xml")))
+            var topicPath = "Assets\\topic.xml";
+            var xDocument = XDocument.Load(topicPath);
+            _assetId = _sut.UploadAssetFromFile(
+                AssetModel.FromFile(topicPath)
+                    .With(PhoenixAttributes.WORKFLOW, CustomWorkflows.Document)
+                    .With(PhoenixAttributes.STATUS, CustomStatuses.Published)
                     .With(PhoenixAttributes.CONTENT_TYPE, CustomContentTypes.IHSDocument)
-                    .With(PhoenixAttributes.NAME, "topic.xml")
-                    .With(PhoenixAttributes.COLLECTION,  CustomCollections.HomeTest)
-                    .With(PhoenixAttributes.ORIGINAL_FILENAME, "topic.xml")
+                    .With(PhoenixAttributes.COLLECTION, CustomCollections.HomeTest)
                     .With(PhoenixAttributes.DITA_TITLE, "topic")
                     .WithPicture(
-                        new Picture("Assets\\just_image.jpg")
-                            .With(PhoenixAttributes.COLLECTION,  CustomCollections.HomeTest))
+                        AssetModel.FromFile("Assets\\just_image.jpg")
+                            .With(
+                                PhoenixAttributes.CONTENT_TYPE,
+                                new PhoenixValue(DefaultContentTypes.PICTURE, "Picture"))
+                            .With(PhoenixAttributes.WORKFLOW, CustomWorkflows.Default)
+                            .With(PhoenixAttributes.STATUS, CustomStatuses.Default)
+                            .With(PhoenixAttributes.COLLECTION, CustomCollections.HomeTest),
+                        xDocument)
                     .WithTableSpreadsheet(
-                        new FileAsset("Assets\\tableSpreadsheet.xlsx")
-                            .With(PhoenixAttributes.CONTENT_TYPE, CustomContentTypes.ObjectSourceSpreadsheet)
+                        AssetModel.FromFile("Assets\\tableSpreadsheet.xlsx")
+                            .With(
+                                PhoenixAttributes.CONTENT_TYPE,
+                                CustomContentTypes.ObjectSourceSpreadsheet)
                             .With(PhoenixAttributes.WORKFLOW, CustomWorkflows.ObjectSource)
                             .With(PhoenixAttributes.STATUS, CustomStatuses.ReadyForDataAdminUpdate)
-                            .With(PhoenixAttributes.COLLECTION,  CustomCollections.HomeTest))
-                    .WithChart(
-                        chart: new Picture("Assets\\chart.jpg").With(PhoenixAttributes.COLLECTION,  CustomCollections.HomeTest),
-                        fromSpreadsheet: new FileAsset("Assets\\excelChartSpreadsheet.xlsx")
-                            .With(PhoenixAttributes.CONTENT_TYPE, CustomContentTypes.ObjectSourceSpreadsheet)
-                            .With(PhoenixAttributes.WORKFLOW, CustomWorkflows.ObjectSource)
-                            .With(PhoenixAttributes.STATUS, CustomStatuses.ReadyForDataAdminUpdate)
-                            .With(PhoenixAttributes.COLLECTION,  CustomCollections.HomeTest))
+                            .With(PhoenixAttributes.COLLECTION, CustomCollections.HomeTest),
+                        xDocument).WithChart(
+                            chart: AssetModel.FromFile("Assets\\chart.jpg")
+                                .With(
+                                    PhoenixAttributes.CONTENT_TYPE,
+                                    new PhoenixValue(DefaultContentTypes.PICTURE, "Picture"))
+                                .With(PhoenixAttributes.WORKFLOW, CustomWorkflows.Default)
+                                .With(PhoenixAttributes.STATUS, CustomStatuses.Default)
+                                .With(PhoenixAttributes.COLLECTION, CustomCollections.HomeTest),
+                            fromSpreadsheet: AssetModel.FromFile("Assets\\excelChartSpreadsheet.xlsx")
+                                .With(
+                                    PhoenixAttributes.CONTENT_TYPE,
+                                    CustomContentTypes.ObjectSourceSpreadsheet)
+                                .With(PhoenixAttributes.WORKFLOW, CustomWorkflows.ObjectSource)
+                                .With(
+                                    PhoenixAttributes.STATUS,
+                                    CustomStatuses.ReadyForDataAdminUpdate)
+                                .With(PhoenixAttributes.COLLECTION, CustomCollections.HomeTest),
+                            xml: xDocument),
+                new FileInfo(topicPath)
                 );
             _topic = _sut.GetTopicWithReferencedItems(_assetId);
         };
 
-        private It should_upload_pictures = () => _topic.Pictures.Count().ShouldEqual(2);
+        private It should_upload_pictures = () => _topic.RelationsOfType(DefaultRelationTypes.XML_COMP_REFERENCE).Count().ShouldEqual(2);
 
-        private It should_upload_tables = () => _topic.Tables.Count().ShouldEqual(1);
+        private It should_upload_tables = () => _topic.RelationsOfType(CustomRelations.TableSource).Count().ShouldEqual(1);
 
-        private It should_upload_chart_spreadsheets = () => _topic.Pictures.Any(picture => picture.AssetModel.IsChart).ShouldBeTrue();
+        private It should_upload_chart_spreadsheets = () =>
+            _topic.RelationsOfType(DefaultRelationTypes.XML_COMP_REFERENCE).Any(
+                picture =>
+                    picture.AssetModel.RelationsOfType(CustomRelations.ChartSource).Count() == 1)
+                  .ShouldBeTrue();
 
 
         private Cleanup after = () => _sut.Delete(_topic);
@@ -61,8 +90,8 @@ namespace QppFacade.Tests
         private static Qpp _sut;
         private static long _assetId;
         private static WindsorContainer _container;
-        private static FileAsset _fileUpdated;
-        private static Topic _topic;
+        private static AssetModel _fileUpdated;
+        private static AssetModel _topic;
 
         private static MemoryStream GenerateStreamFromString(string value)
         {

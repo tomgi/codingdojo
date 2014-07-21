@@ -22,23 +22,22 @@ namespace QppFacade.Tests
 
         private Because of = () =>
             _assetId = _sut.Upload(
-                new FileAsset("asset.txt")
+                AssetModel.FromFile("asset.txt")
                     .With(PhoenixAttributes.CONTENT_TYPE, CustomContentTypes.Report)
                     .With(PhoenixAttributes.NAME, "acetic acid2")
                     .With(PhoenixAttributes.WORKFLOW, CustomWorkflows.Default)
                     .With(PhoenixAttributes.STATUS, CustomStatuses.Default)
                     .With(PhoenixAttributes.COLLECTION, CustomCollections.HomeTest)
-                    .With(PhoenixAttributes.FILE_EXTENSION, "txt")
                     .With(PhoenixAttributes.ORIGINAL_FILENAME, "acetic acid2")
                     .With(PhoenixAttributes.DITA_TITLE, "acetic acid2")
                 );
 
         private It should_upload_asset_properly = () =>
         {
-            var file = _sut.GetFile<FileAsset>(_assetId);
+            var file = _sut.GetFile<AssetModel>(_assetId);
             file.With(PhoenixAttributes.DITA_TITLE, "dupa");
             _sut.UpdateFile(file);
-            _fileUpdated = _sut.GetFile<FileAsset>(_assetId);
+            _fileUpdated = _sut.GetFile<AssetModel>(_assetId);
             _fileUpdated.Get(PhoenixAttributes.DITA_TITLE).ShouldEqual("dupa");
         };
 
@@ -50,11 +49,11 @@ namespace QppFacade.Tests
                 DitaTitle = (string) _fileUpdated.Get(PhoenixAttributes.DITA_TITLE),
                 Name = (string) _fileUpdated.Get(PhoenixAttributes.NAME)
             };
-            Mapper.CreateMap<FileAsset, DatabaseModel>()
+            Mapper.CreateMap<AssetModel, DatabaseModel>()
                   .ForMember(dest => dest.DitaTitle, opts => opts.MapFrom(fileAsset => fileAsset.Get(PhoenixAttributes.DITA_TITLE)))
                   .ForMember(dest => dest.Name, opts => opts.MapFrom(fileAsset => fileAsset.Get(PhoenixAttributes.NAME)));
 
-            var modelAutoMapper = Mapper.Map<FileAsset, DatabaseModel>(_fileUpdated);
+            var modelAutoMapper = Mapper.Map<AssetModel, DatabaseModel>(_fileUpdated);
             modelAutoMapper.Id.ShouldEqual(_fileUpdated.Id);
         };
 
@@ -63,7 +62,7 @@ namespace QppFacade.Tests
         private static Qpp _sut;
         private static long _assetId;
         private static WindsorContainer _container;
-        private static FileAsset _fileUpdated;
+        private static AssetModel _fileUpdated;
 
         private static MemoryStream GenerateStreamFromString(string value)
         {

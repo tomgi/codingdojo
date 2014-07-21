@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -14,7 +15,7 @@ using com.quark.qpp.core.collection.service.remote;
 using com.quark.qpp.core.relation.service.constants;
 using com.quark.qpp.core.security.service.remote;
 using com.quark.qpp.FileTransferGateway;
-using QppFacade.Models;
+using IHS.Phoenix.QPP;
 
 namespace QppFacade
 {
@@ -37,16 +38,17 @@ namespace QppFacade
             _collectionService = collectionService;
         }
 
-        public long Upload(FileAsset assetModel)
+        public long Upload(AssetModel assetModel)
         {
             return CheckInNewAsset(assetModel, null);
         }
 
-        public long Upload(Picture assetModel)
+        public long UploadPicture(AssetModel assetModel)
         {
-            if (assetModel.IsChart)
+            var chartRelation = assetModel.RelationsOfType(CustomRelations.ChartSource).SingleOrDefault();
+            if (chartRelation != null)
             {
-                var spreadsheetId = Upload(assetModel.Chart.AssetModel);
+                var spreadsheetId = Upload(chartRelation.AssetModel);
 
                 return CheckInNewAsset(
                     assetModel,
@@ -55,20 +57,20 @@ namespace QppFacade
                         new AssetRelation
                         {
                             childAssetId = spreadsheetId,
-                            relationTypeId = assetModel.Chart.RelationType,
-                            relationAttributes = assetModel.Chart.GimmeAttributeValues()
+                            relationTypeId = chartRelation.RelationType,
+                            relationAttributes = chartRelation.GimmeAttributeValues()
                         }
                     });
             }
-            return Upload(assetModel as FileAsset);
+            return Upload(assetModel as AssetModel);
         }
 
-        public long UploadTopic(Topic assetModel)
+        public long UploadTopic(AssetModel assetModel)
         {
             var assetRelations = new List<AssetRelation>();
-            foreach (var xmlReference in assetModel.Pictures)
+            foreach (var xmlReference in assetModel.RelationsOfType(DefaultRelationTypes.XML_COMP_REFERENCE))
             {
-                var pictureId = Upload(xmlReference.AssetModel);
+                var pictureId = UploadPicture(xmlReference.AssetModel);
                 assetRelations.Add(
                     new AssetRelation
                     {
@@ -78,7 +80,7 @@ namespace QppFacade
                     });
             }
 
-            foreach (var tableReference in assetModel.Tables)
+            foreach (var tableReference in assetModel.RelationsOfType(CustomRelations.TableSource))
             {
                 var pictureId = Upload(tableReference.AssetModel);
                 assetRelations.Add(
@@ -92,8 +94,76 @@ namespace QppFacade
             return CheckInNewAsset(assetModel, assetRelations.ToArray());
         }
 
+        public long UploadAssetFromFile(AssetModel topic, FileInfo file)
+        {
+            var assetRelations = new List<AssetRelation>();
+            foreach (var xmlReference in topic.RelationsOfType(DefaultRelationTypes.XML_COMP_REFERENCE))
+            {
+                var pictureId = UploadPicture(xmlReference.AssetModel);
+                assetRelations.Add(
+                    new AssetRelation
+                    {
+                        childAssetId = pictureId,
+                        relationTypeId = xmlReference.RelationType,
+                        relationAttributes = xmlReference.GimmeAttributeValues()
+                    });
+            }
 
-        public long CheckInNewAsset(FileAsset assetModel, AssetRelation[] relations)
+            foreach (var tableReference in topic.RelationsOfType(CustomRelations.TableSource))
+            {
+                var pictureId = Upload(tableReference.AssetModel);
+                assetRelations.Add(
+                    new AssetRelation
+                    {
+                        childAssetId = pictureId,
+                        relationTypeId = tableReference.RelationType,
+                        relationAttributes = tableReference.GimmeAttributeValues()
+                    });
+            }
+
+            Func<Stream> readStreamFromFile = 
+                () => File.Open(file.FullName, FileMode.Open, FileAccess.Read);
+
+            return CheckInNewAsset(topic.ToAsset(), assetRelations.ToArray(), readStreamFromFile);
+        }
+
+        private long CheckInNewAsset(Asset asset, AssetRelation[] relations, Func<Stream> openStream)
+        {
+            var contextId = _assetService.createNewCheckInContextWithRelations(
+               asset,
+               false,
+               relations);
+
+            long assetId;
+            try
+            {
+                var properties = new PropertyCollection
+                {
+                    {streamingProperties.HTTPStreamingPort, 61400},
+                    {streamingProperties.HTTPCookieContainer, new CookieContainer()}
+                };
+
+                _fileTransferGatewayConnector.setStreamingTransportType(
+                    StreamingTransportType.http);
+                _fileTransferGatewayConnector.setProperties(
+                    StreamingTransportType.http,
+                    properties);
+                using (var stream = openStream())
+                {
+                    _fileTransferGatewayConnector.Upload(contextId, stream);
+                }
+            }
+            finally
+            {
+                assetId = _assetService.closeContext(contextId).assetId;
+                _assetService.unlockAsset(assetId);
+            }
+
+            return assetId;
+        }
+
+
+        public long CheckInNewAsset(AssetModel assetModel, AssetRelation[] relations)
         {
             var asset = assetModel.ToAsset();
 
@@ -127,18 +197,13 @@ namespace QppFacade
             return assetId;
         }
 
-        public TAssetModel GetFile<TAssetModel>(long assetId) where TAssetModel : FileAsset
+        public TAssetModel GetFile<TAssetModel>(long assetId) where TAssetModel : AssetModel
         {
             var asset = _assetService.getAsset(assetId);
             var assetModel = Activator.CreateInstance<TAssetModel>();
             assetModel.Id = asset.assetId;
             PushAttributes(asset.attributeValues, assetModel);
             return assetModel;
-        }
-
-        public void UpdateDitaMap(DitaMap ditaMap)
-        {
-            //_assetService.getAsset(assetId);
         }
 
         public void LogIn()
@@ -187,7 +252,7 @@ namespace QppFacade
             _assetService.deleteAsset(assetId);
         }
 
-        public void UpdateFile(FileAsset assetModel)
+        public void UpdateFile(AssetModel assetModel)
         {
             _assetService.lockAsset(assetModel.Id);
             var asset = new Asset
@@ -200,31 +265,33 @@ namespace QppFacade
             _assetService.unlockAsset(assetModel.Id);
         }
 
-        public Topic GetTopicWithReferencedItems(long assetId)
+        public AssetModel GetTopicWithReferencedItems(long assetId)
         {
-            var topic = GetFile<Topic>(assetId);
+            var topic = GetFile<AssetModel>(assetId);
             var pictureRelations = _assetService.getChildAssetRelationsOfType(assetId, new long[] {DefaultRelationTypes.XML_COMP_REFERENCE});
             foreach (var assetRelation in pictureRelations)
             {
-                var picture = GetFile<Picture>(assetRelation.childAssetId);
+                var picture = GetFile<AssetModel>(assetRelation.childAssetId);
                 var chartRelations = _assetService.getChildAssetRelationsOfType(picture.Id, new long[] {1001});
                 if (false == chartRelations.IsNullOrEmpty())
                 {
-                    var chartSpreadsheet = GetFile<FileAsset>(chartRelations.First().childAssetId);
-                    picture.WithChartReference(new ChartSourceReference(chartSpreadsheet));
+                    var chartSpreadsheet = GetFile<AssetModel>(chartRelations.First().childAssetId);
+                    picture.WithRelation(Relation.To(chartSpreadsheet).OfType(CustomRelations.ChartSource));
                 }
-                var pictureReference = new XmlReference<Picture>(picture);
-                PushAttributes(assetRelation.relationAttributes, pictureReference);
-                topic.WithPicture(pictureReference);
+                var pictureReference = Relation.To(picture).OfType(DefaultRelationTypes.XML_COMP_REFERENCE)
+                                                .With(assetRelation.relationAttributes);
+                topic.WithRelation(pictureReference);
+                AssetModel temp = topic;
             }
 
             var tableRelations = _assetService.getChildAssetRelationsOfType(assetId, new long[] {1000});
             foreach (var tableRelation in tableRelations)
             {
-                var tableSpreadsheet = GetFile<FileAsset>(tableRelation.childAssetId);
-                var tableReference = new TableSourceReference(tableSpreadsheet);
+                var tableSpreadsheet = GetFile<AssetModel>(tableRelation.childAssetId);
+                var tableReference = Relation.To(tableSpreadsheet).OfType(CustomRelations.TableSource);
                 PushAttributes(tableRelation.relationAttributes, tableReference);
-                topic.WithTableReference(tableReference);
+                topic.WithRelation(tableReference);
+                AssetModel temp = topic;
             }
             return topic;
         }
@@ -233,32 +300,32 @@ namespace QppFacade
         {
             foreach (var attributeValue in attributes)
             {
-                var attrInfo = PhoenixAttributes.ById[attributeValue.attributeId];
-                if (attrInfo == null)
-                    continue;
                 model.Set(attributeValue);
             }
         }
 
-        public void Delete(Topic topic)
+        public void Delete(AssetModel topic)
         {
-            foreach (var pictureReference in topic.Pictures)
+            foreach (var pictureReference in topic.RelationsOfType(DefaultRelationTypes.XML_COMP_REFERENCE))
             {
-                if (pictureReference.AssetModel.IsChart)
-                    Delete(pictureReference.AssetModel.Chart.AssetModel.Id);
+                var chartRelation =
+                    pictureReference.AssetModel.RelationsOfType(CustomRelations.ChartSource)
+                                    .SingleOrDefault();
+                if (chartRelation != null)
+                    Delete(chartRelation.AssetModel.Id);
                 Delete(pictureReference.AssetModel.Id);
             }
-            foreach (var tableRerference in topic.Tables)
+            foreach (var tableRerference in topic.RelationsOfType(CustomRelations.TableSource))
             {
                 Delete(tableRerference.AssetModel.Id);
             }
             Delete(topic.Id);
         }
 
-        public long UploadDitaMap(DitaMap ditaMap)
+        public long UploadDitaMap(AssetModel ditaMap)
         {
             var assetRelations = new List<AssetRelation>();
-            foreach (var topicReference in ditaMap.Topics)
+            foreach (var topicReference in (IEnumerable<Relation>) ditaMap.Relations)
             {
                 var topicId = Upload(topicReference.AssetModel);
                 assetRelations.Add(
@@ -274,25 +341,26 @@ namespace QppFacade
             return CheckInNewAsset(ditaMap, assetRelations.ToArray());
         }
 
-        public DitaMap GetDitaMapWithReferencedItems(long assetId)
+        public AssetModel GetDitaMapWithReferencedItems(long assetId)
         {
-            var ditaMap = GetFile<DitaMap>(assetId);
+            var ditaMap = GetFile<AssetModel>(assetId);
             var topicRelations = _assetService.getChildAssetRelationsOfType(assetId, new long[] {DefaultRelationTypes.XML_COMP_REFERENCE});
             foreach (var assetRelation in topicRelations)
             {
-                var topic = GetFile<Topic>(assetRelation.childAssetId);
+                var topic = GetFile<AssetModel>(assetRelation.childAssetId);
 
-                var topicReference = new XmlReference<Topic>(topic);
-                PushAttributes(assetRelation.relationAttributes, topicReference);
-                ditaMap.AddTopicReference(topicReference);
+                var topicReference = Relation.To(topic).OfType(DefaultRelationTypes.XML_COMP_REFERENCE)
+                                              .With(assetRelation.relationAttributes);
+                ditaMap.WithRelation(topicReference);
+                AssetModel temp = ditaMap;
             }
 
             return ditaMap;
         }
 
-        public void Delete(DitaMap ditaMap)
+        public void DeleteDitaMap(AssetModel ditaMap)
         {
-            foreach (var topicReference in ditaMap.Topics)
+            foreach (var topicReference in (IEnumerable<Relation>) ditaMap.Relations)
             {
                 Delete(topicReference.AssetModel.Id);
             }

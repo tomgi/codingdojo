@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
@@ -6,11 +7,10 @@ using Castle.Windsor;
 using IHS.Phoenix.QPP;
 using IHS.Phoenix.QPP.Facade.SoapFacade;
 using Machine.Specifications;
-using QppFacade.Models;
 
 namespace QppFacade.Tests
 {
-    [Subject(typeof (Topic), "Category")]
+    [Subject(typeof (AssetModel), "Category")]
     public class when_uploading_dita
     {
         private Establish context = () =>
@@ -23,33 +23,36 @@ namespace QppFacade.Tests
 
         private Because of = () =>
         {
+            var ditamapXml = "Assets\\ditamap.xml";
+            var xDocument = XDocument.Load(ditamapXml);
             _assetId = _sut.UploadDitaMap(
-                new DitaMap(XDocument.Parse(File.ReadAllText("Assets\\ditamap.xml")))
+                AssetModel.FromFile(ditamapXml)
+                    .With(PhoenixAttributes.WORKFLOW, CustomWorkflows.Document)
+                    .With(PhoenixAttributes.STATUS, CustomStatuses.Published)
                     .With(PhoenixAttributes.CONTENT_TYPE, CustomContentTypes.IHSDocumentMap)
-                    .With(PhoenixAttributes.NAME, "ditamap.xml")
                     .With(PhoenixAttributes.COLLECTION,  CustomCollections.HomeTest)
                     .With(PhoenixAttributes.ORIGINAL_FILENAME, "ditamap.xml")
                     .With(PhoenixAttributes.DITA_TITLE, "ditamap")
-                    .WithTopic(
-                        new Topic(XDocument.Parse(File.ReadAllText("Assets\\topic1.xml")))
-                            .With(PhoenixAttributes.CONTENT_TYPE, CustomContentTypes.IHSDocument)
-                            .With(PhoenixAttributes.NAME, "topic1.xml")
-                            .With(PhoenixAttributes.COLLECTION,  CustomCollections.HomeTest)
-                            .With(PhoenixAttributes.ORIGINAL_FILENAME, "topic1.xml")
-                            .With(PhoenixAttributes.DITA_TITLE, "topic"))
+                    .WithTopic(AssetModel.FromFile("Assets\\topic1.xml")
+                        .With(PhoenixAttributes.WORKFLOW, CustomWorkflows.Document)
+                        .With(PhoenixAttributes.STATUS, CustomStatuses.Published)    
+                        .With(PhoenixAttributes.CONTENT_TYPE, CustomContentTypes.IHSDocument)
+                        .With(PhoenixAttributes.COLLECTION,  CustomCollections.HomeTest)
+                        .With(PhoenixAttributes.ORIGINAL_FILENAME, "topic1.xml")
+                        .With(PhoenixAttributes.DITA_TITLE, "topic"), xDocument)
                 );
             _ditaMap = _sut.GetDitaMapWithReferencedItems(_assetId);
         };
 
-        private It should_upload_topics = () => _ditaMap.Topics.Count().ShouldEqual(1);
+        private It should_upload_topics = () => _ditaMap.Relations.Count().ShouldEqual(1);
 
-        private Cleanup after = () => _sut.Delete(_ditaMap);
+        private Cleanup after = () => _sut.DeleteDitaMap(_ditaMap);
 
         private static Qpp _sut;
         private static long _assetId;
         private static WindsorContainer _container;
-        private static FileAsset _fileUpdated;
-        private static DitaMap _ditaMap;
+        private static AssetModel _fileUpdated;
+        private static AssetModel _ditaMap;
 
         private static MemoryStream GenerateStreamFromString(string value)
         {
