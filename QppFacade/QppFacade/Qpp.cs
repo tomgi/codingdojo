@@ -87,7 +87,7 @@ namespace QppFacade
         {
             var compositeAsset = _assetService.getAssetWithRelations(assetId);
 
-            var assetModel = new AssetModel { Id = compositeAsset.asset.assetId };
+            var assetModel = AssetModel.FromAsset(compositeAsset.asset);
 
             foreach (var relation in compositeAsset.relatedAssets ?? Enumerable.Empty<RelatedAsset>())
             {
@@ -99,12 +99,39 @@ namespace QppFacade
                     .OfType(relation.assetRelation.relationTypeId));
             }
 
-            foreach (var attributeValue in compositeAsset.asset.attributeValues)
+            return assetModel;
+        }
+
+        public void UpdateAssetModel(AssetModel assetModel)
+        {
+            foreach (var relation in assetModel.Relations)
             {
-                assetModel.Set(attributeValue);
+                UpdateAssetModel(relation.AssetModel);
             }
 
-            return assetModel;
+            _assetService.lockAsset(assetModel.Id);
+            try
+            {
+                _assetService.setAttributeValues(assetModel.Id, 
+                    assetModel.AttributeValues
+                              .Where(a => PhoenixAttributes.ModifiableAttributes[a.attributeId])
+                              .ToArray());
+            }
+            finally
+            {
+                _assetService.unlockAsset(assetModel.Id);
+            }
+        }
+
+        public void DeleteAssetModel(AssetModel assetModel)
+        {
+            foreach (var relation in assetModel.Relations)
+            {
+                DeleteAssetModel(relation.AssetModel);
+            }
+
+            _assetService.lockAsset(assetModel.Id);
+            _assetService.deleteAsset(assetModel.Id);
         }
 
         public void LogIn()
@@ -122,29 +149,6 @@ namespace QppFacade
             var zone = TimeZone.CurrentTimeZone;
             var offset = zone.GetUtcOffset(DateTime.Now);
             return offset;
-        }
-
-        public void UpdateAssetModel(AssetModel assetModel)
-        {
-            foreach (var relation in assetModel.Relations)
-            {
-                UpdateAssetModel(relation.AssetModel);
-            }
-
-            _assetService.lockAsset(assetModel.Id);
-            _assetService.setAttributeValues(assetModel.Id, assetModel.GimmeModifiableAttributeValues());
-            _assetService.unlockAsset(assetModel.Id);
-        }
-
-        public void DeleteAssetModel(AssetModel assetModel)
-        {
-            foreach (var relation in assetModel.Relations)
-            {
-                DeleteAssetModel(relation.AssetModel);
-            }
-
-            _assetService.lockAsset(assetModel.Id);
-            _assetService.deleteAsset(assetModel.Id);
         }
     }
 }

@@ -1,9 +1,12 @@
-﻿using com.quark.qpp.core.asset.service.dto;
+﻿using System.Linq;
+using com.quark.qpp.core.asset.service.dto;
 
 namespace QppFacade
 {
-    public class Relation : AttributeBag
+    public sealed class Relation 
     {
+        private readonly AttributeBag _attributeBag = new AttributeBag();
+
         private Relation(AssetModel assetModel, long relationType)
         {
             AssetModel = assetModel;
@@ -12,6 +15,12 @@ namespace QppFacade
 
         public AssetModel AssetModel { get; private set; }
         public long RelationType { get; private set; }
+
+        public Relation With<TValue>(PhoenixAttribute<TValue> attribute, TValue value)
+        {
+            _attributeBag.Set(attribute, value);
+            return this;
+        }
 
         public static RelationBuilder To(AssetModel assetModel)
         {
@@ -39,7 +48,7 @@ namespace QppFacade
             {
                 childAssetId = AssetModel.Id,
                 parentAssetId = parentAssetId,
-                relationAttributes = GimmeAttributeValues(),
+                relationAttributes = _attributeBag.ToArray(),
                 relationTypeId = RelationType,
             };
         }

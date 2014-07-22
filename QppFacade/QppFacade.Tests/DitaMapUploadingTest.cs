@@ -32,15 +32,12 @@ namespace QppFacade.Tests
                     .With(PhoenixAttributes.STATUS, CustomStatuses.Published)
                     .With(PhoenixAttributes.CONTENT_TYPE, CustomContentTypes.IHSDocumentMap)
                     .With(PhoenixAttributes.COLLECTION,  CustomCollections.HomeTest)
-                    .With(PhoenixAttributes.ORIGINAL_FILENAME, "ditamap.xml")
-                    .With(PhoenixAttributes.DITA_TITLE, "ditamap")
                     .WithTopic(AssetModel.FromFile("Assets\\topic1.xml")
                         .With(PhoenixAttributes.WORKFLOW, CustomWorkflows.Document)
                         .With(PhoenixAttributes.STATUS, CustomStatuses.Published)    
                         .With(PhoenixAttributes.CONTENT_TYPE, CustomContentTypes.IHSDocument)
                         .With(PhoenixAttributes.COLLECTION,  CustomCollections.HomeTest)
-                        .With(PhoenixAttributes.ORIGINAL_FILENAME, "topic1.xml")
-                        .With(PhoenixAttributes.DITA_TITLE, "topic"), xDocument),
+                        , xDocument),
                     new DirectoryInfo(directory)
                 );
             _ditaMap = _sut.GetAssetModel(_assetId);

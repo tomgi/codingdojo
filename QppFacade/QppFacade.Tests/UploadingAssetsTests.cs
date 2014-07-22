@@ -24,11 +24,9 @@ namespace QppFacade.Tests
             _assetId = _sut.UploadAssetModelFromDirectory(
                 AssetModel.FromFile("Assets\\asset.txt")
                     .With(PhoenixAttributes.CONTENT_TYPE, CustomContentTypes.Report)
-                    .With(PhoenixAttributes.NAME, "acetic acid2")
                     .With(PhoenixAttributes.WORKFLOW, CustomWorkflows.Default)
                     .With(PhoenixAttributes.STATUS, CustomStatuses.Default)
-                    .With(PhoenixAttributes.COLLECTION, CustomCollections.HomeTest)
-                    .With(PhoenixAttributes.DITA_TITLE, "acetic acid2"),
+                    .With(PhoenixAttributes.COLLECTION, CustomCollections.HomeTest),
                     new DirectoryInfo("Assets")
                 );
 
@@ -39,22 +37,6 @@ namespace QppFacade.Tests
             _sut.UpdateAssetModel(file);
             _fileUpdated = _sut.GetAssetModel(_assetId);
             _fileUpdated.Get(PhoenixAttributes.DITA_TITLE).ShouldEqual("dupa");
-        };
-
-        private It should_map_things_nicely = () =>
-        {
-            var model = new DatabaseModel()
-            {
-                Id = _fileUpdated.Id,
-                DitaTitle = (string) _fileUpdated.Get(PhoenixAttributes.DITA_TITLE),
-                Name = (string) _fileUpdated.Get(PhoenixAttributes.NAME)
-            };
-            Mapper.CreateMap<AssetModel, DatabaseModel>()
-                  .ForMember(dest => dest.DitaTitle, opts => opts.MapFrom(fileAsset => fileAsset.Get(PhoenixAttributes.DITA_TITLE)))
-                  .ForMember(dest => dest.Name, opts => opts.MapFrom(fileAsset => fileAsset.Get(PhoenixAttributes.NAME)));
-
-            var modelAutoMapper = Mapper.Map<AssetModel, DatabaseModel>(_fileUpdated);
-            modelAutoMapper.Id.ShouldEqual(_fileUpdated.Id);
         };
 
         private Cleanup after = () => _sut.DeleteAssetModel(_fileUpdated);
@@ -68,12 +50,5 @@ namespace QppFacade.Tests
         {
             return new MemoryStream(Encoding.UTF8.GetBytes(value ?? ""));
         }
-    }
-
-    public class DatabaseModel
-    {
-        public long Id { get; set; }
-        public string DitaTitle { get; set; }
-        public string Name { get; set; }
     }
 }

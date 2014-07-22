@@ -1,35 +1,34 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
-using com.quark.qpp.core.asset.service.dto;
 using com.quark.qpp.core.attribute.service.dto;
-using IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes;
 
 namespace QppFacade
 {
-    public abstract class AttributeBag
+    public sealed class AttributeBag : IReadOnlyCollection<AttributeValue>
     {
-        private readonly List<AttributeValue> _attributeValues = new List<AttributeValue>();
+        private readonly List<AttributeValue> _attributeValues;
 
-        public static Dictionary<long,bool> ModifiableAttributes { get; private set; }
+        public AttributeBag() : this(Enumerable.Empty<AttributeValue>())  { }
 
-        static AttributeBag ()
+        public AttributeBag(IEnumerable<AttributeValue> attributeValues)
         {
-            ModifiableAttributes = new Dictionary<long, bool>();
+            _attributeValues = attributeValues.ToList();
         }
 
-        public AttributeValue[] GimmeAttributeValues()
+        public IEnumerator<AttributeValue> GetEnumerator()
         {
-            return _attributeValues.ToArray();
+            return _attributeValues.GetEnumerator();
         }
 
-        public AttributeValue[] GimmeModifiableAttributeValues()
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            return _attributeValues
-                .Where(a => ModifiableAttributes[a.attributeId])
-                .ToArray();
+            return GetEnumerator();
         }
 
-        public T Get<T>(IAttribute<T> attribute)
+        public int Count { get { return _attributeValues.Count; } }
+
+        public T Get<T>(PhoenixAttribute<T> attribute)
         {
             var attr = _attributeValues.SingleOrDefault(a => a.attributeId == attribute.Id);
             if (attr != null)
@@ -39,66 +38,22 @@ namespace QppFacade
             return default(T);
         }
 
-        public void Set<T>(IAttribute<T> attribute, T value)
+        public void Set<T>(PhoenixAttribute<T> attribute, T value)
         {
             var existingAttr = _attributeValues.SingleOrDefault(a => a.attributeId == attribute.Id);
             if (existingAttr == null)
             {
-                AddNewAttribute(attribute, value);
+                _attributeValues.Add(new AttributeValue
+                {
+                    attributeId = attribute.Id,
+                    attributeValue = GenericAttributeMapper.Map(value),
+                    type = attribute.Type
+                });
             }
             else
             {
-                UpdateExistingAttribute(existingAttr, value);
+                existingAttr.attributeValue = GenericAttributeMapper.Map(value);
             }
-        }
-
-        public void Set(AttributeValue attributeValue)
-        {
-            var existingAttr = _attributeValues.SingleOrDefault(a => a.attributeId == attributeValue.attributeId);
-            if (existingAttr == null)
-            {
-                _attributeValues.Add(attributeValue);
-            }
-            else
-            {
-                existingAttr.attributeValue = attributeValue.attributeValue;
-            }
-        }
-
-        private void AddNewAttribute<T>(IAttribute<T> attribute, T value)
-        {
-            var newAttribute = new AttributeValue
-            {
-                attributeId = attribute.Id,
-                attributeValue = GenericAttributeMapper.Map(value),
-                type = attribute.Type
-            };
-            _attributeValues.Add(newAttribute);
-        }
-
-        private void UpdateExistingAttribute<T>(AttributeValue existingAttr, T value)
-        {
-            existingAttr.attributeValue = GenericAttributeMapper.Map(value);
-        }
-    }
-
-    public static class AttrbiuteBagExtensions
-    {
-        public static TAttributeBag With<TAttributeBag,TValue>(this TAttributeBag asset, IAttribute<TValue> attribute, TValue value)
-            where TAttributeBag : AttributeBag
-        {
-            asset.Set(attribute, value);
-            return asset;
-        }
-
-        public static TAttributeBag With<TAttributeBag>(this TAttributeBag asset, AttributeValue[] attributes)
-            where TAttributeBag : AttributeBag
-        {
-            foreach (var attribute in attributes)
-            {
-                asset.Set(attribute);
-            }
-            return asset;
         }
     }
 }

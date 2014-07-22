@@ -76,7 +76,6 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade
             AttributesToAvoidReplicating.Add(typeof (PermissionSetAttribute));
             var serviceFactory = new ServiceFactory(_qppHost, 61400, false, new CookieContainer());
 
-            Func<int, IEnumerable<DomainValue>> resolveDomain = domainId => container.Resolve<AttributeDomainService>().getDomainValues(domainId);
             Func<IEnumerable<Attribute>> getAttributes = () => container.Resolve<AttributeService>().getAllAttributes();
 
 
@@ -92,13 +91,11 @@ namespace IHS.Phoenix.QPP.Facade.SoapFacade
                 Component.For<CollectionService>().UsingFactoryMethod(serviceFactory.GetService<CollectionService>),
                 Component.For<RelationService>().UsingFactoryMethod(serviceFactory.GetService<RelationService>),
                 Component.For<WorkflowService>().UsingFactoryMethod(serviceFactory.GetService<WorkflowService>),
-                Component.For<Func<IEnumerable<Attribute>>>().Instance(getAttributes),
-                Component.For<Func<int, IEnumerable<DomainValue>>>().Instance(resolveDomain),
                 Component.For<FileTransferGatewayConnector>().LifestyleSingleton().DependsOn(Dependency.OnValue<string>(_qppHost)),
                 Component.For<Qpp>().ImplementedBy<Qpp>()
                 );
             container.Resolve<Qpp>().LogIn();
-            PhoenixAttributes.Init(getAttributes, resolveDomain);
+            PhoenixAttributes.Init(getAttributes);
             PhoenixValuesInitializer.Initialize(s => (SoapHttpClientProtocol) serviceFactory.GetService(s));
         }
     }

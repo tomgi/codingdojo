@@ -34,40 +34,29 @@ namespace QppFacade.Tests
                     .With(PhoenixAttributes.STATUS, CustomStatuses.Published)
                     .With(PhoenixAttributes.CONTENT_TYPE, CustomContentTypes.IHSDocument)
                     .With(PhoenixAttributes.COLLECTION, CustomCollections.HomeTest)
-                    .With(PhoenixAttributes.DITA_TITLE, "topic")
                     .WithPicture(
                         AssetModel.FromFile("Assets\\just_image.jpg")
-                            .With(
-                                PhoenixAttributes.CONTENT_TYPE,
-                                new PhoenixValue(DefaultContentTypes.PICTURE, "Picture"))
+                            .With(PhoenixAttributes.CONTENT_TYPE, new PhoenixValue(DefaultContentTypes.PICTURE, "Picture"))
                             .With(PhoenixAttributes.WORKFLOW, CustomWorkflows.Default)
                             .With(PhoenixAttributes.STATUS, CustomStatuses.Default)
                             .With(PhoenixAttributes.COLLECTION, CustomCollections.HomeTest),
                         xDocument)
                     .WithTableSpreadsheet(
                         AssetModel.FromFile("Assets\\tableSpreadsheet.xlsx")
-                            .With(
-                                PhoenixAttributes.CONTENT_TYPE,
-                                CustomContentTypes.ObjectSourceSpreadsheet)
+                            .With(PhoenixAttributes.CONTENT_TYPE, CustomContentTypes.ObjectSourceSpreadsheet)
                             .With(PhoenixAttributes.WORKFLOW, CustomWorkflows.ObjectSource)
                             .With(PhoenixAttributes.STATUS, CustomStatuses.ReadyForDataAdminUpdate)
                             .With(PhoenixAttributes.COLLECTION, CustomCollections.HomeTest),
                         xDocument).WithChart(
                             chart: AssetModel.FromFile("Assets\\chart.jpg")
-                                .With(
-                                    PhoenixAttributes.CONTENT_TYPE,
-                                    new PhoenixValue(DefaultContentTypes.PICTURE, "Picture"))
+                                .With(PhoenixAttributes.CONTENT_TYPE, new PhoenixValue(DefaultContentTypes.PICTURE, "Picture"))
                                 .With(PhoenixAttributes.WORKFLOW, CustomWorkflows.Default)
                                 .With(PhoenixAttributes.STATUS, CustomStatuses.Default)
                                 .With(PhoenixAttributes.COLLECTION, CustomCollections.HomeTest),
                             fromSpreadsheet: AssetModel.FromFile("Assets\\excelChartSpreadsheet.xlsx")
-                                .With(
-                                    PhoenixAttributes.CONTENT_TYPE,
-                                    CustomContentTypes.ObjectSourceSpreadsheet)
+                                .With(PhoenixAttributes.CONTENT_TYPE, CustomContentTypes.ObjectSourceSpreadsheet)
                                 .With(PhoenixAttributes.WORKFLOW, CustomWorkflows.ObjectSource)
-                                .With(
-                                    PhoenixAttributes.STATUS,
-                                    CustomStatuses.ReadyForDataAdminUpdate)
+                                .With(PhoenixAttributes.STATUS, CustomStatuses.ReadyForDataAdminUpdate)
                                 .With(PhoenixAttributes.COLLECTION, CustomCollections.HomeTest),
                             xml: xDocument),
                 new DirectoryInfo(directory)
@@ -75,14 +64,15 @@ namespace QppFacade.Tests
             _topic = _sut.GetAssetModel(_assetId);
         };
 
-        private It should_upload_pictures = () => _topic.RelationsOfType(DefaultRelationTypes.XML_COMP_REFERENCE).Count().ShouldEqual(2);
+        private It should_upload_pictures = () => _topic.Relations.Count(r => r.RelationType == (long) DefaultRelationTypes.XML_COMP_REFERENCE).ShouldEqual(2);
 
-        private It should_upload_tables = () => _topic.RelationsOfType(CustomRelations.TableSource).Count().ShouldEqual(1);
+        private It should_upload_tables = () => _topic.Relations.Count(r => r.RelationType == (long) CustomRelations.TableSource).ShouldEqual(1);
 
         private It should_upload_chart_spreadsheets = () =>
-            _topic.RelationsOfType(DefaultRelationTypes.XML_COMP_REFERENCE).Any(
+            _topic.Relations
+                  .Where(r => r.RelationType == (long) DefaultRelationTypes.XML_COMP_REFERENCE).Any(
                 picture =>
-                    picture.AssetModel.RelationsOfType(CustomRelations.ChartSource).Count() == 1)
+                    picture.AssetModel.Relations.Count(r => r.RelationType == (long) CustomRelations.ChartSource) == 1)
                   .ShouldBeTrue();
 
 

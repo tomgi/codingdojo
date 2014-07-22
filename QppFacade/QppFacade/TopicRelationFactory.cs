@@ -27,7 +27,7 @@ namespace QppFacade
                         .With(PhoenixAttributes.OutSheet, chartTag.Attribute("OutSheet").Value)
                         .With(PhoenixAttributes.OutChartName, chartTag.Attribute("OutChartName").Value));
 
-            topic.Relations.Add(Relation.To(chart).OfType(DefaultRelationTypes.XML_COMP_REFERENCE)
+            topic.WithRelation(Relation.To(chart).OfType(DefaultRelationTypes.XML_COMP_REFERENCE)
                                         .With(PhoenixAttributes.XPATH, chartTag.AbsoluteXPath()));
             return topic;
         }
@@ -51,7 +51,7 @@ namespace QppFacade
 
             foreach (var tableTag in tables)
             {
-                topic.Relations.Add(
+                topic.WithRelation(
                     Relation.To(tableSpreadsheet).OfType(CustomRelations.TableSource)
                             .With(PhoenixAttributes.XPATH, tableTag.AbsoluteXPath())
                             .With(PhoenixAttributes.InRangeName, tableTag.Attribute("InRangeName").Value)

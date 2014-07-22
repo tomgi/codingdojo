@@ -18,9 +18,16 @@
 
         public static implicit operator string(PhoenixValue phoenixValue)
         {
-            return phoenixValue._name;
+            return phoenixValue.Name;
         }
 
         public int DomainId { get; set; }
+        
+        public long Id { get { return _id; } }
+
+        public string Name
+        {
+            get { return _name; }
+        }
     }
 }

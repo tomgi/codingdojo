@@ -2,33 +2,47 @@
 using System.IO;
 using System.Linq;
 using com.quark.qpp.core.asset.service.dto;
+using com.quark.qpp.core.attribute.service.dto;
 
 namespace QppFacade
 {
-    public class AssetModel : AttributeBag
+    public sealed class AssetModel
     {
         public long Id { get; set; }
 
-        public readonly List<Relation> Relations = new List<Relation>();
+        private readonly List<Relation> _relations = new List<Relation>();
+        private readonly AttributeBag _attributeBag;
 
-        public IEnumerable<Relation> RelationsOfType(long relationType)
+        private AssetModel(IEnumerable<AttributeValue> attributes)
         {
-            return Relations
-                .Where(r => r.RelationType == relationType);
+            _attributeBag = new AttributeBag(attributes);
+        }
+
+        public IReadOnlyCollection<Relation> Relations
+        {
+            get { return _relations; }
+        }
+
+        public IReadOnlyCollection<AttributeValue> AttributeValues
+        {
+            get { return _attributeBag; }
         }
 
         public AssetModel WithRelation(Relation relation)
         {
-            Relations.Add(relation);
+            _relations.Add(relation);
             return this;
         }
 
-        public static AssetModel FromFile(string filePath)
+        public AssetModel With<TValue>(PhoenixAttribute<TValue> attribute, TValue value)
         {
-            return new AssetModel()
-                .With(PhoenixAttributes.NAME, Path.GetFileName(filePath))
-                .With(PhoenixAttributes.ORIGINAL_FILENAME, Path.GetFileName(filePath))
-                .With(PhoenixAttributes.FILE_EXTENSION, Path.GetExtension(filePath));
+            _attributeBag.Set(attribute, value);
+            return this;
+        }
+
+        public TValue Get<TValue>(PhoenixAttribute<TValue> value)
+        {
+            return _attributeBag.Get(value);
         }
 
         public Asset ToAsset()
@@ -36,8 +50,21 @@ namespace QppFacade
             return new Asset
             {
                 assetId = Id,
-                attributeValues = GimmeAttributeValues()
+                attributeValues = _attributeBag.ToArray()
             };
+        }
+
+        public static AssetModel FromFile(string filePath)
+        {
+            return new AssetModel(Enumerable.Empty<AttributeValue>())
+                .With(PhoenixAttributes.NAME, Path.GetFileName(filePath))
+                .With(PhoenixAttributes.ORIGINAL_FILENAME, Path.GetFileName(filePath))
+                .With(PhoenixAttributes.FILE_EXTENSION, Path.GetExtension(filePath));
+        }
+
+        public static AssetModel FromAsset(Asset asset)
+        {
+            return new AssetModel(asset.attributeValues) {Id = asset.assetId};
         }
     }
 }
