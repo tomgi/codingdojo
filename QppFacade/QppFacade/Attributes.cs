@@ -28,8 +28,7 @@ namespace QppFacade
 
         public static void Init(
             Func<IEnumerable<Attribute>> getQppAttributes,
-            Func<int, IEnumerable<DomainValue>> getDomainValues,
-            Func<string, long> getCollectionValues)
+            Func<int, IEnumerable<DomainValue>> getDomainValues)
         {
             if (Initialized)
                 return;

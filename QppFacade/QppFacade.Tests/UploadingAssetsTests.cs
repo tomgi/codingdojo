@@ -21,23 +21,23 @@ namespace QppFacade.Tests
 
 
         private Because of = () =>
-            _assetId = _sut.Upload(
-                AssetModel.FromFile("asset.txt")
+            _assetId = _sut.UploadAssetModelFromDirectory(
+                AssetModel.FromFile("Assets\\asset.txt")
                     .With(PhoenixAttributes.CONTENT_TYPE, CustomContentTypes.Report)
                     .With(PhoenixAttributes.NAME, "acetic acid2")
                     .With(PhoenixAttributes.WORKFLOW, CustomWorkflows.Default)
                     .With(PhoenixAttributes.STATUS, CustomStatuses.Default)
                     .With(PhoenixAttributes.COLLECTION, CustomCollections.HomeTest)
-                    .With(PhoenixAttributes.ORIGINAL_FILENAME, "acetic acid2")
-                    .With(PhoenixAttributes.DITA_TITLE, "acetic acid2")
+                    .With(PhoenixAttributes.DITA_TITLE, "acetic acid2"),
+                    new DirectoryInfo("Assets")
                 );
 
         private It should_upload_asset_properly = () =>
         {
-            var file = _sut.GetFile<AssetModel>(_assetId);
+            var file = _sut.GetAssetModel(_assetId);
             file.With(PhoenixAttributes.DITA_TITLE, "dupa");
-            _sut.UpdateFile(file);
-            _fileUpdated = _sut.GetFile<AssetModel>(_assetId);
+            _sut.UpdateAssetModel(file);
+            _fileUpdated = _sut.GetAssetModel(_assetId);
             _fileUpdated.Get(PhoenixAttributes.DITA_TITLE).ShouldEqual("dupa");
         };
 
@@ -57,7 +57,7 @@ namespace QppFacade.Tests
             modelAutoMapper.Id.ShouldEqual(_fileUpdated.Id);
         };
 
-        private Cleanup after = () => _sut.Delete(_assetId);
+        private Cleanup after = () => _sut.DeleteAssetModel(_fileUpdated);
 
         private static Qpp _sut;
         private static long _assetId;

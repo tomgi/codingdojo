@@ -152,7 +152,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="asset.txt">
+    <Content Include="Assets\asset.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\chart.jpg">

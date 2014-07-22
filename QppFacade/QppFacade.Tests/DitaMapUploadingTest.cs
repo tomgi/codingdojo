@@ -25,7 +25,8 @@ namespace QppFacade.Tests
         {
             var ditamapXml = "Assets\\ditamap.xml";
             var xDocument = XDocument.Load(ditamapXml);
-            _assetId = _sut.UploadDitaMap(
+            var directory = "Assets";
+            _assetId = _sut.UploadAssetModelFromDirectory(
                 AssetModel.FromFile(ditamapXml)
                     .With(PhoenixAttributes.WORKFLOW, CustomWorkflows.Document)
                     .With(PhoenixAttributes.STATUS, CustomStatuses.Published)
@@ -39,14 +40,15 @@ namespace QppFacade.Tests
                         .With(PhoenixAttributes.CONTENT_TYPE, CustomContentTypes.IHSDocument)
                         .With(PhoenixAttributes.COLLECTION,  CustomCollections.HomeTest)
                         .With(PhoenixAttributes.ORIGINAL_FILENAME, "topic1.xml")
-                        .With(PhoenixAttributes.DITA_TITLE, "topic"), xDocument)
+                        .With(PhoenixAttributes.DITA_TITLE, "topic"), xDocument),
+                    new DirectoryInfo(directory)
                 );
-            _ditaMap = _sut.GetDitaMapWithReferencedItems(_assetId);
+            _ditaMap = _sut.GetAssetModel(_assetId);
         };
 
         private It should_upload_topics = () => _ditaMap.Relations.Count().ShouldEqual(1);
 
-        private Cleanup after = () => _sut.DeleteDitaMap(_ditaMap);
+        private Cleanup after = () => _sut.DeleteAssetModel(_ditaMap);
 
         private static Qpp _sut;
         private static long _assetId;

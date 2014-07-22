@@ -25,9 +25,10 @@ namespace QppFacade.Tests
 
         private Because of = () =>
         {
+            var directory = "Assets";
             var topicPath = "Assets\\topic.xml";
             var xDocument = XDocument.Load(topicPath);
-            _assetId = _sut.UploadAssetFromFile(
+            _assetId = _sut.UploadAssetModelFromDirectory(
                 AssetModel.FromFile(topicPath)
                     .With(PhoenixAttributes.WORKFLOW, CustomWorkflows.Document)
                     .With(PhoenixAttributes.STATUS, CustomStatuses.Published)
@@ -69,9 +70,9 @@ namespace QppFacade.Tests
                                     CustomStatuses.ReadyForDataAdminUpdate)
                                 .With(PhoenixAttributes.COLLECTION, CustomCollections.HomeTest),
                             xml: xDocument),
-                new FileInfo(topicPath)
+                new DirectoryInfo(directory)
                 );
-            _topic = _sut.GetTopicWithReferencedItems(_assetId);
+            _topic = _sut.GetAssetModel(_assetId);
         };
 
         private It should_upload_pictures = () => _topic.RelationsOfType(DefaultRelationTypes.XML_COMP_REFERENCE).Count().ShouldEqual(2);
@@ -85,7 +86,7 @@ namespace QppFacade.Tests
                   .ShouldBeTrue();
 
 
-        private Cleanup after = () => _sut.Delete(_topic);
+        private Cleanup after = () => _sut.DeleteAssetModel(_topic);
 
         private static Qpp _sut;
         private static long _assetId;

@@ -127,6 +127,7 @@
     <Compile Include="Consts\PhoenixValue.cs" />
     <Compile Include="Consts\PhoenixValuesInitializer.cs" />
     <Compile Include="Models\AttributeBag.cs" />
+    <Compile Include="GenericAttributeMapper.cs" />
     <Compile Include="Models\Relation.cs" />
     <Compile Include="Models\AssetModel.cs" />
     <Compile Include="TopicRelationFactory.cs" />

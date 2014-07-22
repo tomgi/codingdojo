@@ -1,4 +1,6 @@
-﻿namespace QppFacade
+﻿using com.quark.qpp.core.asset.service.dto;
+
+namespace QppFacade
 {
     public class Relation : AttributeBag
     {
@@ -29,6 +31,17 @@
             {
                 return new Relation(_assetModel, relationType);
             }
+        }
+
+        public AssetRelation ToAssetRelation(long parentAssetId)
+        {
+            return new AssetRelation
+            {
+                childAssetId = AssetModel.Id,
+                parentAssetId = parentAssetId,
+                relationAttributes = GimmeAttributeValues(),
+                relationTypeId = RelationType,
+            };
         }
     }
 }

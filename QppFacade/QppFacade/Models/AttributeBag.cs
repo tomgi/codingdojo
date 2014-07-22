@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Collections.Generic;
 using System.Linq;
-using com.quark.qpp.common.dto;
 using com.quark.qpp.core.asset.service.dto;
-using com.quark.qpp.core.attribute.service.constants;
 using com.quark.qpp.core.attribute.service.dto;
-using IHS.Phoenix.QPP;
 using IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes;
 
 namespace QppFacade
@@ -39,7 +34,7 @@ namespace QppFacade
             var attr = _attributeValues.SingleOrDefault(a => a.attributeId == attribute.Id);
             if (attr != null)
             {
-                return GenericValueExtractor.Extract<T>(attr);
+                return GenericAttributeMapper.Map<T>(attr);
             }
             return default(T);
         }
@@ -75,7 +70,7 @@ namespace QppFacade
             var newAttribute = new AttributeValue
             {
                 attributeId = attribute.Id,
-                attributeValue = AttributeValueFactory.Create(value),
+                attributeValue = GenericAttributeMapper.Map(value),
                 type = attribute.Type
             };
             _attributeValues.Add(newAttribute);
@@ -83,92 +78,7 @@ namespace QppFacade
 
         private void UpdateExistingAttribute<T>(AttributeValue existingAttr, T value)
         {
-            existingAttr.attributeValue = AttributeValueFactory.Create(value);
-        }
-    }
-
-    internal static class GenericValueExtractor
-    {
-        private static IDictionary<int, Func<AttributeValue, object>> _map =
-            new Dictionary<int, Func<AttributeValue, object>>
-            {
-                {AttributeValueTypes.BOOLEAN, GetBool},
-                {AttributeValueTypes.NUMERIC, GetNum},
-                {AttributeValueTypes.DATETIME, GetDateTime},
-                {AttributeValueTypes.TEXT, GetText},
-                {AttributeValueTypes.DOMAIN, GetDomain},
-            };
-
-        private static object GetDomain(AttributeValue attribute)
-        {
-            var domainVal = (attribute.attributeValue as DomainValue);
-            return new PhoenixValue(domainVal.id, domainVal.name){ DomainId = domainVal.domainId};
-        }
-
-        private static object GetDateTime(AttributeValue attribute)
-        {
-            return DateTime.Parse((attribute.attributeValue as DateTimeValue).value);
-        }
-
-        private static object GetText(AttributeValue attribute)
-        {
-            return (attribute.attributeValue as TextValue).value;
-        }
-
-        private static object GetBool(AttributeValue attribute)
-        {
-            return (attribute.attributeValue as BooleanValue).value;
-        }
-
-        private static object GetNum(AttributeValue attribute)
-        {
-            return (attribute.attributeValue as NumericValue).value;
-        }
-
-        public static T Extract<T>(AttributeValue attributeValue)
-        {
-            return (T) _map[attributeValue.type](attributeValue);
-        }
-    }
-
-    internal static class AttributeValueFactory
-    {
-        public static Value Create<T>(T value)
-        {
-            var methodInfo = 
-                typeof (AttributeValueFactory)
-                .GetMethod("Create", new[] {typeof (T)});
-            return (Value) methodInfo.Invoke(null, new object[]{value});
-        }
-
-        public static Value Create(long value)
-        {
-            return new NumericValue{ value = value };
-        }
-
-        public static Value Create(string value)
-        {
-            return new TextValue { value = value };
-        }
-        
-        public static Value Create(bool value)
-        {
-            return new BooleanValue { value = value };
-        }
-
-        public static Value Create(DateTime value)
-        {
-            return new DateTimeValue { value = value.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'", CultureInfo.InvariantCulture) };
-        }
-
-        public static Value Create(PhoenixValue value)
-        {
-            return new DomainValue
-            {
-                domainId = value.DomainId,
-                id = value,
-                name = value
-            };
+            existingAttr.attributeValue = GenericAttributeMapper.Map(value);
         }
     }
 
@@ -189,19 +99,6 @@ namespace QppFacade
                 asset.Set(attribute);
             }
             return asset;
-        }
-    }
-
-
-    public static class AssetExtensions
-    {
-        public static Asset ToAsset(this AssetModel assetModel)
-        {
-            return new Asset
-            {
-                assetId = assetModel.Id,
-                attributeValues = assetModel.GimmeAttributeValues()
-            };
         }
     }
 }
