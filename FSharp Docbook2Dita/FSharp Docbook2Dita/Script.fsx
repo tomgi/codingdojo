@@ -9,14 +9,25 @@ type DitaMapProvider = XmlProvider<"out_ditamap.xml", Global = true>
 type TopicProvider   = XmlProvider<"out_topic1.xml", Global = true>
 
 type Docbook         = DocbookProvider.Book
+type Chapter         = DocbookProvider.Chapter
 
 type DitaMap         = DitaMapProvider.Map
 type Topic           = TopicProvider.Topic
 
+type TopicRef        = DitaMapProvider.Topicref
+
 type Composite = {DitaMap : DitaMap; Topics : List<Topic>}
 
+let topicRefFactory = fun i -> TopicRef(sprintf "out_topic%d.xml" (i+1))  
+
+let chapterToTopic (chapter : Chapter) = 
+    Topic(chapter.Id, chapter.Title, TopicProvider.Body chapter.Paras)
+
 let docbook2Dita (docbook : Docbook) : Composite =
-    failwith "implement me"
+    { 
+    DitaMap = DitaMap(docbook.Title, 
+                        topicRefFactory |> (docbook.Chapters.Length |> Array.init) ) 
+    Topics = (docbook.Chapters |> (chapterToTopic |> Array.map)) |> Array.toList }
 
 let actual = DocbookProvider.Load "in_docbook.xml" |> docbook2Dita
 
