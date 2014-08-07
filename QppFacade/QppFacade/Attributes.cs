@@ -1,24 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
 using System.Text;
 using com.quark.qpp.common.dto;
 using com.quark.qpp.core.attribute.service.constants;
 using com.quark.qpp.core.attribute.service.dto;
+using IHS.Phoenix.QPP;
 using IHS.Phoenix.QPP.Facade.SoapFacade.QppAttributes;
 using Attribute = com.quark.qpp.core.attribute.service.dto.Attribute;
 
 namespace QppFacade
 {
-    public class AttributePlaceholder : IAttribute<object>
+     public class AttributePlaceholder<T> : IAttribute<T>
     {
         public long Id { get; set; }
         public string Name { get; set; }
-        public object FromAttributeValue(AttributeValue value)
+
+        public AttributeValue ToAttributeValue(T value)
         {
             throw new NotImplementedException();
         }
 
-        public AttributeValue ToAttributeValue(object value)
+        T IAttribute<T>.FromAttributeValue(AttributeValue value)
         {
             throw new NotImplementedException();
         }
@@ -28,6 +32,7 @@ namespace QppFacade
             throw new NotImplementedException();
         }
     }
+
 
     public static partial class PhoenixAttributes
     {
@@ -48,7 +53,6 @@ namespace QppFacade
             ByName = new Dictionary<string, IAttribute>();
             ById = new Dictionary<long, IAttribute>();
 
-            var builder = new StringBuilder();
             foreach (var qppAttribute in getQppAttributes())
             {
                 IAttribute attribute = null;
@@ -82,9 +86,11 @@ namespace QppFacade
                 }
             }
 
-            foreach (var fieldInfo in typeof (PhoenixAttributes).GetFields())
+            //var builder = new StringBuilder();
+
+            foreach (var fieldInfo in typeof(PhoenixAttributes).GetFields(BindingFlags.Public | BindingFlags.Static))
             {
-                var attributePlaceholder = (AttributePlaceholder) fieldInfo.GetValue(null);
+                var attributePlaceholder = (IAttribute) fieldInfo.GetValue(null);
                 IAttribute attribute = null;
                 if (attributePlaceholder.Id != 0)
                 {
@@ -98,8 +104,15 @@ namespace QppFacade
                 }
                 if (attribute != null)
                     fieldInfo.SetValue(null, attribute);
-                builder.AppendLine(string.Format("public static IAttribute<{0}> {1} = new AttributePlaceholder \{Id={2},Name={3}\}",GetAttributeType(attribute),fieldInfo.Name));
+
+                //if (attribute != null)
+                //    builder.AppendLine(string.Format("public static IAttribute<{0}> {1} = new AttributePlaceholder<{0}> {{Id={2},Name=\"{3}\"}}",
+                //        GetAttributeType(attribute),
+                //        fieldInfo.Name,
+                //        attribute.Id,
+                //        attribute.Name));
             }
+            //Debug.Write(builder.ToString());
         }
 
         private static string GetAttributeType(IAttribute attribute)
@@ -116,179 +129,180 @@ namespace QppFacade
 
     public static partial class PhoenixAttributes
     {
-        public static IAttribute APP_STUDIO_ISSUE_URN = new AttributePlaceholder {Id = 180L};
-        public static IAttribute ARTICLE_COMP_REFRENCE_ASSET_ID = new AttributePlaceholder {Id = 0x19eL};
-        public static IAttribute ARTICLE_COMP_REFRENCE_ASSET_MAJ_VERSION = new AttributePlaceholder {Id = 0x19fL};
-        public static IAttribute ARTICLE_COMP_REFRENCE_ASSET_MIN_VERSION = new AttributePlaceholder {Id = 0x1a0L};
-        public static IAttribute ARTICLE_COMPONENT_ID = new AttributePlaceholder {Id = 0x131L};
-        public static IAttribute ARTICLE_ID = new AttributePlaceholder {Id = 0x19dL};
-        public static IAttribute ASSET_CHECKSUM = new AttributePlaceholder {Id = 0x197L};
-        public static IAttribute ASSIGNED_LENGTH = new AttributePlaceholder {Id = 0x166L};
-        public static IAttribute ATTACHED_COMPONENT_ID = new AttributePlaceholder {Id = 0x19cL};
-        public static IAttribute ATTACHED_LAYOUT_ID = new AttributePlaceholder {Id = 0x191L};
-        public static IAttribute ATTACHMENT_CHECKSUM = new AttributePlaceholder {Id = 0x198L};
-        public static IAttribute AUXILIARY_DATA = new AttributePlaceholder {Id = 0x199L};
-        public static IAttribute BOX_HEIGHT = new AttributePlaceholder {Id = 0x196L};
-        public static IAttribute BOX_ID = new AttributePlaceholder {Id = 0x192L};
-        public static IAttribute BOX_WIDTH = new AttributePlaceholder {Id = 0x195L};
-        public static IAttribute CHARACTER_COUNT = new AttributePlaceholder {Id = 0x164L};
-        public static IAttribute CHECK_OUT_DATE_TIME = new AttributePlaceholder {Id = 0x11L};
-        public static IAttribute CHECKED_OUT_APPLICATION = new AttributePlaceholder {Id = 0x22L};
-        public static IAttribute CHECKED_OUT_BY = new AttributePlaceholder {Id = 14L};
-        public static IAttribute CHECKED_OUT_DURATION = new AttributePlaceholder {Id = 0x23L};
-        public static IAttribute CHECKED_OUT_FILE_PATH = new AttributePlaceholder {Id = 0x10L};
-        public static IAttribute CHECKED_OUT_MACHINE_NAME = new AttributePlaceholder {Id = 15L};
-        public static IAttribute COLLECTION = new AttributePlaceholder {Id = 0x37L};
-        public static IAttribute COLLECTION_PATH = new AttributePlaceholder {Id = 0x39L};
-        public static IAttribute COLLECTION_TEMPLATE = new AttributePlaceholder {Id = 0x3aL};
-        public static IAttribute COLOR_DEPTH = new AttributePlaceholder {Id = 0xccL};
-        public static IAttribute COLOR_SPACE = new AttributePlaceholder {Id = 0xcdL};
-        public static IAttribute COLUMN_WIDTH = new AttributePlaceholder {Id = 0x163L};
-        public static IAttribute COMPONENT_NAME = new AttributePlaceholder {Id = 0x12fL};
-        public static IAttribute COMPONENT_POSITION = new AttributePlaceholder {Id = 0x12eL};
-        public static IAttribute CONTENT_CREATOR = new AttributePlaceholder {Id = 0x20L};
-        public static IAttribute CONTENT_TYPE = new AttributePlaceholder {Id = 0x3eL};
-        public static IAttribute CONTENT_TYPE_HIERARCHY = new AttributePlaceholder {Id = 0x3fL};
-        public static IAttribute CREATED = new AttributePlaceholder {Id = 3L};
-        public static IAttribute CREATOR = new AttributePlaceholder {Id = 5L};
-        public static IAttribute CURRENT_BILLABLE_HOURS = new AttributePlaceholder {Id = 0x24L};
-        public static IAttribute CURRENT_LENGTH = new AttributePlaceholder {Id = 0x165L};
-        public static IAttribute DEPENDENT_ON_COLLECTION_RESOURCES = new AttributePlaceholder {Id = 0x1a2L};
-        public static IAttribute DEVICE_NAME = new AttributePlaceholder {Id = 0x9eL};
-        public static IAttribute DITA_AUDIENCE = new AttributePlaceholder {Id = 0x1c4L};
-        public static IAttribute DITA_AUTHOR = new AttributePlaceholder {Id = 0x1c5L};
-        public static IAttribute DITA_BRAND = new AttributePlaceholder {Id = 0x1c6L};
-        public static IAttribute DITA_CATEGORY = new AttributePlaceholder {Id = 0x1c7L};
-        public static IAttribute DITA_ID = new AttributePlaceholder {Id = 0x1c8L};
-        public static IAttribute DITA_IMPORTANCE = new AttributePlaceholder {Id = 0x1d2L};
-        public static IAttribute DITA_KEYWORDS = new AttributePlaceholder {Id = 0x1c9L};
-        public static IAttribute DITA_LANGUAGE = new AttributePlaceholder {Id = 0x1d0L};
-        public static IAttribute DITA_NAVIGATION_TITLE = new AttributePlaceholder {Id = 0x1caL};
-        public static IAttribute DITA_OTHER_PROPERTIES = new AttributePlaceholder {Id = 0x1d1L};
-        public static IAttribute DITA_PLATFORM = new AttributePlaceholder {Id = 0x1cbL};
-        public static IAttribute DITA_PRODUCT_NAME = new AttributePlaceholder {Id = 460L};
-        public static IAttribute DITA_PUBLISHING_CONTENT = new AttributePlaceholder {Id = 0x1cfL};
-        public static IAttribute DITA_SEARCH_TITLE = new AttributePlaceholder {Id = 0x1cdL};
-        public static IAttribute DITA_TITLE = new AttributePlaceholder {Id = 0x1ceL};
-        public static IAttribute DUE_DATE = new AttributePlaceholder {Id = 0x29L};
-        public static IAttribute DUE_TIME = new AttributePlaceholder {Id = 0x2aL};
-        public static IAttribute FILE_EXTENSION = new AttributePlaceholder {Id = 11L};
-        public static IAttribute FILE_PATH = new AttributePlaceholder {Id = 8L};
-        public static IAttribute FILE_SIZE = new AttributePlaceholder {Id = 12L};
-        public static IAttribute FIRST_PAGE = new AttributePlaceholder {Id = 0x33L};
-        public static IAttribute GLOBAL_ID = new AttributePlaceholder {Id = 0x42L};
-        public static IAttribute HAS_CHILDREN = new AttributePlaceholder {Id = 0x41L};
-        public static IAttribute ID = new AttributePlaceholder {Id = 1L};
-        public static IAttribute INDESIGN_OBJECT_UID = new AttributePlaceholder {Id = 0x1a3L};
-        public static IAttribute INDEXING_STATUS = new AttributePlaceholder {Id = 0x1dL};
-        public static IAttribute IPTC_BY_LINE = new AttributePlaceholder {Id = 0xd5L};
-        public static IAttribute IPTC_BY_LINE_TITLE = new AttributePlaceholder {Id = 0xd6L};
-        public static IAttribute IPTC_CAPTION = new AttributePlaceholder {Id = 0xdfL};
-        public static IAttribute IPTC_CATEGORY = new AttributePlaceholder {Id = 0xd0L};
-        public static IAttribute IPTC_CITY = new AttributePlaceholder {Id = 0xd7L};
-        public static IAttribute IPTC_COPYRIGHT_NOTICE = new AttributePlaceholder {Id = 0xdeL};
-        public static IAttribute IPTC_COUNTRY = new AttributePlaceholder {Id = 0xd9L};
-        public static IAttribute IPTC_CREDIT = new AttributePlaceholder {Id = 220L};
-        public static IAttribute IPTC_DATE_CREATED = new AttributePlaceholder {Id = 0xd4L};
-        public static IAttribute IPTC_HEADLINE = new AttributePlaceholder {Id = 0xdbL};
-        public static IAttribute IPTC_KEYWORDS = new AttributePlaceholder {Id = 210L};
-        public static IAttribute IPTC_OBJECT_NAME = new AttributePlaceholder {Id = 0xceL};
-        public static IAttribute IPTC_ORIGINAL_TRANSMISSION_REFERENCE = new AttributePlaceholder {Id = 0xdaL};
-        public static IAttribute IPTC_PROVINCE = new AttributePlaceholder {Id = 0xd8L};
-        public static IAttribute IPTC_SOURCE = new AttributePlaceholder {Id = 0xddL};
-        public static IAttribute IPTC_SPECIAL_INSTRUCTIONS = new AttributePlaceholder {Id = 0xd3L};
-        public static IAttribute IPTC_SUPPLEMENTAL_CATEGORIES = new AttributePlaceholder {Id = 0xd1L};
-        public static IAttribute IPTC_URGENCY = new AttributePlaceholder {Id = 0xcfL};
-        public static IAttribute IPTC_WRITER = new AttributePlaceholder {Id = 0xe0L};
-        public static IAttribute IS_CHECKED_OUT = new AttributePlaceholder {Id = 13L};
-        public static IAttribute IS_COLLECTED = new AttributePlaceholder {Id = 0x12L};
-        public static IAttribute IS_COLLECTION_TEMPLATE = new AttributePlaceholder {Id = 0x3bL};
-        public static IAttribute IS_PLACEHOLDER = new AttributePlaceholder {Id = 30L};
-        public static IAttribute ISSUE = new AttributePlaceholder {Id = 0x1aL};
-        public static IAttribute ITEM_NAME = new AttributePlaceholder {Id = 410L};
-        public static IAttribute ITEM_TYPE = new AttributePlaceholder {Id = 0x19bL};
-        public static IAttribute JOB_JACKET = new AttributePlaceholder {Id = 0x2cL};
-        public static IAttribute JOB_TICKET_TEMPLATE_NAME = new AttributePlaceholder {Id = 0x2dL};
-        public static IAttribute LAST_CONTENT_UPDATE = new AttributePlaceholder {Id = 0x13L};
-        public static IAttribute LAST_CONTENT_UPDATED_BY = new AttributePlaceholder {Id = 20L};
-        public static IAttribute LAST_GEOMETRY_UPDATE = new AttributePlaceholder {Id = 0x15L};
-        public static IAttribute LAST_JOB_JACKET_MODIFIED = new AttributePlaceholder {Id = 10L};
-        public static IAttribute LAST_MODIFIED = new AttributePlaceholder {Id = 4L};
-        public static IAttribute LAST_MODIFIER = new AttributePlaceholder {Id = 6L};
-        public static IAttribute LAST_PAGE = new AttributePlaceholder {Id = 0x34L};
-        public static IAttribute LAYOUT_GEOMETRY_DIFFERS = new AttributePlaceholder {Id = 0x97L};
-        public static IAttribute LAYOUT_NAME = new AttributePlaceholder {Id = 0x9dL};
-        public static IAttribute LINE_COUNT = new AttributePlaceholder {Id = 0x162L};
-        public static IAttribute MAC_CREATOR_TYPE = new AttributePlaceholder {Id = 0x2fL};
-        public static IAttribute MAC_OS_TYPE = new AttributePlaceholder {Id = 0x2eL};
-        public static IAttribute MAJOR_VERSION = new AttributePlaceholder {Id = 7L};
-        public static IAttribute MIME_TYPE = new AttributePlaceholder {Id = 0x30L};
-        public static IAttribute MINOR_VERSION = new AttributePlaceholder {Id = 0x3dL};
-        public static IAttribute NAME = new AttributePlaceholder {Id = 2L};
-        public static IAttribute NUMBER_OF_LAYOUTS = new AttributePlaceholder {Id = 60L};
-        public static IAttribute NUMBER_OF_PAGES = new AttributePlaceholder {Id = 0x2bL};
-        public static IAttribute ORIENTATION = new AttributePlaceholder {Id = 0x99L};
-        public static IAttribute ORIGINAL_FILENAME = new AttributePlaceholder {Id = 0x21L};
-        public static IAttribute PAGE_HEIGHT = new AttributePlaceholder {Id = 0x9cL};
-        public static IAttribute PAGE_INDEX = new AttributePlaceholder {Id = 0x194L};
-        public static IAttribute PAGE_NAME = new AttributePlaceholder {Id = 0x193L};
-        public static IAttribute PAGE_WIDTH = new AttributePlaceholder {Id = 0x9bL};
-        public static IAttribute PIXEL_HEIGHT = new AttributePlaceholder {Id = 0xcaL};
-        public static IAttribute PIXEL_WIDTH = new AttributePlaceholder {Id = 0xc9L};
-        public static IAttribute RELATION_STATUS = new AttributePlaceholder {Id = 0x40L};
-        public static IAttribute REPOSITORY = new AttributePlaceholder {Id = 0x1cL};
-        public static IAttribute REPOSITORY_TYPE = new AttributePlaceholder {Id = 0x1bL};
-        public static IAttribute RESOLUTION = new AttributePlaceholder {Id = 0xcbL};
-        public static IAttribute REVISION_COMMENTS = new AttributePlaceholder {Id = 0x1fL};
-        public static IAttribute ROUTED_TO = new AttributePlaceholder {Id = 0x19L};
-        public static IAttribute STATUS = new AttributePlaceholder {Id = 0x18L};
-        public static IAttribute STORY_DIRECTION = new AttributePlaceholder {Id = 0x9aL};
-        public static IAttribute TEXT_INDEXING_STATUS = new AttributePlaceholder {Id = 0x35L};
-        public static IAttribute TEXT_PREVIEW = new AttributePlaceholder {Id = 0x160L};
-        public static IAttribute TOTAL_BILLABLE_HOURS = new AttributePlaceholder {Id = 0x25L};
-        public static IAttribute WORD_COUNT = new AttributePlaceholder {Id = 0x161L};
-        public static IAttribute WORKFLOW = new AttributePlaceholder {Id = 0x36L};
-        public static IAttribute XPATH = new AttributePlaceholder {Id = 0x1a1L};
-        public static IAttribute SourceDocumentId = new AttributePlaceholder {Name = "Source Document Id"};
-        public static IAttribute GeographyId = new AttributePlaceholder {Name = "Geography Id"};
-        public static IAttribute Geography = new AttributePlaceholder {Name = "Geography"};
-        public static IAttribute PublishedDate = new AttributePlaceholder {Name = "Published Date"};
-        public static IAttribute UserSetPublishedDate = new AttributePlaceholder {Name = "User-Set Published Date"};
-        public static IAttribute UserProposedPublishedDate = new AttributePlaceholder {Name = "User-Proposed Published Date"};
-        public static IAttribute DontUpdatePublishedDate = new AttributePlaceholder {Name = "Don't Update Published Date"};
-        public static IAttribute HiddenUpdate = new AttributePlaceholder {Name = "Hidden Update"};
-        public static IAttribute InRangeName = new AttributePlaceholder {Name = "InRangeName"};
-        public static IAttribute InRangeValue = new AttributePlaceholder {Name = "InRangeValue"};
-        public static IAttribute OutSheet = new AttributePlaceholder {Name = "OutSheet"};
-        public static IAttribute OutRange = new AttributePlaceholder {Name = "OutRange"};
-        public static IAttribute OutChartName = new AttributePlaceholder {Name = "OutChartName"};
-        public static IAttribute OutImageName = new AttributePlaceholder {Name = "OutImageName"};
-        public static IAttribute PdfBusinessLine = new AttributePlaceholder {Name = "PDF Business Line"};
-        public static IAttribute PdfReportType = new AttributePlaceholder {Name = "PDF Report Type"};
-        public static IAttribute PdfReportTitle = new AttributePlaceholder {Name = "PDF Report Title"};
-        public static IAttribute PdfSubheading = new AttributePlaceholder {Name = "PDF Subheading"};
-        public static IAttribute PdfDate = new AttributePlaceholder {Name = "PDF Date"};
-        public static IAttribute PdfAddressBar = new AttributePlaceholder {Name = "PDF Address Bar"};
-        public static IAttribute Location = new AttributePlaceholder {Name = "Location"};
-        public static IAttribute UploaderVersion = new AttributePlaceholder {Name = "Uploader Version"};
-        public static IAttribute AnalystWhoSentForReviewId = new AttributePlaceholder {Name = "Analyst who sent for review id"};
-        public static IAttribute EditorWhoSentBackToAnalystId = new AttributePlaceholder {Name = "Editor who sent back to Analyst id"};
-        public static IAttribute PublishFailReason = new AttributePlaceholder {Name = "Publishing fail reason"};
-        public static IAttribute DataRefreshStart = new AttributePlaceholder {Name = "Data refresh started"};
-        public static IAttribute DataRefreshEnd = new AttributePlaceholder {Name = "Data refresh ended"};
-        public static IAttribute DataRefreshExcelPull = new AttributePlaceholder {Name = "Data refresh excels pulled"};
-        public static IAttribute DataRefreshFailReason = new AttributePlaceholder {Name = "Data refresh fail reason"};
-        public static IAttribute ChemicalProductAndMarket = new AttributePlaceholder {Name = "Chemical Product and Market(Taxonomy)"};
-        public static IAttribute BrandTaxonomy = new AttributePlaceholder {Name = "Brand(Taxonomy)"};
-        public static IAttribute DomainsTaxonomy = new AttributePlaceholder {Name = "Domain(Taxonomy)"};
-        public static IAttribute ContentTypeTaxonomy = new AttributePlaceholder {Name = "Content Type(Taxonomy)"};
-        public static IAttribute FileClassificationTaxonomy = new AttributePlaceholder {Name = "File Classification(Taxonomy)"};
-        public static IAttribute PublishFrequencyTaxonomy = new AttributePlaceholder {Name = "Publish Frequency(Taxonomy)"};
-        public static IAttribute AuthorizationCode = new AttributePlaceholder {Name = "Authorization Code"};
-        public static IAttribute Authors = new AttributePlaceholder {Name = "Authors"};
-        public static IAttribute DomainUrl = new AttributePlaceholder {Name = "Domain Url"};
-        public static IAttribute HardCopyPublicationDate = new AttributePlaceholder {Name = "Hardcopy Publication Date"};
-        public static IAttribute BrandDisplayName = new AttributePlaceholder {Name = "Brand"};
-        public static IAttribute DomainsDisplayName = new AttributePlaceholder {Name = "Domains"};
+        public static IAttribute<string> APP_STUDIO_ISSUE_URN = new AttributePlaceholder<string> { Id = 180, Name = "App Studio Issue URN" };
+        public static IAttribute<long> ARTICLE_COMP_REFRENCE_ASSET_ID = new AttributePlaceholder<long> { Id = 414, Name = "Article Component Reference Asset Id" };
+        public static IAttribute<long> ARTICLE_COMP_REFRENCE_ASSET_MAJ_VERSION = new AttributePlaceholder<long> { Id = 415, Name = "Article Component Reference Asset Major Version" };
+        public static IAttribute<long> ARTICLE_COMP_REFRENCE_ASSET_MIN_VERSION = new AttributePlaceholder<long> { Id = 416, Name = "Article Component Reference Asset Minor version" };
+        public static IAttribute<long> ARTICLE_COMPONENT_ID = new AttributePlaceholder<long> { Id = 305, Name = "Article Component id" };
+        public static IAttribute<long> ARTICLE_ID = new AttributePlaceholder<long> { Id = 413, Name = "Article Id" };
+        public static IAttribute<string> ASSET_CHECKSUM = new AttributePlaceholder<string> { Id = 407, Name = "Asset Checksum" };
+        public static IAttribute<long> ATTACHED_COMPONENT_ID = new AttributePlaceholder<long> { Id = 412, Name = "Attached Component Id" };
+        public static IAttribute<long> ATTACHED_LAYOUT_ID = new AttributePlaceholder<long> { Id = 401, Name = "Attached Layout Uid" };
+        public static IAttribute<string> ATTACHMENT_CHECKSUM = new AttributePlaceholder<string> { Id = 408, Name = "Attachment Checksum" };
+        public static IAttribute<string> AUXILIARY_DATA = new AttributePlaceholder<string> { Id = 409, Name = "Auxillary Data" };
+        public static IAttribute<long> BOX_ID = new AttributePlaceholder<long> { Id = 402, Name = "Box Uid" };
+        public static IAttribute<long> CHARACTER_COUNT = new AttributePlaceholder<long> { Id = 356, Name = "Character count" };
+        public static IAttribute<DateTime> CHECK_OUT_DATE_TIME = new AttributePlaceholder<DateTime> { Id = 17, Name = "Check Out Date and Time" };
+        public static IAttribute<string> CHECKED_OUT_APPLICATION = new AttributePlaceholder<string> { Id = 34, Name = "Checkedout Application" };
+        public static IAttribute<PhoenixValue> CHECKED_OUT_BY = new AttributePlaceholder<PhoenixValue> { Id = 14, Name = "Checked out by" };
+        public static IAttribute<long> CHECKED_OUT_DURATION = new AttributePlaceholder<long> { Id = 35, Name = "Checked out duration" };
+        public static IAttribute<string> CHECKED_OUT_FILE_PATH = new AttributePlaceholder<string> { Id = 16, Name = "Checked out file path" };
+        public static IAttribute<string> CHECKED_OUT_MACHINE_NAME = new AttributePlaceholder<string> { Id = 15, Name = "Checked out machine name" };
+        public static IAttribute<CollectionValue> COLLECTION = new AttributePlaceholder<CollectionValue> { Id = 55, Name = "Collection" };
+        public static IAttribute<string> COLLECTION_PATH = new AttributePlaceholder<string> { Id = 57, Name = "Collection Path" };
+        public static IAttribute<PhoenixValue> COLLECTION_TEMPLATE = new AttributePlaceholder<PhoenixValue> { Id = 58, Name = "Collection Template" };
+        public static IAttribute<long> COLOR_DEPTH = new AttributePlaceholder<long> { Id = 204, Name = "Color depth" };
+        public static IAttribute<PhoenixValue> COLOR_SPACE = new AttributePlaceholder<PhoenixValue> { Id = 205, Name = "Color space" };
+        public static IAttribute<string> COMPONENT_NAME = new AttributePlaceholder<string> { Id = 303, Name = "Component name" };
+        public static IAttribute<long> COMPONENT_POSITION = new AttributePlaceholder<long> { Id = 302, Name = "Component position" };
+        public static IAttribute<PhoenixValue> CONTENT_CREATOR = new AttributePlaceholder<PhoenixValue> { Id = 32, Name = "Content creator" };
+        public static IAttribute<PhoenixValue> CONTENT_TYPE = new AttributePlaceholder<PhoenixValue> { Id = 62, Name = "Content Type" };
+        public static IAttribute<string> CONTENT_TYPE_HIERARCHY = new AttributePlaceholder<string> { Id = 63, Name = "Content Type Hierarchy" };
+        public static IAttribute<DateTime> CREATED = new AttributePlaceholder<DateTime> { Id = 3, Name = "Created" };
+        public static IAttribute<PhoenixValue> CREATOR = new AttributePlaceholder<PhoenixValue> { Id = 5, Name = "Creator" };
+        public static IAttribute<bool> DEPENDENT_ON_COLLECTION_RESOURCES = new AttributePlaceholder<bool> { Id = 418, Name = "Dependent On Collection Resources" };
+        public static IAttribute<string> DEVICE_NAME = new AttributePlaceholder<string> { Id = 158, Name = "Device Name" };
+        public static IAttribute<string> DITA_AUDIENCE = new AttributePlaceholder<string> { Id = 452, Name = "Audience (DITA)" };
+        public static IAttribute<string> DITA_AUTHOR = new AttributePlaceholder<string> { Id = 453, Name = "Author (DITA)" };
+        public static IAttribute<string> DITA_BRAND = new AttributePlaceholder<string> { Id = 454, Name = "Brand (DITA)" };
+        public static IAttribute<string> DITA_CATEGORY = new AttributePlaceholder<string> { Id = 455, Name = "Category (DITA)" };
+        public static IAttribute<string> DITA_ID = new AttributePlaceholder<string> { Id = 456, Name = "Id (DITA)" };
+        public static IAttribute<string> DITA_IMPORTANCE = new AttributePlaceholder<string> { Id = 466, Name = "Importance (DITA)" };
+        public static IAttribute<string> DITA_KEYWORDS = new AttributePlaceholder<string> { Id = 457, Name = "Keywords (DITA)" };
+        public static IAttribute<string> DITA_LANGUAGE = new AttributePlaceholder<string> { Id = 464, Name = "Language (DITA)" };
+        public static IAttribute<string> DITA_NAVIGATION_TITLE = new AttributePlaceholder<string> { Id = 458, Name = "Navigation Title (DITA)" };
+        public static IAttribute<string> DITA_OTHER_PROPERTIES = new AttributePlaceholder<string> { Id = 465, Name = "Other Properties (DITA)" };
+        public static IAttribute<string> DITA_PLATFORM = new AttributePlaceholder<string> { Id = 459, Name = "Platform (DITA)" };
+        public static IAttribute<string> DITA_PRODUCT_NAME = new AttributePlaceholder<string> { Id = 460, Name = "Product Name (DITA)" };
+        public static IAttribute<string> DITA_PUBLISHING_CONTENT = new AttributePlaceholder<string> { Id = 463, Name = "Publishing Intent (DITA)" };
+        public static IAttribute<string> DITA_SEARCH_TITLE = new AttributePlaceholder<string> { Id = 461, Name = "Search Title (DITA)" };
+        public static IAttribute<string> DITA_TITLE = new AttributePlaceholder<string> { Id = 462, Name = "Title (DITA)" };
+        public static IAttribute<string> FILE_EXTENSION = new AttributePlaceholder<string> { Id = 11, Name = "File extension" };
+        public static IAttribute<string> FILE_PATH = new AttributePlaceholder<string> { Id = 8, Name = "File path" };
+        public static IAttribute<long> FILE_SIZE = new AttributePlaceholder<long> { Id = 12, Name = "File size" };
+        public static IAttribute<string> FIRST_PAGE = new AttributePlaceholder<string> { Id = 51, Name = "First page" };
+        public static IAttribute<string> GLOBAL_ID = new AttributePlaceholder<string> { Id = 66, Name = "Global ID" };
+        public static IAttribute<bool> HAS_CHILDREN = new AttributePlaceholder<bool> { Id = 65, Name = "Has Children" };
+        public static IAttribute<long> ID = new AttributePlaceholder<long> { Id = 1, Name = "Id" };
+        public static IAttribute<long> INDESIGN_OBJECT_UID = new AttributePlaceholder<long> { Id = 419, Name = "InDesign Object UID" };
+        public static IAttribute<PhoenixValue> INDEXING_STATUS = new AttributePlaceholder<PhoenixValue> { Id = 29, Name = "Indexing status" };
+        public static IAttribute<string> IPTC_BY_LINE = new AttributePlaceholder<string> { Id = 213, Name = "By-line (IPTC)" };
+        public static IAttribute<string> IPTC_BY_LINE_TITLE = new AttributePlaceholder<string> { Id = 214, Name = "By-line Title (IPTC)" };
+        public static IAttribute<string> IPTC_CAPTION = new AttributePlaceholder<string> { Id = 223, Name = "Caption (IPTC)" };
+        public static IAttribute<string> IPTC_CATEGORY = new AttributePlaceholder<string> { Id = 208, Name = "Category (IPTC)" };
+        public static IAttribute<string> IPTC_CITY = new AttributePlaceholder<string> { Id = 215, Name = "City (IPTC)" };
+        public static IAttribute<string> IPTC_COPYRIGHT_NOTICE = new AttributePlaceholder<string> { Id = 222, Name = "Copyright Notice (IPTC)" };
+        public static IAttribute<string> IPTC_COUNTRY = new AttributePlaceholder<string> { Id = 217, Name = "Country (IPTC)" };
+        public static IAttribute<string> IPTC_CREDIT = new AttributePlaceholder<string> { Id = 220, Name = "Credit (IPTC)" };
+        public static IAttribute<string> IPTC_HEADLINE = new AttributePlaceholder<string> { Id = 219, Name = "Headline (IPTC)" };
+        public static IAttribute<string> IPTC_KEYWORDS = new AttributePlaceholder<string> { Id = 210, Name = "Keywords (IPTC)" };
+        public static IAttribute<string> IPTC_OBJECT_NAME = new AttributePlaceholder<string> { Id = 206, Name = "Object Name (IPTC)" };
+        public static IAttribute<string> IPTC_ORIGINAL_TRANSMISSION_REFERENCE = new AttributePlaceholder<string> { Id = 218, Name = "Original Transmission Reference (IPTC)" };
+        public static IAttribute<string> IPTC_PROVINCE = new AttributePlaceholder<string> { Id = 216, Name = "Province (IPTC)" };
+        public static IAttribute<string> IPTC_SOURCE = new AttributePlaceholder<string> { Id = 221, Name = "Source (IPTC)" };
+        public static IAttribute<string> IPTC_SPECIAL_INSTRUCTIONS = new AttributePlaceholder<string> { Id = 211, Name = "Special Instructions (IPTC)" };
+        public static IAttribute<string> IPTC_SUPPLEMENTAL_CATEGORIES = new AttributePlaceholder<string> { Id = 209, Name = "Supplemental Categories (IPTC)" };
+        public static IAttribute<string> IPTC_URGENCY = new AttributePlaceholder<string> { Id = 207, Name = "Urgency (IPTC)" };
+        public static IAttribute<string> IPTC_WRITER = new AttributePlaceholder<string> { Id = 224, Name = "Writer (IPTC)" };
+        public static IAttribute<bool> IS_CHECKED_OUT = new AttributePlaceholder<bool> { Id = 13, Name = "Is checked out" };
+        public static IAttribute<bool> IS_COLLECTED = new AttributePlaceholder<bool> { Id = 18, Name = "Is collected" };
+        public static IAttribute<bool> IS_COLLECTION_TEMPLATE = new AttributePlaceholder<bool> { Id = 59, Name = "Is Template" };
+        public static IAttribute<bool> IS_PLACEHOLDER = new AttributePlaceholder<bool> { Id = 30, Name = "Is placeholder" };
+        public static IAttribute<PhoenixValue> ISSUE = new AttributePlaceholder<PhoenixValue> { Id = 26, Name = "Issue" };
+        public static IAttribute<string> ITEM_NAME = new AttributePlaceholder<string> { Id = 410, Name = "Item Name" };
+        public static IAttribute<string> ITEM_TYPE = new AttributePlaceholder<string> { Id = 411, Name = "Item Type" };
+        public static IAttribute<PhoenixValue> JOB_JACKET = new AttributePlaceholder<PhoenixValue> { Id = 44, Name = "Job jacket" };
+        public static IAttribute<string> JOB_TICKET_TEMPLATE_NAME = new AttributePlaceholder<string> { Id = 45, Name = "Job ticket template name" };
+        public static IAttribute<DateTime> LAST_CONTENT_UPDATE = new AttributePlaceholder<DateTime> { Id = 19, Name = "Last content update" };
+        public static IAttribute<PhoenixValue> LAST_CONTENT_UPDATED_BY = new AttributePlaceholder<PhoenixValue> { Id = 20, Name = "Last content updated by" };
+        public static IAttribute<DateTime> LAST_GEOMETRY_UPDATE = new AttributePlaceholder<DateTime> { Id = 21, Name = "Last geometry update" };
+        public static IAttribute<DateTime> LAST_JOB_JACKET_MODIFIED = new AttributePlaceholder<DateTime> { Id = 10, Name = "Job jacket last modified" };
+        public static IAttribute<DateTime> LAST_MODIFIED = new AttributePlaceholder<DateTime> { Id = 4, Name = "Last modified" };
+        public static IAttribute<PhoenixValue> LAST_MODIFIER = new AttributePlaceholder<PhoenixValue> { Id = 6, Name = "Last modifier" };
+        public static IAttribute<string> LAST_PAGE = new AttributePlaceholder<string> { Id = 52, Name = "Last page" };
+        public static IAttribute<bool> LAYOUT_GEOMETRY_DIFFERS = new AttributePlaceholder<bool> { Id = 151, Name = "Layout Geometry Differs" };
+        public static IAttribute<string> LAYOUT_NAME = new AttributePlaceholder<string> { Id = 157, Name = "Layout Name" };
+        public static IAttribute<long> LINE_COUNT = new AttributePlaceholder<long> { Id = 354, Name = "Line count" };
+        public static IAttribute<string> MAC_CREATOR_TYPE = new AttributePlaceholder<string> { Id = 47, Name = "Mac creator type" };
+        public static IAttribute<string> MAC_OS_TYPE = new AttributePlaceholder<string> { Id = 46, Name = "Mac OS type" };
+        public static IAttribute<long> MAJOR_VERSION = new AttributePlaceholder<long> { Id = 7, Name = "Major version" };
+        public static IAttribute<string> MIME_TYPE = new AttributePlaceholder<string> { Id = 48, Name = "Mime type" };
+        public static IAttribute<long> MINOR_VERSION = new AttributePlaceholder<long> { Id = 61, Name = "Minor version" };
+        public static IAttribute<string> NAME = new AttributePlaceholder<string> { Id = 2, Name = "Name" };
+        public static IAttribute<long> NUMBER_OF_LAYOUTS = new AttributePlaceholder<long> { Id = 60, Name = "Number of Layouts" };
+        public static IAttribute<long> NUMBER_OF_PAGES = new AttributePlaceholder<long> { Id = 43, Name = "Number of pages" };
+        public static IAttribute<PhoenixValue> ORIENTATION = new AttributePlaceholder<PhoenixValue> { Id = 153, Name = "Orientation" };
+        public static IAttribute<string> ORIGINAL_FILENAME = new AttributePlaceholder<string> { Id = 33, Name = "Original filename" };
+        public static IAttribute<long> PAGE_INDEX = new AttributePlaceholder<long> { Id = 404, Name = "Page Index" };
+        public static IAttribute<string> PAGE_NAME = new AttributePlaceholder<string> { Id = 403, Name = "Page Name" };
+        public static IAttribute<long> PIXEL_HEIGHT = new AttributePlaceholder<long> { Id = 202, Name = "Pixel height" };
+        public static IAttribute<long> PIXEL_WIDTH = new AttributePlaceholder<long> { Id = 201, Name = "Pixel width" };
+        public static IAttribute<string> RELATION_STATUS = new AttributePlaceholder<string> { Id = 64, Name = "Relationship Status" };
+        public static IAttribute<PhoenixValue> REPOSITORY = new AttributePlaceholder<PhoenixValue> { Id = 28, Name = "Repository" };
+        public static IAttribute<PhoenixValue> REPOSITORY_TYPE = new AttributePlaceholder<PhoenixValue> { Id = 27, Name = "Repository type" };
+        public static IAttribute<long> RESOLUTION = new AttributePlaceholder<long> { Id = 203, Name = "Resolution" };
+        public static IAttribute<string> REVISION_COMMENTS = new AttributePlaceholder<string> { Id = 31, Name = "Revision comments" };
+        public static IAttribute<PhoenixValue> ROUTED_TO = new AttributePlaceholder<PhoenixValue> { Id = 25, Name = "Routed to" };
+        public static IAttribute<PhoenixValue> STATUS = new AttributePlaceholder<PhoenixValue> { Id = 24, Name = "Status" };
+        public static IAttribute<PhoenixValue> STORY_DIRECTION = new AttributePlaceholder<PhoenixValue> { Id = 154, Name = "Story Direction" };
+        public static IAttribute<PhoenixValue> TEXT_INDEXING_STATUS = new AttributePlaceholder<PhoenixValue> { Id = 53, Name = "Text Indexing status" };
+        public static IAttribute<string> TEXT_PREVIEW = new AttributePlaceholder<string> { Id = 352, Name = "Text preview" };
+        public static IAttribute<long> WORD_COUNT = new AttributePlaceholder<long> { Id = 353, Name = "Word count" };
+        public static IAttribute<PhoenixValue> WORKFLOW = new AttributePlaceholder<PhoenixValue> { Id = 54, Name = "Workflow" };
+        public static IAttribute<string> XPATH = new AttributePlaceholder<string> { Id = 417, Name = "XPath" };
+        public static IAttribute<long> SourceDocumentId = new AttributePlaceholder<long> { Id = 504, Name = "Source Document Id" };
+        public static IAttribute<DateTime> PublishedDate = new AttributePlaceholder<DateTime> { Id = 505, Name = "Published Date" };
+        public static IAttribute<bool> UserSetPublishedDate = new AttributePlaceholder<bool> { Id = 506, Name = "User-Set Published Date" };
+        public static IAttribute<DateTime> UserProposedPublishedDate = new AttributePlaceholder<DateTime> { Id = 509, Name = "User-Proposed Published Date" };
+        public static IAttribute<bool> DontUpdatePublishedDate = new AttributePlaceholder<bool> { Id = 507, Name = "Don't Update Published Date" };
+        public static IAttribute<bool> HiddenUpdate = new AttributePlaceholder<bool> { Id = 508, Name = "Hidden Update" };
+        public static IAttribute<string> InRangeName = new AttributePlaceholder<string> { Id = 515, Name = "InRangeName" };
+        public static IAttribute<string> InRangeValue = new AttributePlaceholder<string> { Id = 516, Name = "InRangeValue" };
+        public static IAttribute<string> OutSheet = new AttributePlaceholder<string> { Id = 517, Name = "OutSheet" };
+        public static IAttribute<string> OutRange = new AttributePlaceholder<string> { Id = 518, Name = "OutRange" };
+        public static IAttribute<string> OutChartName = new AttributePlaceholder<string> { Id = 519, Name = "OutChartName" };
+        public static IAttribute<string> OutImageName = new AttributePlaceholder<string> { Id = 520, Name = "OutImageName" };
+        public static IAttribute<string> PdfBusinessLine = new AttributePlaceholder<string> { Id = 620, Name = "PDF Business Line" };
+        public static IAttribute<string> PdfReportType = new AttributePlaceholder<string> { Id = 621, Name = "PDF Report Type" };
+        public static IAttribute<string> PdfReportTitle = new AttributePlaceholder<string> { Id = 622, Name = "PDF Report Title" };
+        public static IAttribute<string> PdfSubheading = new AttributePlaceholder<string> { Id = 623, Name = "PDF Subheading" };
+        public static IAttribute<string> PdfDate = new AttributePlaceholder<string> { Id = 624, Name = "PDF Date" };
+        public static IAttribute<string> PdfAddressBar = new AttributePlaceholder<string> { Id = 625, Name = "PDF Address Bar" };
+        public static IAttribute<string> UploaderVersion = new AttributePlaceholder<string> { Id = 501, Name = "Uploader Version" };
+        public static IAttribute<long> AnalystWhoSentForReviewId = new AttributePlaceholder<long> { Id = 502, Name = "Analyst who sent for review id" };
+        public static IAttribute<long> EditorWhoSentBackToAnalystId = new AttributePlaceholder<long> { Id = 503, Name = "Editor who sent back to Analyst id" };
+        public static IAttribute<string> PublishFailReason = new AttributePlaceholder<string> { Id = 510, Name = "Publishing fail reason" };
+        public static IAttribute<DateTime> DataRefreshStart = new AttributePlaceholder<DateTime> { Id = 511, Name = "Data refresh started" };
+        public static IAttribute<DateTime> DataRefreshEnd = new AttributePlaceholder<DateTime> { Id = 512, Name = "Data refresh ended" };
+        public static IAttribute<DateTime> DataRefreshExcelPull = new AttributePlaceholder<DateTime> { Id = 513, Name = "Data refresh excels pulled" };
+        public static IAttribute<string> DataRefreshFailReason = new AttributePlaceholder<string> { Id = 514, Name = "Data refresh fail reason" };
+        public static IAttribute<string> ChemicalProductAndMarket = new AttributePlaceholder<string> { Id = 635, Name = "Chemical Product and Market(Taxonomy)" };
+        public static IAttribute<long> BrandTaxonomy = new AttributePlaceholder<long> { Id = 628, Name = "Brand(Taxonomy)" };
+        public static IAttribute<string> DomainsTaxonomy = new AttributePlaceholder<string> { Id = 627, Name = "Domain(Taxonomy)" };
+        public static IAttribute<long> ContentTypeTaxonomy = new AttributePlaceholder<long> { Id = 629, Name = "Content Type(Taxonomy)" };
+        public static IAttribute<long> FileClassificationTaxonomy = new AttributePlaceholder<long> { Id = 630, Name = "File Classification(Taxonomy)" };
+        public static IAttribute<long> PublishFrequencyTaxonomy = new AttributePlaceholder<long> { Id = 631, Name = "Publish Frequency(Taxonomy)" };
+        public static IAttribute<string> AuthorizationCode = new AttributePlaceholder<string> { Id = 634, Name = "Authorization Code" };
+        public static IAttribute<string> Authors = new AttributePlaceholder<string> { Id = 636, Name = "Authors" };
+        public static IAttribute<string> DomainUrl = new AttributePlaceholder<string> { Id = 638, Name = "Domain Url" };
+        public static IAttribute<string> HardCopyPublicationDate = new AttributePlaceholder<string> { Id = 639, Name = "Hardcopy Publication Date" };
+        public static IAttribute<string> BrandDisplayName = new AttributePlaceholder<string> { Id = 632, Name = "Brand" };
+        public static IAttribute<string> DomainsDisplayName = new AttributePlaceholder<string> { Id = 633, Name = "Domains" };
+
+    }
+
+    public class CollectionValue
+    {
+        private readonly string _collection;
+
+        public CollectionValue(string collection)
+        {
+            _collection = collection;
+        }
+
+        public static implicit operator string(CollectionValue value)
+        {
+            return value._collection;
+        }
     }
 }
