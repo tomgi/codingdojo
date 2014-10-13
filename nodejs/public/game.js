@@ -1,6 +1,10 @@
 $(document).ready(function() {
 
+  var person = prompt("Please enter your name", "Harry Potter");
+
   var socket = io();
+
+  socket.emit('login', person);
 
   socket.on('initial_state', function (initial_state) {
     var client_id = initial_state.client_id;
@@ -26,10 +30,18 @@ $(document).ready(function() {
 
       var players = {};
 
-      initial_state.players.forEach(function (id) { 
+
+      Object.keys(initial_state.players).forEach(function (id) { 
           players[id] = Crafty.e("2D, Canvas, ship, Collision")
         .attr({x: Crafty.viewport.width / 2, y: Crafty.viewport.height / 2})
         .origin("center")
+
+          var score = Crafty.e("2D, DOM, Text")
+          .text(initial_state.players[id].name)
+          .attr({x: 950, y: 550, w: 200, h:50})
+          .css({color: "#fff"});
+
+          players[id].attach(score);
         });
 
       players[client_id] = Crafty.e("2D, Canvas, ship, Controls, Collision")
@@ -55,12 +67,29 @@ $(document).ready(function() {
         socket.emit('move', {left: this.move.left, right: this.move.right, up: this.move.up});
       });
 
+      console.log(Crafty.viewport.width);
+      console.log(Crafty.viewport.height);
 
-      socket.on('new_player', function (new_player_id) {
+    var score = Crafty.e("2D, DOM, Text")
+      .text(person)
+      .attr({x: 950, y: 550, w: 200, h:50})
+      .css({color: "#fff"});
+
+      players[client_id].attach(score);
+
+
+      socket.on('new_player', function (new_player_id, player) {
         console.log('new player connected');
         players[new_player_id] = Crafty.e("2D, Canvas, ship, Collision")
         .attr({x: Crafty.viewport.width / 2, y: Crafty.viewport.height / 2})
         .origin("center")
+
+        var score = Crafty.e("2D, DOM, Text")
+        .text(player.name)
+        .attr({x: 950, y: 550, w: 200, h:50})
+        .css({color: "#fff"});
+
+        players[new_player_id].attach(score);
       });
 
       socket.on('player_drop', function (drop_player_id) {

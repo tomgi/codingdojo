@@ -13,21 +13,23 @@ io.on('connection', function(client){
 
     console.log('client connected');
 
-    client.emit('initial_state', {client_id: client.id, players: Object.keys(players)});
+    client.on('login', function(login) {
+      
+      client.emit('initial_state', {client_id: client.id, players: players});
 
-    players[client.id] = {x: 0, y: 0, rotation: 0, xspeed: 0, yspeed: 0, decay: 0}
+      players[client.id] = {x: 0, y: 0, rotation: 0, xspeed: 0, yspeed: 0, decay: 0, name: login}
 
-    console.log(JSON.stringify(players));
+      console.log(JSON.stringify(players));
 
-    client.broadcast.emit('new_player', client.id);
+      client.broadcast.emit('new_player', client.id, players[client.id]);
 
-    client.on('disconnect', function () {
+      client.on('disconnect', function () {
         console.log('client disconnected');
         client.broadcast.emit('player_drop', client.id);
         delete players[client.id]
-    });
+      });
 
-    client.on('move', function(move){   
+      client.on('move', function(move){   
 
         var movingPlayer = players[client.id];
 
@@ -52,6 +54,7 @@ io.on('connection', function(client){
 
         io.emit('players_positions', players);
     });
+  });
 });
 
 http.listen(1337);
